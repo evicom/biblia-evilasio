@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Bíblia Sagrada — José Evilasio Marques</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5c3510">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bíblia Sagrada">
+
+<!-- SEO / Social -->
+<meta name="description" content="Bíblia Sagrada completa com ARC, ACF, ARA e NVI. Leia, busque e anote versículos. Por José Evilasio Marques.">
+<meta name="author" content="José Evilasio Marques">
+<meta property="og:title" content="Bíblia Sagrada">
+<meta property="og:description" content="Leia a Bíblia completa com ARC, ACF, ARA e NVI. Busca, anotações e estudos bíblicos.">
+<meta property="og:type" content="website">
+
+<!-- Apple Icons -->
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+:root {
+  --parch:#f7ead2;--parch2:#eddbb0;--parch3:#e4cc94;
+  --ink:#2c1a0e;--ink2:#5a3a1a;
+  --gold:#b8860b;--gold2:#d4a017;--gold3:#f5d060;
+  --red:#8b0000;--blue:#003580;--accent:#6b3a1f;
+  --tg1:#5c3510;--tg2:#a0701a;
+  --shadow:rgba(44,26,14,0.18);
+  --card-bg:rgba(247,234,210,0.94);
+  --font-b:'Times New Roman',Times,serif;
+  --font-u:Arial,Helvetica,sans-serif;
+  --zoom:1;
+}
+[data-theme="dark"]{
+  --parch:#18100600;--parch2:#1e1408;--parch3:#26180a;
+  --ink:#e8d5a0;--ink2:#c0a060;
+  --gold:#c8960c;--gold2:#e0b020;--gold3:#ffe060;
+  --red:#ff7070;--blue:#6aadff;--accent:#d4a040;
+  --tg1:#2a1a06;--tg2:#5a3a10;
+  --shadow:rgba(0,0,0,0.55);
+  --card-bg:rgba(30,20,8,0.97);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);min-height:100vh;background:var(--parch3);color:var(--ink);overflow-x:hidden;transition:background .4s,color .4s}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 32px,rgba(184,134,11,.06) 32px,rgba(184,134,11,.06) 33px),
+  radial-gradient(ellipse at 20% 20%,rgba(200,150,40,.1) 0%,transparent 60%),
+  radial-gradient(ellipse at 80% 80%,rgba(180,120,20,.08) 0%,transparent 55%)}
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:200;background:linear-gradient(135deg,var(--tg1) 0%,var(--tg2) 50%,var(--tg1) 100%);border-bottom:3px solid var(--gold);box-shadow:0 4px 20px var(--shadow)}
+.htop{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px;gap:10px;flex-wrap:wrap}
+.logo{font-family:var(--font-b);color:var(--gold3);text-shadow:1px 2px 6px rgba(0,0,0,.6);line-height:1.1}
+.logo-t{font-size:1.45rem;font-weight:bold;letter-spacing:.05em}
+.logo-s{font-size:.7rem;color:var(--gold2);letter-spacing:.14em;font-family:var(--font-u)}
+.hctrls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.hctrls select,.hbtn{font-family:var(--font-u);font-size:.76rem;background:rgba(255,255,255,.13);border:1px solid var(--gold2);color:var(--gold3);border-radius:6px;padding:5px 10px;cursor:pointer;outline:none;transition:background .2s}
+.hctrls select:hover,.hbtn:hover{background:rgba(255,255,255,.25)}
+.hctrls select option{background:#3a2008;color:var(--gold3)}
+.zgrp{display:flex;align-items:center;gap:3px}
+.zgrp button{background:rgba(255,255,255,.13);border:1px solid var(--gold2);color:var(--gold3);border-radius:4px;width:24px;height:24px;font-size:1rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.zgrp button:hover{background:rgba(255,255,255,.3)}
+.zval{color:var(--gold3);font-family:var(--font-u);font-size:.72rem;min-width:30px;text-align:center}
+/* TABS */
+.tabs{display:flex;gap:2px;overflow-x:auto;padding:0 6px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:7px 15px;border-radius:8px 8px 0 0;border:1px solid rgba(212,160,23,.5);border-bottom:none;color:rgba(245,208,96,.75);font-family:var(--font-u);font-size:.78rem;cursor:pointer;user-select:none;white-space:nowrap;background:linear-gradient(180deg,rgba(255,255,255,.08) 0%,transparent 100%);transition:all .2s}
+.tab:hover{color:var(--gold3);background:linear-gradient(180deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.04) 100%)}
+.tab.active{background:linear-gradient(180deg,var(--gold3) 0%,var(--gold2) 100%);color:var(--tg1);font-weight:bold;border-color:var(--gold3)}
+/* MAIN */
+.main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:16px}
+.panel{display:none}
+.panel.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* CARD */
+.card{background:var(--card-bg);border:2px solid var(--gold);border-radius:12px;padding:20px 22px;margin-bottom:16px;box-shadow:0 6px 28px var(--shadow),inset 0 0 50px rgba(184,134,11,.04);position:relative;overflow:hidden;backdrop-filter:blur(2px)}
+.card::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(184,134,11,.05) 30px,rgba(184,134,11,.05) 31px)}
+.stitle{font-family:var(--font-b);font-size:1.25rem;color:var(--accent);border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:14px;text-align:center;letter-spacing:.07em;position:relative;z-index:1}
+/* VDAY */
+.vday{text-align:center;padding:8px 0;position:relative;z-index:1}
+.vday-cross{font-size:2.2rem;color:var(--gold);margin-bottom:6px}
+.vday-t{font-size:calc(1.1rem * var(--zoom));font-style:italic;color:var(--ink);line-height:1.75}
+.vday-r{margin-top:10px;font-size:.85rem;color:var(--accent);font-weight:bold;font-family:var(--font-u)}
+/* NAV */
+.nav-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px;position:relative;z-index:1}
+.nav-row select{padding:7px 11px;border:2px solid var(--gold);border-radius:8px;background:rgba(255,255,255,.3);color:var(--ink);font-family:var(--font-u);font-size:.83rem;outline:none;cursor:pointer;flex:1;min-width:120px;transition:border .2s}
+.nav-row select:focus{border-color:var(--gold2)}
+.btn{padding:7px 16px;background:linear-gradient(135deg,var(--tg1),var(--tg2));color:var(--gold3);border:2px solid var(--gold);border-radius:8px;font-family:var(--font-u);font-size:.82rem;cursor:pointer;transition:opacity .2s,transform .1s;white-space:nowrap}
+.btn:hover{opacity:.85;transform:translateY(-1px)}
+.btn:active{transform:none}
+/* VBADGE */
+.vbadge{display:inline-block;background:linear-gradient(90deg,var(--tg1),var(--tg2));color:var(--gold3);font-family:var(--font-u);font-size:.7rem;border:1px solid var(--gold);border-radius:20px;padding:3px 12px;margin-bottom:12px;letter-spacing:.06em}
+/* LEGEND */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-family:var(--font-u);font-size:.75rem;color:var(--ink2)}
+.litem{display:flex;align-items:center;gap:5px}
+.ldot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* LOADING */
+.loading{text-align:center;padding:40px;font-family:var(--font-u);font-size:.9rem;color:var(--accent)}
+.spin{display:inline-block;width:36px;height:36px;border:4px solid rgba(184,134,11,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* CHAPTER */
+.chap-hdr{font-family:var(--font-b);font-size:1.1rem;color:var(--accent);text-align:center;margin-bottom:16px;font-weight:bold;letter-spacing:.05em;position:relative;z-index:1}
+.vl{position:relative;padding:5px 8px 5px 42px;margin-bottom:3px;border-radius:6px;transition:background .15s;cursor:pointer;font-size:calc(1rem * var(--zoom));line-height:1.75;z-index:1}
+.vl:hover{background:rgba(184,134,11,.12)}
+.vl.hn{border-left:3px solid var(--gold2)}
+.vn{position:absolute;left:8px;top:5px;font-size:.65em;color:var(--gold);font-weight:bold;font-family:var(--font-u);line-height:2.3}
+.gw{color:var(--blue);font-weight:600}
+.jw{color:var(--red);font-weight:600}
+.npin{font-size:.65em;color:var(--gold);vertical-align:super;margin-left:2px;font-family:var(--font-u)}
+/* CHAP NAV */
+.cnav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:8px;position:relative;z-index:1}
+.cnav span{font-family:var(--font-u);font-size:.85rem;color:var(--accent);text-align:center}
+/* ERROR */
+.ebox{background:rgba(139,0,0,.08);border:1.5px solid var(--red);border-radius:8px;padding:14px 18px;margin:10px 0;font-family:var(--font-u);font-size:.82rem;color:var(--red);position:relative;z-index:1}
+/* SEARCH */
+.sbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;position:relative;z-index:1}
+.sbar input{flex:1;min-width:180px;padding:9px 14px;border:2px solid var(--gold);border-radius:8px;background:rgba(255,255,255,.3);color:var(--ink);font-family:var(--font-b);font-size:1rem;outline:none;transition:border .2s,box-shadow .2s}
+.sbar input:focus{border-color:var(--gold2);box-shadow:0 0 10px rgba(184,134,11,.25)}
+.sbar input::placeholder{color:var(--ink2);opacity:.6}
+.sri{padding:9px 0;border-bottom:1px solid rgba(184,134,11,.18);cursor:pointer;transition:background .15s;border-radius:4px;position:relative;z-index:1}
+.sri:hover{background:rgba(184,134,11,.1);padding-left:6px}
+.sri-ref{font-family:var(--font-u);font-size:.73rem;color:var(--accent);margin-bottom:3px}
+.sri-t{font-size:calc(.9rem * var(--zoom));line-height:1.6}
+mark{background:rgba(184,134,11,.3);border-radius:3px;padding:0 2px}
+/* KEYS */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px;position:relative;z-index:1}
+.kcard{background:rgba(255,255,255,.25);border:1.5px solid var(--gold);border-radius:9px;padding:12px 14px;cursor:pointer;transition:background .2s,transform .15s}
+.kcard:hover{background:rgba(255,255,255,.4);transform:translateY(-2px)}
+.kcard h4{font-size:.87rem;color:var(--accent);margin-bottom:5px;font-family:var(--font-u)}
+.kcard p{font-size:.76rem;color:var(--ink2);line-height:1.4;font-family:var(--font-u)}
+.kref-item{padding:7px 10px;border-bottom:1px solid rgba(184,134,11,.15);font-family:var(--font-u);font-size:.83rem;color:var(--accent);cursor:pointer;border-radius:4px;transition:background .15s}
+.kref-item:hover{background:rgba(184,134,11,.1)}
+/* STUDIES */
+.scard{background:rgba(255,255,255,.22);border:1.5px solid var(--gold);border-radius:9px;padding:13px 16px;margin-bottom:10px;cursor:pointer;transition:background .2s;position:relative;z-index:1}
+.scard:hover{background:rgba(255,255,255,.35)}
+.scard h4{font-size:.92rem;color:var(--accent);margin-bottom:4px;font-family:var(--font-u)}
+.scard p{font-size:.78rem;color:var(--ink2);font-family:var(--font-u)}
+.sbody{display:none;margin-top:12px;padding:14px;background:rgba(255,255,255,.2);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;font-family:var(--font-b);font-size:calc(.95rem * var(--zoom));line-height:1.75}
+.sbody.open{display:block}
+/* NOTES */
+.nitem{background:rgba(255,255,255,.25);border:1.5px solid var(--gold);border-radius:9px;padding:12px 14px;margin-bottom:10px;position:relative;z-index:1}
+.nref{font-family:var(--font-u);font-size:.75rem;color:var(--accent);margin-bottom:5px}
+.ntext{font-family:var(--font-b);font-size:calc(.92rem * var(--zoom));line-height:1.55}
+.ndel{float:right;background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;margin:-4px -4px 0 0}
+/* POPUP */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400}
+.overlay.open{display:block}
+.npop{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;width:min(480px,94vw);background:var(--card-bg);border:2px solid var(--gold);border-radius:14px;padding:22px;box-shadow:0 16px 50px rgba(0,0,0,.4)}
+.npop.open{display:block}
+.ptitle{font-family:var(--font-u);font-size:.9rem;color:var(--accent);font-weight:bold;margin-bottom:10px}
+.npop textarea{width:100%;height:130px;resize:vertical;background:rgba(255,255,255,.4);border:1.5px solid var(--gold);border-radius:8px;padding:10px;font-family:var(--font-b);font-size:.95rem;color:var(--ink);outline:none}
+.pbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.pbtns button{padding:7px 18px;border-radius:8px;cursor:pointer;font-family:var(--font-u);font-size:.82rem;border:1.5px solid var(--gold)}
+.bsave{background:linear-gradient(135deg,var(--tg1),var(--tg2));color:var(--gold3)}
+.bcancel{background:rgba(255,255,255,.3);color:var(--ink)}
+/* FOOTER */
+footer{position:relative;z-index:1;background:linear-gradient(135deg,var(--tg1) 0%,var(--tg2) 50%,var(--tg1) 100%);border-top:2px solid var(--gold);padding:12px 16px;text-align:center;font-family:var(--font-u);font-size:.76rem;color:var(--gold2)}
+footer strong{color:var(--gold3)}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:var(--parch2)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+@media(max-width:600px){.logo-t{font-size:1.1rem}.main{padding:10px}.card{padding:14px 12px}.tab{padding:6px 10px;font-size:.72rem}}
+</style>
+</head>
+<body data-theme="light">
+
+<div class="overlay" id="ov" onclick="closePopup()"></div>
+<div class="npop" id="npop">
+  <div class="ptitle" id="ptitle">📝 Anotação</div>
+  <textarea id="nta" placeholder="Escreva sua anotação aqui..."></textarea>
+  <div class="pbtns">
+    <button class="bcancel" onclick="closePopup()">✕ Fechar</button>
+    <button class="bsave" onclick="saveNote()">💾 Salvar</button>
+  </div>
+</div>
+
+<header class="hdr">
+  <div class="htop">
+    <div class="logo">
+      <div class="logo-t">✝ Bíblia Sagrada</div>
+      <div class="logo-s">PALAVRA VIVA DE DEUS</div>
+    </div>
+    <div class="hctrls">
+      <select id="vsel" onchange="onVer()" title="Versão">
+        <option value="arc">ARC</option>
+        <option value="acf">ACF</option>
+        <option value="ara">ARA</option>
+        <option value="nvi">NVI</option>
+      </select>
+      <div class="zgrp">
+        <button onclick="zo()">−</button>
+        <span class="zval" id="zv">100%</span>
+        <button onclick="zi()">+</button>
+      </div>
+      <button class="hbtn" onclick="toggleTheme()" id="tbtn">🌙 Escuro</button>
+      <button class="hbtn" id="installBtn" onclick="installApp()" style="display:none;align-items:center;gap:4px">📲 Instalar</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('leitura')">📖 Leitura</div>
+    <div class="tab" onclick="showTab('busca')">🔍 Busca</div>
+    <div class="tab" onclick="showTab('chaves')">🗝 Chaves</div>
+    <div class="tab" onclick="showTab('estudos')">📚 Estudos</div>
+    <div class="tab" onclick="showTab('anotacoes')">📝 Anotações</div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- LEITURA -->
+  <div class="panel active" id="tab-leitura">
+    <div class="card">
+      <div class="stitle">✦ Versículo do Dia ✦</div>
+      <div class="vday"><div class="vday-cross">✝</div>
+        <div class="vday-t" id="vdt"></div>
+        <div class="vday-r" id="vdr"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stitle">Navegar na Escritura</div>
+      <div class="nav-row">
+        <select id="bsel" onchange="onBook()"></select>
+        <select id="csel" onchange="onChap()"></select>
+        <select id="vvsel"><option value="">Ir ao versículo...</option></select>
+        <button class="btn" onclick="jumpV()">↓ Ir</button>
+        <button class="btn" onclick="loadChap()">📖 Ler</button>
+      </div>
+      <div class="legend">
+        <div class="litem"><div class="ldot" style="background:var(--blue)"></div>Palavras de Deus</div>
+        <div class="litem"><div class="ldot" style="background:var(--red)"></div>Palavras de Jesus</div>
+        <div class="litem"><div class="ldot" style="background:var(--gold)"></div>Com anotação</div>
+      </div>
+      <div class="vbadge" id="vbadge">ARC — Almeida Revista e Corrigida</div>
+      <div id="cc"></div>
+      <div class="cnav">
+        <button class="btn" onclick="prevC()">◀ Anterior</button>
+        <span id="clabel"></span>
+        <button class="btn" onclick="nextC()">Próximo ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUSCA -->
+  <div class="panel" id="tab-busca">
+    <div class="card">
+      <div class="stitle">🔍 Busca na Escritura</div>
+      <div class="sbar">
+        <input type="text" id="si" placeholder="Digite uma palavra ou frase..." onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="btn" onclick="doSearch()">Buscar</button>
+      </div>
+      <div id="sinfo" style="font-family:var(--font-u);font-size:.78rem;color:var(--ink2);margin-bottom:10px;"></div>
+      <div id="sres"></div>
+    </div>
+  </div>
+
+  <!-- CHAVES -->
+  <div class="panel" id="tab-chaves">
+    <div class="card">
+      <div class="stitle">🗝 Chaves Bíblicas</div>
+      <p style="font-family:var(--font-u);font-size:.8rem;color:var(--ink2);margin-bottom:14px;position:relative;z-index:1">Clique num tema para ver os versículos de referência.</p>
+      <div class="kgrid" id="kg"></div>
+    </div>
+    <div class="card" id="kpanel" style="display:none">
+      <div class="stitle" id="kptitle"></div>
+      <div id="krefs"></div>
+      <button class="btn" onclick="document.getElementById('kpanel').style.display='none'" style="margin-top:10px">✕ Fechar</button>
+    </div>
+  </div>
+
+  <!-- ESTUDOS -->
+  <div class="panel" id="tab-estudos">
+    <div class="card">
+      <div class="stitle">📚 Estudos Bíblicos</div>
+      <div id="sl"></div>
+    </div>
+  </div>
+
+  <!-- ANOTAÇÕES -->
+  <div class="panel" id="tab-anotacoes">
+    <div class="card">
+      <div class="stitle">📝 Minhas Anotações</div>
+      <div id="nl"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>Bíblia Sagrada Web</strong> &nbsp;|&nbsp; Versão 2.0.0 &nbsp;|&nbsp;
+  Autor: <strong>José Evilasio Marques</strong> &nbsp;|&nbsp; © 2025 ✝
+</footer>
+
+<script>
+// ══════════════════════════════
+// LIVROS
+// ══════════════════════════════
+const BOOKS=[
+  {n:'Gênesis',a:'gn',c:50,t:'AT'},{n:'Êxodo',a:'ex',c:40,t:'AT'},{n:'Levítico',a:'lv',c:27,t:'AT'},
+  {n:'Números',a:'nm',c:36,t:'AT'},{n:'Deuteronômio',a:'dt',c:34,t:'AT'},{n:'Josué',a:'js',c:24,t:'AT'},
+  {n:'Juízes',a:'jz',c:21,t:'AT'},{n:'Rute',a:'rt',c:4,t:'AT'},{n:'1 Samuel',a:'1sm',c:31,t:'AT'},
+  {n:'2 Samuel',a:'2sm',c:24,t:'AT'},{n:'1 Reis',a:'1rs',c:22,t:'AT'},{n:'2 Reis',a:'2rs',c:25,t:'AT'},
+  {n:'1 Crônicas',a:'1cr',c:29,t:'AT'},{n:'2 Crônicas',a:'2cr',c:36,t:'AT'},{n:'Esdras',a:'ed',c:10,t:'AT'},
+  {n:'Neemias',a:'ne',c:13,t:'AT'},{n:'Ester',a:'et',c:10,t:'AT'},{n:'Jó',a:'jó',c:42,t:'AT'},
+  {n:'Salmos',a:'sl',c:150,t:'AT'},{n:'Provérbios',a:'pv',c:31,t:'AT'},{n:'Eclesiastes',a:'ec',c:12,t:'AT'},
+  {n:'Cantares',a:'ct',c:8,t:'AT'},{n:'Isaías',a:'is',c:66,t:'AT'},{n:'Jeremias',a:'jr',c:52,t:'AT'},
+  {n:'Lamentações',a:'lm',c:5,t:'AT'},{n:'Ezequiel',a:'ez',c:48,t:'AT'},{n:'Daniel',a:'dn',c:12,t:'AT'},
+  {n:'Oséias',a:'os',c:14,t:'AT'},{n:'Joel',a:'jl',c:3,t:'AT'},{n:'Amós',a:'am',c:9,t:'AT'},
+  {n:'Obadias',a:'ob',c:1,t:'AT'},{n:'Jonas',a:'jn',c:4,t:'AT'},{n:'Miquéias',a:'mq',c:7,t:'AT'},
+  {n:'Naum',a:'na',c:3,t:'AT'},{n:'Habacuque',a:'hc',c:3,t:'AT'},{n:'Sofonias',a:'sf',c:3,t:'AT'},
+  {n:'Ageu',a:'ag',c:2,t:'AT'},{n:'Zacarias',a:'zc',c:14,t:'AT'},{n:'Malaquias',a:'ml',c:4,t:'AT'},
+  {n:'Mateus',a:'mt',c:28,t:'NT'},{n:'Marcos',a:'mc',c:16,t:'NT'},{n:'Lucas',a:'lc',c:24,t:'NT'},
+  {n:'João',a:'jo',c:21,t:'NT'},{n:'Atos',a:'at',c:28,t:'NT'},{n:'Romanos',a:'rm',c:16,t:'NT'},
+  {n:'1 Coríntios',a:'1co',c:16,t:'NT'},{n:'2 Coríntios',a:'2co',c:13,t:'NT'},{n:'Gálatas',a:'gl',c:6,t:'NT'},
+  {n:'Efésios',a:'ef',c:6,t:'NT'},{n:'Filipenses',a:'fp',c:4,t:'NT'},{n:'Colossenses',a:'cl',c:4,t:'NT'},
+  {n:'1 Tessalonicenses',a:'1ts',c:5,t:'NT'},{n:'2 Tessalonicenses',a:'2ts',c:3,t:'NT'},
+  {n:'1 Timóteo',a:'1tm',c:6,t:'NT'},{n:'2 Timóteo',a:'2tm',c:4,t:'NT'},{n:'Tito',a:'tt',c:3,t:'NT'},
+  {n:'Filemom',a:'fm',c:1,t:'NT'},{n:'Hebreus',a:'hb',c:13,t:'NT'},{n:'Tiago',a:'tg',c:5,t:'NT'},
+  {n:'1 Pedro',a:'1pe',c:5,t:'NT'},{n:'2 Pedro',a:'2pe',c:3,t:'NT'},{n:'1 João',a:'1jo',c:5,t:'NT'},
+  {n:'2 João',a:'2jo',c:1,t:'NT'},{n:'3 João',a:'3jo',c:1,t:'NT'},{n:'Judas',a:'jd',c:1,t:'NT'},
+  {n:'Apocalipse',a:'ap',c:22,t:'NT'}
+];
+
+// Versículos de Jesus por livro/capítulo/versículo
+const JR={
+  jo:{3:[3,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20,21],1:[38,39,42,43,50,51],
+      6:[35,37,38,40,44,47,48,51],8:[12,31,32,34,36,58],10:[7,9,10,11,14,27,28,30],
+      11:[25,26],14:[1,2,3,6,9,10,12,13,14,15,16,17,18,19,20,21,23,26,27],
+      15:[1,4,5,7,9,10,11,12,13,14,16,17],16:[7,8,13,22,23,24,33]},
+  mt:{5:[3,4,5,6,7,8,9,10,11,12,13,14,17,18,19,20,21,22,28,44,45,46,48],
+      6:[9,10,11,12,13,14,19,20,21,24,25,26,27,28,33,34],28:[18,19,20]},
+  mc:{1:[15,17],10:[14,15,21,23,24,25,27,29,30],2:[17]},
+  lc:{4:[18,19,21],15:[4,5,6,7,8,10,11,12,13,14,17,20,21,22,23,24,32],
+      6:[20,21,22,27,28,29,30,31,35,36,37,38]}
+};
+// Palavras de Deus (AT)
+const GR={
+  gn:{1:[3,6,9,11,14,20,22,24,26,28],2:[16,17,18],3:[9,11,13,14,15,16,17],12:[1,2,3,7]},
+  is:{43:[1,2,3,4,5,6,10,11,12,13],55:[8,9,10,11],41:[10,13]},
+  jr:{29:[11,12,13],1:[5,7,8,9]},
+  ex:{3:[6,7,8,14,15],20:[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]}
+};
+
+function isJesus(a,c,v){return JR[a]&&JR[a][c]&&JR[a][c].includes(v)}
+function isGod(a,c,v){return GR[a]&&GR[a][c]&&GR[a][c].includes(v)}
+
+// ══════════════════════════════
+// ESTADO
+// ══════════════════════════════
+const cache={};
+let notes={};
+try{notes=JSON.parse(localStorage.getItem('bsw2')||'{}')}catch(e){}
+
+const S={ver:'arc',bi:42,ch:3,zoom:1,dark:false,nk:null};
+const VL={arc:'ARC — Almeida Revista e Corrigida',acf:'ACF — Almeida Corrigida Fiel',ara:'ARA — Almeida Revista e Atualizada',nvi:'NVI — Nova Versão Internacional'};
+
+// ══════════════════════════════
+// FETCH
+// ══════════════════════════════
+async function fj(url){
+  if(cache[url])return cache[url];
+  const r=await fetch(url);
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const d=await r.json();
+  cache[url]=d;return d;
+}
+
+// ══════════════════════════════
+// BUSCAR CAPÍTULO
+// Fontes:
+//   ARC: raw.githubusercontent.com/MaatheusGois/bible/main/versions/pt-br/arc/{a}/{a}.json
+//   ACF/NVI: raw.githubusercontent.com/thiagobodruk/biblia/master/json/{ver}.json
+//   ARA: usa ACF com aviso
+// ══════════════════════════════
+async function fetchChap(ver,abbrev,chapNum){
+  const bk=BOOKS.find(b=>b.a===abbrev);
+  if(!ver||ver==='arc'){
+    const url=`https://raw.githubusercontent.com/MaatheusGois/bible/main/versions/pt-br/arc/${abbrev}/${abbrev}.json`;
+    const data=await fj(url);
+    // Estrutura possível: {book, chapters:[{chapter,verses:[{verse,text}]}]}
+    const chaps=data.chapters||data;
+    let chap=null;
+    if(Array.isArray(chaps)){
+      chap=chaps.find(c=>parseInt(c.chapter||c.number||0)===chapNum)||chaps[chapNum-1];
+    }
+    if(!chap)throw new Error('Capítulo não encontrado');
+    const vs=chap.verses||chap;
+    return {verses:vs.map((v,i)=>({n:parseInt(v.verse||v.number||i+1),t:String(v.text||v.t||v)})),note:null};
+  } else {
+    let realVer=ver;let note=null;
+    if(ver==='ara'){realVer='acf';note='⚠️ ARA não disponível nesta fonte gratuita. Exibindo ACF.';}
+    const url=`https://raw.githubusercontent.com/thiagobodruk/biblia/master/json/${realVer}.json`;
+    const data=await fj(url);
+    // [{abbrev,book,chapters:[[str,...],...]},...]
+    const entry=data.find(b=>{
+      if(!b)return false;
+      const ba=(b.abbrev||'').toLowerCase();
+      const bn=(b.book||'').toLowerCase();
+      return ba===abbrev||ba===abbrev.replace(/\s/,'')||bn.startsWith(bk.n.toLowerCase().slice(0,4));
+    });
+    if(!entry)throw new Error('Livro não encontrado: '+abbrev);
+    const chap=entry.chapters[chapNum-1];
+    if(!chap)throw new Error('Capítulo não encontrado');
+    return {verses:chap.map((t,i)=>({n:i+1,t:String(t||'')})),note};
+  }
+}
+
+// ══════════════════════════════
+// RENDER CAPÍTULO
+// ══════════════════════════════
+async function loadChap(){
+  const bk=BOOKS[S.bi];
+  document.getElementById('clabel').textContent=bk.n+' '+S.ch;
+  document.getElementById('cc').innerHTML=`<div class="loading"><div class="spin"></div><br>Carregando ${bk.n} ${S.ch}...</div>`;
+  try{
+    const {verses,note}=await fetchChap(S.ver,bk.a,S.ch);
+    // preenche jump
+    const vvs=document.getElementById('vvsel');
+    vvs.innerHTML='<option value="">Ir ao versículo...</option>';
+    verses.forEach(v=>{const o=document.createElement('option');o.value='vv'+v.n;o.textContent='Versículo '+v.n;vvs.appendChild(o);});
+    let html=`<div class="chap-hdr">${bk.n} — Capítulo ${S.ch}</div>`;
+    if(note)html=`<div class="ebox" style="color:var(--gold);border-color:var(--gold)">${note}</div>`+html;
+    verses.forEach(v=>{
+      const key=`${bk.a}_${S.ch}_${v.n}`;
+      const hasN=!!notes[key];
+      const isJ=isJesus(bk.a,S.ch,v.n);
+      const isG=isGod(bk.a,S.ch,v.n);
+      const cls=isJ?'jw':isG?'gw':'';
+      const pin=hasN?`<span class="npin" title="${notes[key].replace(/"/g,'&quot;')}">📌</span>`:'';
+      html+=`<div class="vl${hasN?' hn':''}" id="vv${v.n}" onclick="openNote('${bk.a}',${S.ch},${v.n})">
+        <span class="vn">${v.n}</span><span class="${cls}">${v.t}</span>${pin}</div>`;
+    });
+    document.getElementById('cc').innerHTML=html;
+  }catch(e){
+    document.getElementById('cc').innerHTML=`<div class="ebox">⚠️ Erro ao carregar capítulo.<br><small>${e.message}</small><br><small>Verifique sua conexão com a internet.</small></div>`;
+  }
+}
+
+// ══════════════════════════════
+// NAVEGAÇÃO
+// ══════════════════════════════
+function buildBS(){
+  const sel=document.getElementById('bsel');sel.innerHTML='';let lt='';
+  BOOKS.forEach((b,i)=>{
+    if(b.t!==lt){const og=document.createElement('optgroup');og.label=b.t==='AT'?'— Antigo Testamento —':'— Novo Testamento —';sel.appendChild(og);lt=b.t;}
+    const o=document.createElement('option');o.value=i;o.textContent=b.n;if(i===S.bi)o.selected=true;sel.appendChild(o);
+  });
+}
+function buildCS(){
+  const sel=document.getElementById('csel');sel.innerHTML='';
+  for(let i=1;i<=BOOKS[S.bi].c;i++){const o=document.createElement('option');o.value=i;o.textContent='Capítulo '+i;if(i===S.ch)o.selected=true;sel.appendChild(o);}
+}
+function onBook(){S.bi=parseInt(document.getElementById('bsel').value);S.ch=1;buildCS();}
+function onChap(){S.ch=parseInt(document.getElementById('csel').value);}
+function prevC(){if(S.ch>1){S.ch--;buildCS();loadChap();window.scrollTo({top:0,behavior:'smooth'});}}
+function nextC(){if(S.ch<BOOKS[S.bi].c){S.ch++;buildCS();loadChap();window.scrollTo({top:0,behavior:'smooth'});}}
+function jumpV(){const v=document.getElementById('vvsel').value;if(!v)return;const el=document.getElementById(v);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
+function onVer(){S.ver=document.getElementById('vsel').value;document.getElementById('vbadge').textContent=VL[S.ver];loadChap();}
+
+// ══════════════════════════════
+// BUSCA FULL BIBLE
+// ══════════════════════════════
+async function doSearch(){
+  const q=document.getElementById('si').value.trim().toLowerCase();
+  const info=document.getElementById('sinfo');
+  const res=document.getElementById('sres');
+  if(!q){info.textContent='Digite algo para buscar.';res.innerHTML='';return;}
+  info.innerHTML='<div class="loading"><div class="spin"></div><br>Buscando em toda a Bíblia...</div>';
+  res.innerHTML='';
+  try{
+    let ver=S.ver==='arc'?'nvi':S.ver==='ara'?'acf':S.ver;
+    const url=`https://raw.githubusercontent.com/thiagobodruk/biblia/master/json/${ver}.json`;
+    const data=await fj(url);
+    const qw=q.split(/\s+/).filter(Boolean);
+    let found=0,html='';
+    for(const entry of data){
+      const bn=entry.book||entry.abbrev||'';
+      const ab=(entry.abbrev||'').toLowerCase();
+      const bi=BOOKS.findIndex(b=>b.a===ab||b.n.toLowerCase().startsWith(bn.toLowerCase().slice(0,4)));
+      for(let ci=0;ci<entry.chapters.length;ci++){
+        const chap=entry.chapters[ci];
+        for(let vi=0;vi<chap.length;vi++){
+          const txt=String(chap[vi]||'');
+          if(!txt)continue;
+          const lower=txt.toLowerCase();
+          if(qw.every(w=>lower.includes(w))){
+            found++;
+            if(found>250)continue;
+            let hi=txt;
+            qw.forEach(w=>{hi=hi.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`);});
+            const bname=bi>=0?BOOKS[bi].n:bn;
+            html+=`<div class="sri" onclick="goV(${bi},${ci+1},${vi+1})">
+              <div class="sri-ref">📖 ${bname} ${ci+1}:${vi+1}</div>
+              <div class="sri-t">${hi}</div></div>`;
+          }
+        }
+      }
+    }
+    if(S.ver==='arc')info.textContent=`ARC não disponível para busca completa — buscando em ${ver.toUpperCase()}. `;
+    else info.textContent='';
+    if(found===0)info.textContent+='Nenhum resultado para "'+q+'".';
+    else{info.textContent+=`${found} resultado(s)${found>250?' (exibindo 250)':''}: `;res.innerHTML=html;}
+  }catch(e){
+    info.innerHTML=`<div class="ebox">⚠️ Erro na busca: ${e.message}</div>`;
+  }
+}
+
+function goV(bi,ch,v){
+  if(bi<0)return;S.bi=bi;S.ch=ch;
+  buildBS();buildCS();showTab('leitura');
+  loadChap().then(()=>{setTimeout(()=>{const el=document.getElementById('vv'+v);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},400);});
+}
+
+// ══════════════════════════════
+// CHAVES BÍBLICAS
+// ══════════════════════════════
+const KEYS=[
+  {t:'Salvação',d:'Graça, fé e redenção',r:['João 3:16','Romanos 10:9','Efésios 2:8','Atos 4:12','Tito 3:5']},
+  {t:'Fé',d:'Confiança e crença em Deus',r:['Hebreus 11:1','Marcos 11:24','Mateus 17:20','Romanos 10:17','Tiago 2:17']},
+  {t:'Amor',d:'Amor divino e ao próximo',r:['1 Coríntios 13:4','João 13:34','1 João 4:8','Romanos 5:8','João 15:13']},
+  {t:'Oração',d:'Como e por que orar',r:['Mateus 6:9','Filipenses 4:6','1 Tessalonicenses 5:17','Lucas 18:1','Tiago 5:16']},
+  {t:'Paz',d:'A paz que vem de Deus',r:['Filipenses 4:7','João 14:27','Isaías 26:3','Salmos 29:11','Romanos 5:1']},
+  {t:'Esperança',d:'Promessas e futuro em Deus',r:['Jeremias 29:11','Romanos 8:28','Salmos 31:24','Isaías 40:31','Hebreus 6:19']},
+  {t:'Cura',d:'Saúde e restauração divina',r:['Isaías 53:5','Salmos 103:3','Tiago 5:14','Êxodo 15:26','Jeremias 17:14']},
+  {t:'Força',d:'Força e poder em Cristo',r:['Filipenses 4:13','Isaías 40:29','Salmos 46:1','2 Coríntios 12:9','Efésios 6:10']},
+  {t:'Perdão',d:'Misericórdia e reconciliação',r:['1 João 1:9','Mateus 6:14','Salmos 103:12','Efésios 4:32','Colossenses 3:13']},
+  {t:'Sabedoria',d:'Buscando a sabedoria de Deus',r:['Provérbios 3:5','Tiago 1:5','Provérbios 1:7','Colossenses 2:3','Jó 28:28']},
+  {t:'Criação',d:'Deus criador do universo',r:['Gênesis 1:1','Salmos 19:1','Colossenses 1:16','João 1:3','Hebreus 11:3']},
+  {t:'Batismo',d:'Sacramento e identidade cristã',r:['Mateus 28:19','Atos 2:38','Romanos 6:4','Gálatas 3:27','1 Pedro 3:21']},
+  {t:'Ressurreição',d:'Vida eterna e ressurreição',r:['João 11:25','1 Coríntios 15:20','Romanos 8:11','Filipenses 3:10','1 Tessalonicenses 4:16']},
+  {t:'Segunda Vinda',d:'Retorno glorioso de Cristo',r:['João 14:3','Atos 1:11','1 Tessalonicenses 4:16','Apocalipse 22:20','Mateus 24:44']},
+  {t:'Família',d:'Família segundo a Bíblia',r:['Efésios 5:25','Provérbios 22:6','Salmos 127:3','Colossenses 3:18','1 Timóteo 5:8']},
+  {t:'Dízimo',d:'Oferta e generosidade',r:['Malaquias 3:10','Lucas 21:3','2 Coríntios 9:7','Provérbios 3:9','Mateus 23:23']},
+];
+function renderKeys(){
+  document.getElementById('kg').innerHTML=KEYS.map((k,i)=>`<div class="kcard" onclick="showK(${i})"><h4>🔑 ${k.t}</h4><p>${k.d}</p></div>`).join('');
+}
+function showK(i){
+  const k=KEYS[i];
+  document.getElementById('kptitle').textContent='🔑 '+k.t;
+  document.getElementById('krefs').innerHTML=k.r.map(r=>`<div class="kref-item" onclick="openRef('${r}')">📖 ${r}</div>`).join('');
+  const p=document.getElementById('kpanel');p.style.display='block';p.scrollIntoView({behavior:'smooth'});
+}
+function openRef(ref){
+  const m=ref.match(/^(.+?)\s+(\d+):(\d+)/);if(!m)return;
+  const bn=m[1].trim(),ch=parseInt(m[2]),v=parseInt(m[3]);
+  const bi=BOOKS.findIndex(b=>b.n.toLowerCase()===bn.toLowerCase()||b.n.toLowerCase().startsWith(bn.toLowerCase().slice(0,5)));
+  if(bi<0)return;goV(bi,ch,v);
+}
+
+// ══════════════════════════════
+// ESTUDOS
+// ══════════════════════════════
+const STUDIES=[
+  {t:'O Novo Nascimento',th:'Salvação e Regeneração',b:'O conceito de "novo nascimento" é ensinado por Jesus em João 3:1-21, onde explica a Nicodemos que é necessário nascer de água e do Espírito para entrar no reino de Deus. Esta regeneração espiritual é obra do Espírito Santo que transforma o coração do pecador. Em 2 Coríntios 5:17, Paulo confirma que se alguém está em Cristo, é uma nova criatura. O novo nascimento não é uma reforma moral, mas uma transformação radical da natureza interior do ser humano pela graça de Deus.'},
+  {t:'A Trindade Santa',th:'Teologia Bíblica',b:'A doutrina da Trindade afirma que há um único Deus que existe em três Pessoas: Pai, Filho e Espírito Santo. Em Mateus 28:19, Jesus manda batizar em nome do Pai, do Filho e do Espírito Santo. Em João 10:30, Jesus declara que Ele e o Pai são um. Em 2 Coríntios 13:14, Paulo escreve uma bênção trinitária completa. A Trindade é um mistério que excede a compreensão humana, mas é fundamental para a fé cristã ortodoxa.'},
+  {t:'As Bem-aventuranças',th:'Sermão do Monte',b:'Em Mateus 5:3-12, Jesus apresenta o Sermão do Monte com oito declarações de bênção. Os "pobres de espírito" reconhecem sua necessidade espiritual; os "mansos" herdam a terra; os "puros de coração" verão a Deus; os "pacificadores" são chamados filhos de Deus. Estas bem-aventuranças descrevem o caráter do cidadão do reino de Deus — valores radicalmente opostos aos do mundo.'},
+  {t:'Fé e Obras',th:'Soteriologia',b:'Paulo afirma em Efésios 2:8-9 que somos salvos pela graça mediante a fé, não de obras. Porém Tiago 2:17 declara que a fé sem obras é morta. Não há contradição: Paulo fala da base da salvação (fé em Cristo), enquanto Tiago fala da evidência da salvação genuína (obras de amor). A fé verdadeira produz boas obras como fruto natural, não como causa da salvação.'},
+  {t:'A Oração do Pai Nosso',th:'Vida de Oração',b:'Em Mateus 6:9-13, Jesus ensina o modelo do Pai Nosso. Cobre seis dimensões: adoração (santificado seja o teu nome), reino (venha o teu reino), dependência (o pão nosso de cada dia), perdão (perdoa-nos), proteção (não nos induzas à tentação) e libertação (livra-nos do mal). É um modelo que equilibra adoração e petição, revelando como nos aproximarmos de Deus.'},
+  {t:'O Espírito Santo',th:'Pneumatologia',b:'Em João 16:7-14, Jesus descreve o Espírito Santo como o Consolador que guia os crentes a toda a verdade. Em Atos 2, derramado no dia de Pentecostes, o Espírito inaugurou a era da Igreja. Em 1 Coríntios 12, Paulo ensina sobre os dons espirituais que o Espírito distribui para edificação do corpo de Cristo. O Espírito também intercede por nós com gemidos inexprimíveis (Romanos 8:26).'},
+  {t:'A Criação e o Ser Humano',th:'Origens Bíblicas',b:'Gênesis 1 e 2 descrevem a criação por Deus em seis dias. O ser humano foi criado à imagem de Deus (imago Dei) no sexto dia — único ser a receber o sopro divino (Gênesis 2:7). Esta dignidade humana é fundamental para a ética bíblica. O mandato cultural (Gênesis 1:28) chama o ser humano a dominar e cuidar da criação como mordomos responsáveis perante Deus.'},
+  {t:'A Segunda Vinda de Cristo',th:'Escatologia',b:'A Bíblia afirma que Jesus voltará em glória. Em João 14:3, Ele promete voltar e receber os seus. Em 1 Tessalonicenses 4:16-17, Paulo descreve a volta de Cristo com voz de arcanjo. Em Apocalipse 19, João descreve o retorno do Rei dos reis. A segunda vinda é pessoal, visível e gloriosa — diferente da primeira vinda em humildade — e inaugura o julgamento final e o reino pleno de Deus.'},
+];
+function renderStudies(){
+  document.getElementById('sl').innerHTML=STUDIES.map((s,i)=>`
+    <div class="scard" onclick="ts(${i})">
+      <h4>📚 ${s.t}</h4><p>🏷 Tema: ${s.th}</p>
+      <div class="sbody" id="sb${i}">${s.b}</div>
+    </div>`).join('');
+}
+function ts(i){document.getElementById('sb'+i).classList.toggle('open');}
+
+// ══════════════════════════════
+// ANOTAÇÕES
+// ══════════════════════════════
+function openNote(a,c,v){
+  S.nk=`${a}_${c}_${v}`;
+  const bk=BOOKS.find(b=>b.a===a);
+  document.getElementById('ptitle').textContent=`📝 ${bk?bk.n:a} ${c}:${v}`;
+  document.getElementById('nta').value=notes[S.nk]||'';
+  document.getElementById('npop').classList.add('open');
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('nta').focus();
+}
+function closePopup(){
+  document.getElementById('npop').classList.remove('open');
+  document.getElementById('ov').classList.remove('open');
+  S.nk=null;
+}
+function saveNote(){
+  if(!S.nk)return;
+  const v=document.getElementById('nta').value.trim();
+  if(v)notes[S.nk]=v;else delete notes[S.nk];
+  try{localStorage.setItem('bsw2',JSON.stringify(notes));}catch(e){}
+  closePopup();loadChap();renderNL();
+}
+function renderNL(){
+  const ks=Object.keys(notes);
+  const el=document.getElementById('nl');
+  if(!ks.length){el.innerHTML='<p style="font-family:var(--font-u);font-size:.85rem;color:var(--ink2)">Nenhuma anotação ainda. Clique em qualquer versículo para adicionar.</p>';return;}
+  el.innerHTML=ks.map(k=>{
+    const p=k.split('_');
+    const bk=BOOKS.find(b=>b.a===p[0]);
+    return `<div class="nitem">
+      <button class="ndel" onclick="delN('${k}')">✕</button>
+      <div class="nref">📌 ${bk?bk.n:p[0]} ${p[1]}:${p[2]}</div>
+      <div class="ntext">${notes[k]}</div></div>`;
+  }).join('');
+}
+function delN(k){
+  delete notes[k];
+  try{localStorage.setItem('bsw2',JSON.stringify(notes));}catch(e){}
+  renderNL();
+}
+
+// ══════════════════════════════
+// VERSÍCULO DO DIA
+// ══════════════════════════════
+const DAILY=[
+  {t:'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo o que nele crê não pereça, mas tenha a vida eterna.',r:'João 3:16'},
+  {t:'O Senhor é o meu pastor; nada me faltará.',r:'Salmos 23:1'},
+  {t:'Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento.',r:'Provérbios 3:5'},
+  {t:'Posso tudo em Cristo que me fortalece.',r:'Filipenses 4:13'},
+  {t:'Não estejais inquietos por coisa alguma; antes as vossas petições sejam em tudo conhecidas de Deus pela oração e súplica, com ação de graças.',r:'Filipenses 4:6'},
+  {t:'Sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus.',r:'Romanos 8:28'},
+  {t:'No princípio era o Verbo, e o Verbo estava com Deus, e o Verbo era Deus.',r:'João 1:1'},
+  {t:'Bem-aventurados os limpos de coração, porque verão a Deus.',r:'Mateus 5:8'},
+  {t:'A paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos sentidos em Cristo Jesus.',r:'Filipenses 4:7'},
+  {t:'O que habita no esconderijo do Altíssimo, à sombra do Onipotente descansará.',r:'Salmos 91:1'},
+  {t:'Porque eu bem sei os pensamentos que tenho a vosso respeito: pensamentos de paz, e não de mal, para vos dar o fim que esperais.',r:'Jeremias 29:11'},
+  {t:'Mas os que esperam no Senhor renovarão as suas forças; subirão com asas como águias.',r:'Isaías 40:31'},
+  {t:'Porque pela graça sois salvos, por meio da fé; e isso não vem de vós; é dom de Deus.',r:'Efésios 2:8'},
+  {t:'Bem-aventurado o homem que não anda no conselho dos ímpios.',r:'Salmos 1:1'},
+  {t:'Nada vos torneis contenciosos por vaidade, mas por humildade, cada um considere os outros superiores a si mesmo.',r:'Filipenses 2:3'},
+];
+function renderDV(){
+  const i=(new Date().getDate()+new Date().getMonth())%DAILY.length;
+  document.getElementById('vdt').textContent=DAILY[i].t;
+  document.getElementById('vdr').textContent='— '+DAILY[i].r;
+}
+
+// ══════════════════════════════
+// TEMA / ZOOM / TABS
+// ══════════════════════════════
+function toggleTheme(){
+  S.dark=!S.dark;
+  document.body.setAttribute('data-theme',S.dark?'dark':'light');
+  document.getElementById('tbtn').textContent=S.dark?'☀️ Claro':'🌙 Escuro';
+}
+function zi(){S.zoom=Math.min(2,S.zoom+0.1);applyZ();}
+function zo(){S.zoom=Math.max(0.7,S.zoom-0.1);applyZ();}
+function applyZ(){
+  document.documentElement.style.setProperty('--zoom',S.zoom);
+  document.getElementById('zv').textContent=Math.round(S.zoom*100)+'%';
+}
+function showTab(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const order=['leitura','busca','chaves','estudos','anotacoes'];
+  const tab=document.querySelectorAll('.tab')[order.indexOf(name)];
+  if(tab)tab.classList.add('active');
+  if(name==='anotacoes')renderNL();
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+function init(){
+  buildBS();buildCS();renderDV();renderKeys();renderStudies();renderNL();
+  document.getElementById('vbadge').textContent=VL[S.ver];
+  loadChap();
+}
+window.onload=init;
+
+// ── PWA: Service Worker ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg=>{
+        console.log('[PWA] SW registrado:',reg.scope);
+        reg.addEventListener('updatefound',()=>{
+          const nw=reg.installing;
+          nw.addEventListener('statechange',()=>{
+            if(nw.state==='installed'&&navigator.serviceWorker.controller) showUpdateBanner();
+          });
+        });
+      }).catch(e=>console.warn('[PWA] SW erro:',e));
+  });
+}
+function showUpdateBanner(){
+  const b=document.createElement('div');
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--tg2);color:var(--gold3);padding:12px 16px;text-align:center;z-index:9999;font-family:var(--font-u);font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:12px;border-top:2px solid var(--gold)';
+  b.innerHTML='✝ Nova versão disponível! <button onclick="location.reload()" style="background:var(--gold3);color:var(--tg1);border:none;border-radius:6px;padding:5px 14px;cursor:pointer;font-weight:bold">Atualizar</button><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--gold3);cursor:pointer;font-size:1.1rem;margin-left:8px">✕</button>';
+  document.body.appendChild(b);
+}
+// ── PWA: Instalar ──
+let _dp=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dp=e;const b=document.getElementById('installBtn');if(b)b.style.display='flex';});
+window.addEventListener('appinstalled',()=>{_dp=null;const b=document.getElementById('installBtn');if(b)b.style.display='none';});
+function installApp(){if(!_dp)return;_dp.prompt();_dp.userChoice.then(()=>{_dp=null;});}
+</script>
+</body>
+</html>
