@@ -17,7 +17,7 @@ Bíblia Sagrada completa como **Progressive Web App (PWA)** — instalável em q
 ## 📲 Como Instalar (PWA)
 
 ### Android (Chrome/Edge/Samsung Browser)
-1. Acesse o site no navegador
+1. Acesse o site no navegador com o link: https://evicom.github.io/biblia-evilasio/
 2. Toque no banner **"Instalar aplicativo"** que aparece automaticamente  
    _ou_ vá em Menu (⋮) → **"Adicionar à tela inicial"**
 3. Confirme a instalação
