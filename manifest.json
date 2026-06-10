@@ -68,5 +68,5 @@
     }
   ],
   "categories": ["books", "lifestyle", "education"],
-  "screenshots": []
+  "screenshots": ["icons/screenshots.png", "screenshots2.png"]
 }
