@@ -34,7 +34,7 @@ App web progressivo (PWA) com a Bíblia Sagrada completa. Funciona 100% offline 
 3. Em **Source**, selecione `main` e a pasta `/ (root)`
 4. Clique em **Save**
 5. Aguarde alguns minutos — o app estará disponível em:
-   `https://SEU_USUARIO.github.io/NOME_DO_REPOSITORIO`
+   `(https://evicom.github.io/biblia-evilasio/)`
 
 ## 📁 Estrutura de arquivos
 
