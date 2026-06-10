@@ -1,7 +1,7 @@
 // Service Worker - Bíblia Sagrada (José Evilasio Marques)
 // Estratégia: cache-first para assets estáticos, com fallback offline.
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
 // Lista de arquivos essenciais para o app funcionar 100% offline.
