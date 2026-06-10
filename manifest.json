@@ -1,6 +1,6 @@
 {
-  "name": "Bíblia Sagrada — José Evilasio Marques",
-  "short_name": "Bíblia Sagrada",
+  "name": "Bíblia Sagrada",
+  "short_name": "Bíblia",
   "description": "Bíblia Sagrada completa com ARC, ACF, NVI, AA e KJA. 100% offline. Leia, busque e anote versículos.",
   "start_url": "./index.html",
   "scope": "./",
