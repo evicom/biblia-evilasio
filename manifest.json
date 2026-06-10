@@ -1,5 +1,5 @@
 {
-  "id": 	"/biblia-evilasio/"
+  "id": "/biblia-evilasio/",
   "name": "Bíblia Sagrada",
   "short_name": "Bíblia",
   "description": "Bíblia Sagrada completa com ARC, ACF, NVI, AA e KJA. 100% offline. Leia, busque e anote versículos.",
@@ -67,6 +67,5 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["books", "lifestyle", "education"],
-  "screenshots": ["icons/screenshots.png", "screenshots2.png"]
+  "categories": ["books", "lifestyle", "education"]
 }
