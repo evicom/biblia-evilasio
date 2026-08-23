@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bíblia Sagrada — José Evilasio Marques</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #8e44ad;
+            --bg: #fdfbf7;
+            --text: #333;
+            --verse-num: #8e44ad;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        /* Header */
+        header { background: var(--primary); color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        
+        /* Toolbar */
+        .toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; padding: 0.5rem; background: #34495e; }
+        .btn { background: var(--accent); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .btn:hover { background: #9b59b6; }
+        .btn.active { background: #f1c40f; color: #333; font-weight: bold; }
+        .btn-outline { background: transparent; border: 1px solid white; }
+        
+        /* Navigation */
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; background: #ecf0f1; border-bottom: 1px solid #bdc3c7; flex-wrap: wrap; gap: 0.5rem; }
+        .nav-bar select { padding: 0.3rem; border-radius: 4px; border: 1px solid #bdc3c7; }
+        
+        /* Reader */
+        #leitor-biblia { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; font-family: 'Georgia', 'Times New Roman', serif; font-size: 100%; transition: font-size 0.2s; }
+        .capitulo-titulo { text-align: center; color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .versiculo { margin-bottom: 0.8rem; text-align: justify; cursor: pointer; padding: 0.2rem; border-radius: 4px; }
+        .versiculo:hover { background: rgba(142, 68, 173, 0.1); }
+        .num-verso { color: var(--verse-num); font-weight: bold; font-size: 0.8em; vertical-align: super; margin-right: 0.2rem; cursor: pointer; }
+        .num-verso:hover { text-decoration: underline; }
+        
+        /* Loading */
+        #loading { display: none; text-align: center; padding: 2rem; font-size: 1.2rem; color: var(--accent); }
+
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 1.5rem; border-radius: 8px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+        .close { font-size: 1.5rem; cursor: pointer; color: #999; }
+        .close:hover { color: #333; }
+        
+        /* Search Results */
+        .search-result { padding: 0.8rem; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-result:hover { background: #f9f9f9; }
+        .search-ref { font-weight: bold; color: var(--accent); font-size: 0.9rem; }
+        
+        /* Notes */
+        textarea { width: 100%; height: 150px; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; margin: 0.5rem 0; }
+        
+        /* Share Buttons */
+        .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
+        .share-btn { padding: 0.6rem; border: none; border-radius: 4px; color: white; cursor: pointer; text-align: center; text-decoration: none; font-size: 0.9rem; }
+        .whatsapp { background: #25D366; }
+        .telegram { background: #0088cc; }
+        .facebook { background: #3b5998; }
+        .twitter { background: #000000; }
+        .copy { background: #7f8c8d; grid-column: span 2; }
+
+        /* Footer */
+        footer { text-align: center; padding: 1.5rem; background: var(--primary); color: #bdc3c7; font-size: 0.85rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📖 Bíblia Sagrada — José Evilasio Marques</h1>
+    <div class="toolbar">
+        <button class="btn" onclick="openModal('modal-nav')">📖 Navegar</button>
+        <button class="btn" onclick="openModal('modal-search')">🔍 Buscar</button>
+        <button class="btn" onclick="openModal('modal-notes')">📝 Anotações</button>
+        <div style="display:flex; gap:0.3rem; align-items:center; margin-left:0.5rem;">
+            <button class="btn btn-outline" onclick="changeFontSize(-10)">−</button>
+            <span id="font-size-display" style="color:white; font-size:0.9rem;">100%</span>
+            <button class="btn btn-outline" onclick="changeFontSize(10)">+</button>
+        </div>
+    </div>
+    <div class="toolbar" id="version-buttons">
+        <!-- Botões de versão gerados via JS -->
+    </div>
+</header>
+
+<div class="nav-bar">
+    <button class="btn" onclick="changeChapter(-1)">◀ Anterior</button>
+    <span id="current-reference" style="font-weight:bold; color:var(--primary);">Gênesis 1</span>
+    <button class="btn" onclick="changeChapter(1)">Próximo ▶</button>
+</div>
+
+<div id="loading">Carregando Escrituras...</div>
+<div id="leitor-biblia"></div>
+
+<footer>
+    Bíblia Sagrada v2.0 · José Evilasio Marques · © 2025
+</footer>
+
+<!-- MODAL DE NAVEGAÇÃO -->
+<div id="modal-nav" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📖 Navegar na Escritura</h3>
+            <span class="close" onclick="closeModal('modal-nav')">&times;</span>
+        </div>
+        <select id="select-book" onchange="updateChapterSelect()" style="width:100%; margin-bottom:1rem; padding:0.5rem;"></select>
+        <select id="select-chapter" onchange="goToChapter()" style="width:100%; padding:0.5rem;"></select>
+    </div>
+</div>
+
+<!-- MODAL DE BUSCA -->
+<div id="modal-search" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🔍 Busca na Escritura</h3>
+            <span class="close" onclick="closeModal('modal-search')">&times;</span>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+            <input type="text" id="search-input" placeholder="Digite pelo menos 3 letras..." style="flex:1; padding:0.5rem; border:1px solid #ccc; border-radius:4px;">
+            <button class="btn" onclick="performSearch()">Buscar</button>
+        </div>
+        <div id="search-results" style="margin-top:1rem;"></div>
+    </div>
+</div>
+
+<!-- MODAL DE ANOTAÇÕES -->
+<div id="modal-notes" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📝 Minhas Anotações</h3>
+            <span class="close" onclick="closeModal('modal-notes')">&times;</span>
+        </div>
+        <p id="note-reference" style="font-weight:bold; color:var(--accent); margin-bottom:0.5rem;"></p>
+        <textarea id="note-text" placeholder="Escreva sua anotação aqui..."></textarea>
+        <button class="btn" onclick="saveNote()" style="width:100%;">💾 Salvar Anotação</button>
+        <div id="saved-notes-list" style="margin-top:1rem; max-height:200px; overflow-y:auto;"></div>
+    </div>
+</div>
+
+<!-- MODAL DE COMPARTILHAMENTO -->
+<div id="modal-share" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Compartilhar Versículo</h3>
+            <span class="close" onclick="closeModal('modal-share')">&times;</span>
+        </div>
+        <p id="share-text" style="font-style:italic; background:#f9f9f9; padding:1rem; border-left:3px solid var(--accent); margin-bottom:1rem;"></p>
+        <div class="share-grid">
+            <a id="share-wa" class="share-btn whatsapp" target="_blank">💬 WhatsApp</a>
+            <a id="share-tg" class="share-btn telegram" target="_blank">✈️ Telegram</a>
+            <a id="share-fb" class="share-btn facebook" target="_blank">f Facebook</a>
+            <a id="share-tw" class="share-btn twitter" target="_blank">𝕏 Twitter/X</a>
+            <button class="share-btn copy" onclick="copyToClipboard()">📋 Copiar Texto</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- ESTADO DA APLICAÇÃO ---
+    const state = {
+        version: 'arc',
+        bookIndex: 0,
+        chapterIndex: 0,
+        fontSize: 100,
+        data: null,
+        notes: JSON.parse(localStorage.getItem('biblia_notas') || '{}')
+    };
+
+    const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'KJA': 'kja' };
+
+    // --- INICIALIZAÇÃO ---
+    document.addEventListener('DOMContentLoaded', () => {
+        renderVersionButtons();
+        loadVersion('ARC');
+    });
+
+    function renderVersionButtons() {
+        const container = document.getElementById('version-buttons');
+        container.innerHTML = '';
+        for (const [label, key] of Object.entries(versions)) {
+            const btn = document.createElement('button');
+            btn.className = `btn ${state.version === key ? 'active' : ''}`;
+            btn.textContent = label;
+            btn.onclick = () => loadVersion(label);
+            container.appendChild(btn);
+        }
+    }
+
+    // --- CARREGAMENTO DOS DADOS ---
+    async function loadVersion(versionLabel) {
+        state.version = versions[versionLabel];
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('leitor-biblia').innerHTML = '';
+        
+        // Atualiza botões ativos
+        document.querySelectorAll('#version-buttons .btn').forEach(btn => {
+            btn.classList.toggle('active', btn.textContent === versionLabel);
+        });
+
+        try {
+            // Busca o JSON na pasta pt-br/
+            const response = await fetch(`pt-br/${state.version}.json`);
+            if (!response.ok) throw new Error('Falha ao carregar');
+            state.data = await response.json();
+            
+            state.bookIndex = 0;
+            state.chapterIndex = 0;
+            updateBookChapterSelectors();
+            renderChapter();
+        } catch (error) {
+            console.error("Erro ao carregar a versão:", error);
+            document.getElementById('leitor-biblia').innerHTML = 
+                `<p style="color:red; text-align:center;">Erro ao carregar os dados. Verifique se a pasta <strong>pt-br/</strong> e o arquivo <strong>${state.version}.json</strong> existem no seu repositório.</p>`;
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+
+    // --- RENDERIZAÇÃO ---
+    function renderChapter() {
+        const book = state.data[state.bookIndex];
+        const chapter = book.chapters[state.chapterIndex];
+        const reader = document.getElementById('leitor-biblia');
+        
+        reader.innerHTML = `<h2 class="capitulo-titulo">${book.name} ${state.chapterIndex + 1}</h2>`;
+        document.getElementById('current-reference').textContent = `${book.name} ${state.chapterIndex + 1} (${versionLabelFromKey(state.version)})`;
+
+        chapter.forEach((verseText, index) => {
+            const verseNum = index + 1;
+            const ref = `${book.name} ${state.chapterIndex + 1}:${verseNum}`;
+            const safeText = verseText.replace(/'/g, "\\'");
+            
+            const p = document.createElement('p');
+            p.className = 'versiculo';
+            p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${safeText}')">${verseNum}</sup> ${verseText}`;
+            
+            // Clique no versículo abre anotação
+            p.onclick = () => openNoteModal(ref, verseText);
+            reader.appendChild(p);
+        });
+        
+        updateNavButtons();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function versionLabelFromKey(key) {
+        return Object.keys(versions).find(k => versions[k] === key) || key.toUpperCase();
+    }
+
+    // --- NAVEGAÇÃO ---
+    function changeChapter(direction) {
+        const book = state.data[state.bookIndex];
+        const newChapter = state.chapterIndex + direction;
+        
+        if (newChapter >= 0 && newChapter < book.chapters.length) {
+            state.chapterIndex = newChapter;
+            renderChapter();
+        } else if (direction > 0 && state.bookIndex < state.data.length - 1) {
+            state.bookIndex++;
+            state.chapterIndex = 0;
+            renderChapter();
+        } else if (direction < 0 && state.bookIndex > 0) {
+            state.bookIndex--;
+            state.chapterIndex = state.data[state.bookIndex].chapters.length - 1;
+            renderChapter();
+        }
+    }
+
+    function updateBookChapterSelectors() {
+        const bookSelect = document.getElementById('select-book');
+        bookSelect.innerHTML = state.data.map((book, idx) => 
+            `<option value="${idx}" ${idx === state.bookIndex ? 'selected' : ''}>${book.name}</option>`
+        ).join('');
+        updateChapterSelect();
+    }
+
+    function updateChapterSelect() {
+        state.bookIndex = parseInt(document.getElementById('select-book').value);
+        const book = state.data[state.bookIndex];
+        const chapSelect = document.getElementById('select-chapter');
+        chapSelect.innerHTML = book.chapters.map((_, idx) => 
+            `<option value="${idx}" ${idx === state.chapterIndex ? 'selected' : ''}>Capítulo ${idx + 1}</option>`
+        ).join('');
+    }
+
+    function goToChapter() {
+        state.chapterIndex = parseInt(document.getElementById('select-chapter').value);
+        renderChapter();
+        closeModal('modal-nav');
+    }
+
+    function updateNavButtons() {
+        // Lógica simples para desabilitar botões se necessário (opcional)
+    }
+
+    // --- FUNCIONALIDADES DE UI ---
+    function changeFontSize(delta) {
+        state.fontSize = Math.max(50, Math.min(200, state.fontSize + delta));
+        document.getElementById('leitor-biblia').style.fontSize = `${state.fontSize}%`;
+        document.getElementById('font-size-display').textContent = `${state.fontSize}%`;
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+        if (id === 'modal-notes') renderSavedNotes();
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    // Fechar modal ao clicar fora
+    window.onclick = (event) => {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+
+    // --- BUSCA ---
+    function performSearch() {
+        const query = document.getElementById('search-input').value.trim().toLowerCase();
+        const resultsDiv = document.getElementById('search-results');
+        
+        if (query.length < 3) {
+            resultsDiv.innerHTML = '<p style="color:#666;">Digite pelo menos 3 caracteres.</p>';
+            return;
+        }
+
+        resultsDiv.innerHTML = '<p>Buscando...</p>';
+        
+        // Pequeno delay para não travar a UI
+        setTimeout(() => {
+            const results = [];
+            state.data.forEach((book, bIdx) => {
+                book.chapters.forEach((chapter, cIdx) => {
+                    chapter.forEach((verse, vIdx) => {
+                        if (verse.toLowerCase().includes(query)) {
+                            results.push({
+                                ref: `${book.name} ${cIdx + 1}:${vIdx + 1}`,
+                                text: verse,
+                                bIdx, cIdx
+                            });
+                        }
+                    });
+                });
+            });
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<p>Nenhum resultado encontrado.</p>';
+            } else {
+                resultsDiv.innerHTML = results.slice(0, 50).map(r => `
+                    <div class="search-result" onclick="jumpTo(${r.bIdx}, ${r.cIdx}); closeModal('modal-search');">
+                        <div class="search-ref">${r.ref}</div>
+                        <div>${r.text.replace(new RegExp(query, 'gi'), match => `<mark>${match}</mark>`)}</div>
+                    </div>
+                `).join('') + (results.length > 50 ? '<p style="text-align:center; color:#666; margin-top:1rem;">...e mais ' + (results.length - 50) + ' resultados.</p>' : '');
+            }
+        }, 100);
+    }
+
+    function jumpTo(bIdx, cIdx) {
+        state.bookIndex = bIdx;
+        state.chapterIndex = cIdx;
+        updateBookChapterSelectors();
+        renderChapter();
+    }
+
+    // --- ANOTAÇÕES ---
+    let currentNoteRef = '';
+
+    function openNoteModal(ref, text) {
+        currentNoteRef = ref;
+        document.getElementById('note-reference').textContent = ref;
+        document.getElementById('note-text').value = state.notes[ref] || '';
+        openModal('modal-notes');
+    }
+
+    function saveNote() {
+        const text = document.getElementById('note-text').value.trim();
+        if (text) {
+            state.notes[currentNoteRef] = text;
+        } else {
+            delete state.notes[currentNoteRef];
+        }
+        localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
+        alert('Anotação salva com sucesso!');
+        renderSavedNotes();
+    }
+
+    function renderSavedNotes() {
+        const list = document.getElementById('saved-notes-list');
+        const refs = Object.keys(state.notes);
+        if (refs.length === 0) {
+            list.innerHTML = '<p style="color:#666; font-size:0.9rem;">Nenhuma anotação salva ainda.</p>';
+            return;
+        }
+        list.innerHTML = refs.map(ref => `
+            <div style="padding:0.5rem; border-bottom:1px solid #eee; cursor:pointer;" onclick="document.getElementById('note-reference').textContent='${ref}'; document.getElementById('note-text').value=state.notes['${ref}']; currentNoteRef='${ref}';">
+                <strong style="color:var(--accent); font-size:0.85rem;">${ref}</strong>
+                <div style="font-size:0.85rem; color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${state.notes[ref]}</div>
+            </div>
+        `).join('');
+    }
+
+    // --- COMPARTILHAMENTO ---
+    function openShareModal(ref, text) {
+        const fullText = `"${text}"\n\n${ref} — Bíblia Sagrada (${versionLabelFromKey(state.version)})`;
+        const encodedText = encodeURIComponent(fullText);
+        const url = encodeURIComponent(window.location.href);
+
+        document.getElementById('share-text').textContent = fullText;
+        document.getElementById('share-wa').href = `https://wa.me/?text=${encodedText}`;
+        document.getElementById('share-tg').href = `https://t.me/share/url?url=${url}&text=${encodedText}`;
+        document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        document.getElementById('share-tw').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
+        
+        openModal('modal-share');
+    }
+
+    function copyToClipboard() {
+        const text = document.getElementById('share-text').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Versículo copiado para a área de transferência!');
+        }).catch(err => {
+            console.error('Erro ao copiar:', err);
+        });
+    }
+</script>
+
+</body>
+</html>
