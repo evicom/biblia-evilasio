@@ -1,6 +1,6 @@
 # ✝ Bíblia Sagrada — App Web (PWA)
 
-App web progressivo (PWA) com a **Bíblia Sagrada completa em português**. Funciona **100% offline** após o primeiro acesso, pode ser instalado como aplicativo no celular e sincroniza suas anotações na nuvem.
+App web progressivo (PWA) com a **Bíblia Sagrada completa em português**, incluindo a **Bíblia Católica** com os livros deuterocanônicos. Funciona **100% offline** após o primeiro acesso, pode ser instalado como aplicativo no celular e sincroniza suas anotações na nuvem.
 
 > **Criado por José Evilasio Marques** · © 2025
 > 🔗 Disponível em: [https://evicom.github.io/biblia-evilasio/](https://evicom.github.io/biblia-evilasio/)
@@ -15,7 +15,7 @@ App web progressivo (PWA) com a **Bíblia Sagrada completa em português**. Func
 | **ACF** | Almeida Corrigida Fiel |
 | **NVI** | Nova Versão Internacional |
 | **AA**  | Almeida Atualizada |
-| **KJA** | King James Atualizada |
+| **BC**  | Bíblia Católica (com deuterocanônicos: Tobias, Judite, Sabedoria, Eclesiástico, Baruc e Macabeus) |
 
 Os textos ficam na pasta `pt-br/` em arquivos `.json` (um por versão), o que torna o app totalmente offline e fácil de ampliar com novos idiomas ou versões.
 
@@ -23,10 +23,10 @@ Os textos ficam na pasta `pt-br/` em arquivos `.json` (um por versão), o que to
 
 ## ✨ Funcionalidades
 
-- 📜 **Leitura completa** do Antigo e Novo Testamento (separados no menu Navegar);
+- 📜 **Leitura completa** do Antigo e Novo Testamento (separados no menu Navegar — funciona com 66 ou 73 livros);
 - 🔄 **Troca de versão** mantendo o livro e capítulo atuais;
 - ◀▶ **Navegação** por capítulos no topo **e no fim** de cada capítulo;
-- 🔑 **Chave Bíblica robusta**: digite `Jo 3:16`, `sl 23`, `1 Co 13:4` (aceita abreviações, com ou sem acento) e o app abre e destaca o versículo;
+- 🔑 **Chave Bíblica robusta**: digite `Jo 3:16`, `sl 23`, `1 Co 13:4`, `Tb 4` (aceita abreviações, com ou sem acento) e o app abre e destaca o versículo;
 - 🔍 **Busca** por palavras em todos os livros;
 - 📝 **Anotações por versículo** com barra dourada de destaque, salvas no aparelho **e na nuvem (JSONBin)**;
 - 🔊 **Leitura em voz alta** (TTS) com player, velocidade ajustável, escolha de voz e versículo destacado;
@@ -47,9 +47,17 @@ Os textos ficam na pasta `pt-br/` em arquivos `.json` (um por versão), o que to
 4. Clique em **Save** e aguarde alguns minutos;
 5. Seu app estará no ar em: `https://SEU-USUARIO.github.io/SEU-REPOSITORIO/`
 
----
+├── index.html ← App principal (interface + lógica)
+├── manifest.json ← Configuração do PWA (nome, cores, ícones)
+├── sw.js ← Service Worker (cache offline)
+├── README.md ← Este arquivo
+├── pt-br/ ← Bíblias em JSON (arc, acf, nvi, aa, bc)
+└── icons/ ← Ícones do app para instalação
+├── icon-72.png
+├── ...
+└── icon-512.png
 
-
+ 
 ---
 
 ## ⚠️ AVISO IMPORTANTE — LEIA ANTES DE MODIFICAR!
@@ -69,6 +77,6 @@ Porém, ao criar a sua própria cópia (fork), você **DEVE trocar a API da nuve
 const JSONBIN_BIN_ID = 'COLE_AQUI_O_SEU_BIN_ID';
 const JSONBIN_MASTER_KEY = 'COLE_AQUI_A_SUA_CHAVE';
 
-
+---
 
 ## 📁 Estrutura de arquivos
