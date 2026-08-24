@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Sagrada</title>
+    <title>Bíblia Evilasio</title>
 
     <!-- ===== PWA: MANIFEST E META TAGS ===== -->
     <link rel="manifest" href="manifest.json">
@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bíblia Sagrada">
+    <meta name="apple-mobile-web-app-title" content="Bíblia Evilasio">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
@@ -514,7 +514,7 @@
 </div>
 
 <footer>
-    Bíblia Sagrada v3.8 · Criado por José Evilasio Marques · © 2025
+    Bíblia Evilasio v1.0 · Criado por José Evilasio Marques · © 2025
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -651,6 +651,9 @@
 
     // ===== VERSÕES DISPONÍVEIS (BC = Bíblia Católica) =====
     const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'BC': 'bc' };
+
+    // ===== LIVROS DEUTEROCANÔNICOS (aparecem no Navegar só na versão BC) =====
+    const DEUTEROCANONICOS = ['tobias','judite','sabedoria','eclesiastico','siracida','baruc','1macabeus','2macabeus','3macabeus','4macabeus'];
 
     document.addEventListener('DOMContentLoaded', () => {
         renderVersionButtons();
@@ -812,20 +815,22 @@
 
     // =====================================================
     // ===== NORMALIZADOR UNIVERSAL DE JSON BÍBLICO =====
-    // Aceita vários formatos (resolve o erro do bc.json)
+    // Aceita os DOIS formatos dos seus JSONs:
+    //  1) ARC/ACF/NVI/AA: { id, name, chapters: [ ["versículo", ...], ... ] }
+    //  2) BC (Católica):  { livro, capitulos: [ { capitulo, versiculos: [{numero, texto}] } ] }
     // =====================================================
     function normalizeBibleData(raw) {
         const chapterToVerses = (ch) => {
             if (Array.isArray(ch)) {
-                return ch.map(v => (typeof v === 'string') ? v : (v.text || v.texto || v.verse || v.content || '')).filter(t => t);
+                return ch.map(v => (typeof v === 'string') ? v : (v.texto || v.text || v.verse || v.content || '')).filter(t => t);
             }
             if (ch && typeof ch === 'object') {
-                const arr = ch.verses || ch.versiculos || ch.vs || null;
+                const arr = ch.versiculos || ch.verses || ch.vs || null;
                 if (Array.isArray(arr)) {
-                    return arr.map(v => (typeof v === 'string') ? v : (v.text || v.texto || v.verse || v.content || '')).filter(t => t);
+                    return arr.map(v => (typeof v === 'string') ? v : (v.texto || v.text || v.verse || v.content || '')).filter(t => t);
                 }
                 return Object.keys(ch).sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(k => (typeof ch[k] === 'string') ? ch[k] : (ch[k] && (ch[k].text || ch[k].texto)) || '')
+                    .map(k => (typeof ch[k] === 'string') ? ch[k] : (ch[k] && (ch[k].texto || ch[k].text)) || '')
                     .filter(t => t);
             }
             return [];
@@ -833,7 +838,7 @@
 
         const bookToStandard = (b) => {
             if (!b || typeof b !== 'object') return null;
-            const name = b.name || b.nome || b.title || b.titulo || b.book || null;
+            const name = b.name || b.nome || b.livro || b.title || b.titulo || b.book || null;
             const chaptersRaw = b.chapters || b.capitulos || b.ch || null;
             if (!name || !chaptersRaw) return null;
 
@@ -848,14 +853,11 @@
             return chapters.length ? { name, chapters } : null;
         };
 
-        // FORMATO 1: array de livros
         if (Array.isArray(raw)) {
             const books = raw.map(bookToStandard).filter(Boolean);
-            if (books.length) return books;
-            return null;
+            return books.length ? books : null;
         }
 
-        // FORMATO 2 e 3: objeto com lista de livros ou chaveado por nome
         if (raw && typeof raw === 'object') {
             const arr = raw.books || raw.livros || raw.Bible || raw.bible || null;
             if (Array.isArray(arr)) {
@@ -1028,20 +1030,28 @@
         }
     }
 
-    // ===== NAVEGAÇÃO COM ANTIGO E NOVO TESTAMENTO =====
+    // ===== NAVEGAÇÃO COM ANTIGO / (CATÓLICOS) / NOVO TESTAMENTO =====
     function updateBookChapterSelectors() {
         const bookSelect = document.getElementById('select-book');
-        let ntStart = state.data.findIndex(b => normalizeText(b.name).startsWith('mateus'));
-        if (ntStart === -1) ntStart = 39;
+        let ntStart = state.data.findIndex(b => normalizeText(b.name).includes('mateus'));
+        if (ntStart === -1) ntStart = Math.min(39, state.data.length);
 
         const otBooks = [];
+        const deutBooks = [];
         const ntBooks = [];
         state.data.forEach((book, idx) => {
             const entry = `<option value="${idx}" ${idx === state.bookIndex ? 'selected' : ''}>${book.name}</option>`;
-            if (idx < ntStart) otBooks.push(entry);
-            else ntBooks.push(entry);
+            if (idx >= ntStart) {
+                ntBooks.push(entry);
+            } else if (state.version === 'bc' && DEUTEROCANONICOS.includes(normalizeText(book.name).replace(/\s+/g, ''))) {
+                deutBooks.push(entry); // grupo extra só na Bíblia Católica
+            } else {
+                otBooks.push(entry);
+            }
         });
+
         let html = `<optgroup label="📜 Antigo Testamento">${otBooks.join('')}</optgroup>`;
+        if (deutBooks.length) html += `<optgroup label="🕮 Livros Católicos (Deuterocanônicos)">${deutBooks.join('')}</optgroup>`;
         if (ntBooks.length) html += `<optgroup label="✝️ Novo Testamento">${ntBooks.join('')}</optgroup>`;
         bookSelect.innerHTML = html;
         updateChapterSelect(false);
@@ -1261,7 +1271,7 @@
     // ===== COMPARTILHAMENTO =====
     // =====================================================
     function openShareModal(ref, text) {
-        const fullText = `"${text}"\n\n${ref} — Bíblia Sagrada`;
+        const fullText = `"${text}"\n\n${ref} — Bíblia Evilasio`;
         setShareLinks(fullText);
         openModal('modal-share');
     }
@@ -1305,7 +1315,7 @@
         if (!selectedText) return;
         
         const selection = window.getSelection();
-        let ref = 'Bíblia Sagrada';
+        let ref = 'Bíblia Evilasio';
         
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
