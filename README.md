@@ -29,6 +29,6 @@ Por José Evilasio Marques
 3. Em **Source**, selecione `main` e a pasta `/ (root)`
 4. Clique em **Save**
 5. Aguarde alguns minutos — o app estará disponível em:
-   `https://evicom.github.io/biblia-evilasio/`
+   `https://usuario.github.io/nome-preferencia/`
 
 ## 📁 Estrutura de arquivos
