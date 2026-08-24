@@ -1,8 +1,8 @@
 {
   "id": "/biblia-evilasio/",
-  "name": "Bíblia Sagrada",
-  "short_name": "Bíblia",
-  "description": "Bíblia Sagrada completa com ARC, ACF, NVI, AA e KJA. 100% offline. Leia, busque e anote versículos.",
+  "name": "Bíblia Evilasio",
+  "short_name": "Evilasio",
+  "description": "Bíblia Evilasio completa com ARC, ACF, NVI, AA e Bíblia Católica (BC). 100% offline. Leia, busque e anote versículos.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
