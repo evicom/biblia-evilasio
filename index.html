@@ -88,6 +88,7 @@
         }
 
         #install-btn { animation: pulse 2s infinite; }
+        #tts-btn.active-tts { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
             70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
@@ -168,7 +169,7 @@
         #leitor-biblia { 
             max-width: 800px; 
             margin: 0 auto; 
-            padding: 2rem 1.5rem; 
+            padding: 2rem 1.5rem 6rem 1.5rem; 
             font-family: 'Georgia', 'Merriweather', serif; 
             font-size: 110%; 
             line-height: 1.8; 
@@ -191,6 +192,10 @@
             user-select: text;
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
+        .versiculo-ativo { 
+            background: rgba(212, 175, 55, 0.15) !important; 
+            border-left: 3px solid var(--accent); 
+        }
         .num-verso { 
             color: var(--accent); 
             font-weight: bold; 
@@ -208,7 +213,7 @@
         #share-selection-btn {
             display: none;
             position: fixed;
-            bottom: 20px;
+            bottom: 80px;
             right: 20px;
             background: var(--accent);
             color: var(--bg-primary);
@@ -224,6 +229,41 @@
         #share-selection-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(212, 175, 55, 0.5);
+        }
+
+        /* ===== PLAYER DE ÁUDIO (TTS) ===== */
+        #player-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            z-index: 998;
+            flex-wrap: wrap;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+        }
+        #player-bar.visible { display: flex; }
+        #player-info { color: var(--accent); font-weight: 700; font-size: 0.9rem; min-width: 110px; text-align: center; }
+        .player-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .player-btn:hover { background: var(--accent); color: var(--bg-primary); }
+        #player-rate { color: var(--text-secondary); font-size: 0.85rem; min-width: 42px; text-align: center; }
+        #voice-select {
+            width: auto; margin: 0; padding: 0.35rem 0.5rem;
+            font-size: 0.8rem; max-width: 150px;
         }
 
         #loading { 
@@ -371,6 +411,7 @@
         <button class="icon-btn" title="Navegar" onclick="openModal('modal-nav')">📖</button>
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
         <button class="icon-btn" title="Anotações" onclick="openModal('modal-notes')">📝</button>
+        <button class="icon-btn" id="tts-btn" title="Ouvir capítulo em voz alta" onclick="toggleSpeech()">🔊</button>
         <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
         
         <div class="font-controls">
@@ -394,8 +435,19 @@
 
 <button id="share-selection-btn" onclick="shareSelection()">📤 Compartilhar Seleção</button>
 
+<!-- PLAYER DE LEITURA EM VOZ ALTA -->
+<div id="player-bar">
+    <span id="player-info">—</span>
+    <button class="player-btn" id="player-play" onclick="toggleSpeech()" title="Pausar / Continuar">⏸</button>
+    <button class="player-btn" onclick="stopSpeech()" title="Parar leitura">⏹</button>
+    <button class="player-btn" onclick="changeRate(-0.25)" title="Mais devagar">−</button>
+    <span id="player-rate">1x</span>
+    <button class="player-btn" onclick="changeRate(0.25)" title="Mais rápido">+</button>
+    <select id="voice-select" title="Escolher voz" onchange="changeVoice(this.value)"></select>
+</div>
+
 <footer>
-    Bíblia Sagrada v3.0 · © 2025
+    Bíblia Sagrada v3.1 · © 2025
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -469,7 +521,7 @@
             <span class="close" onclick="closeModal('modal-install')">&times;</span>
         </div>
         <div class="install-step">
-            <strong> Android (Chrome):</strong><br>
+            <strong>🤖 Android (Chrome):</strong><br>
             Toque no menu (⋮) → "Adicionar à tela inicial" ou "Instalar app".
         </div>
         <div class="install-step">
@@ -503,6 +555,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         renderVersionButtons();
         loadVersion('ARC');
+        initVoices();
         document.addEventListener('mouseup', checkSelection);
         document.addEventListener('touchend', checkSelection);
     });
@@ -631,6 +684,8 @@
     }
 
     function renderChapter() {
+        if (tts.speaking) stopSpeech(); // para a leitura ao trocar de capítulo
+
         const book = state.data[state.bookIndex];
         const chapter = book.chapters[state.chapterIndex];
         const reader = document.getElementById('leitor-biblia');
@@ -849,6 +904,137 @@
         setShareLinks(`"${selectedText}"\n\n${ref}`);
         openModal('modal-share');
         document.getElementById('share-selection-btn').style.display = 'none';
+    }
+
+    // =====================================================
+    // ===== LEITURA EM VOZ ALTA (TTS - Web Speech API) =====
+    // =====================================================
+    const tts = { speaking: false, paused: false, verseIndex: 0, rate: 1, voice: null, voices: [] };
+
+    function initVoices() {
+        if (!('speechSynthesis' in window)) return;
+        const load = () => {
+            tts.voices = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('pt'));
+            tts.voice = tts.voices.find(v => v.lang.replace('_','-') === 'pt-BR') || tts.voices[0] || null;
+            renderVoiceSelect();
+        };
+        load();
+        speechSynthesis.onvoiceschanged = load;
+    }
+
+    function renderVoiceSelect() {
+        const sel = document.getElementById('voice-select');
+        if (!sel) return;
+        if (tts.voices.length === 0) { sel.style.display = 'none'; return; }
+        sel.style.display = '';
+        sel.innerHTML = tts.voices.map((v, i) => `<option value="${i}">${v.name}</option>`).join('');
+        const idx = tts.voices.indexOf(tts.voice);
+        if (idx >= 0) sel.value = String(idx);
+    }
+
+    function changeVoice(i) {
+        tts.voice = tts.voices[parseInt(i)] || null;
+        if (tts.speaking && !tts.paused) {
+            speechSynthesis.cancel();
+            speakCurrentVerse();
+        }
+    }
+
+    function toggleSpeech() {
+        if (!('speechSynthesis' in window)) {
+            alert('Desculpe, seu navegador não suporta leitura em voz alta. Use o Chrome ou o Edge.');
+            return;
+        }
+        if (tts.speaking && !tts.paused) { pauseSpeech(); return; }
+        if (tts.speaking && tts.paused) { resumeSpeech(); return; }
+        startSpeech(0);
+    }
+
+    function startSpeech(fromVerse) {
+        speechSynthesis.cancel();
+        tts.speaking = true;
+        tts.paused = false;
+        tts.verseIndex = fromVerse || 0;
+        document.getElementById('player-bar').classList.add('visible');
+        updatePlayerUI();
+        speakCurrentVerse();
+    }
+
+    function speakCurrentVerse() {
+        if (!tts.speaking) return;
+        const book = state.data[state.bookIndex];
+        const chapter = book.chapters[state.chapterIndex];
+
+        if (tts.verseIndex >= chapter.length) { stopSpeech(); return; }
+
+        highlightVerse(tts.verseIndex);
+
+        const verseText = chapter[tts.verseIndex];
+        const intro = tts.verseIndex === 0
+            ? `${book.name}, capítulo ${state.chapterIndex + 1}. `
+            : '';
+        const utter = new SpeechSynthesisUtterance(`${intro}Versículo ${tts.verseIndex + 1}: ${verseText}`);
+        utter.lang = 'pt-BR';
+        if (tts.voice) utter.voice = tts.voice;
+        utter.rate = tts.rate;
+
+        utter.onend = () => {
+            if (!tts.speaking) return;
+            tts.verseIndex++;
+            speakCurrentVerse();
+        };
+        utter.onerror = (e) => {
+            if (e.error !== 'canceled' && e.error !== 'interrupted' && tts.speaking) stopSpeech();
+        };
+
+        speechSynthesis.speak(utter);
+        updatePlayerUI();
+    }
+
+    function highlightVerse(idx) {
+        const verses = document.querySelectorAll('.versiculo');
+        verses.forEach((el, i) => el.classList.toggle('versiculo-ativo', i === idx));
+        if (verses[idx]) verses[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('player-info').textContent =
+            `${state.data[state.bookIndex].name} ${state.chapterIndex + 1}:${idx + 1}`;
+    }
+
+    function pauseSpeech() {
+        speechSynthesis.pause();
+        tts.paused = true;
+        updatePlayerUI();
+    }
+
+    function resumeSpeech() {
+        speechSynthesis.resume();
+        tts.paused = false;
+        updatePlayerUI();
+    }
+
+    function stopSpeech() {
+        speechSynthesis.cancel();
+        tts.speaking = false;
+        tts.paused = false;
+        tts.verseIndex = 0;
+        document.getElementById('player-bar').classList.remove('visible');
+        document.querySelectorAll('.versiculo').forEach(el => el.classList.remove('versiculo-ativo'));
+        updatePlayerUI();
+    }
+
+    function changeRate(delta) {
+        tts.rate = Math.min(2, Math.max(0.5, Math.round((tts.rate + delta) * 100) / 100));
+        document.getElementById('player-rate').textContent = `${tts.rate}x`;
+        if (tts.speaking) {
+            speechSynthesis.cancel();
+            speakCurrentVerse();
+        }
+    }
+
+    function updatePlayerUI() {
+        const playBtn = document.getElementById('player-play');
+        const ttsBtn = document.getElementById('tts-btn');
+        if (playBtn) playBtn.textContent = (tts.speaking && !tts.paused) ? '⏸' : '▶';
+        if (ttsBtn) ttsBtn.classList.toggle('active-tts', tts.speaking);
     }
 </script>
 
