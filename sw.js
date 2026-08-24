@@ -1,7 +1,9 @@
-// Service Worker - Bíblia Sagrada (José Evilasio Marques)
+// Service Worker - Bíblia Evilasio (José Evilasio Marques)
+// v12: HTML sempre atualizado (network-first) + Bíblias .json em cache (offline total)
 const CACHE_VERSION = 'v1';
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
+// Arquivos essenciais do app
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -15,6 +17,7 @@ const PRECACHE_ASSETS = [
   './icons/icon-512.png'
 ];
 
+// Bíblias em JSON (cacheadas na instalação para funcionar 100% offline)
 const BIBLE_JSONS = [
   './pt-br/arc.json',
   './pt-br/acf.json',
@@ -23,16 +26,19 @@ const BIBLE_JSONS = [
   './pt-br/bc.json'
 ];
 
+// Instalação: cache inicial
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.addAll(PRECACHE_ASSETS);
+      // allSettled: se um JSON falhar, não quebra a instalação
       await Promise.allSettled(BIBLE_JSONS.map((url) => cache.add(url)));
       return self.skipWaiting();
     })
   );
 });
 
+// Ativação: remove caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -45,10 +51,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Fetch
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Navegações (HTML): REDE PRIMEIRO → sempre versão nova; cache só se offline
+  // Navegações (HTML): REDE PRIMEIRO → sempre pega a versão nova;
+  // usa o cache apenas se estiver offline
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
@@ -62,7 +70,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Demais arquivos: cache primeiro, atualiza em segundo plano
+  // Demais arquivos (JSONs, ícones, manifest): cache primeiro,
+  // atualiza em segundo plano (stale-while-revalidate)
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const networkFetch = fetch(event.request)
