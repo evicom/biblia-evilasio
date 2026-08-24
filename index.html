@@ -514,7 +514,7 @@
 </div>
 
 <footer>
-    Bíblia Sagrada v1 · Criado por José Evilasio Marques · © 2026
+    Bíblia Sagrada v3.8 · Criado por José Evilasio Marques · © 2025
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -649,7 +649,7 @@
         currentChapterNum: null
     };
 
-    // ===== VERSÕES DISPONÍVEIS (KJA saiu, BC - Bíblia Católica entrou) =====
+    // ===== VERSÕES DISPONÍVEIS (BC = Bíblia Católica) =====
     const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'BC': 'bc' };
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -811,6 +811,74 @@
     }
 
     // =====================================================
+    // ===== NORMALIZADOR UNIVERSAL DE JSON BÍBLICO =====
+    // Aceita vários formatos (resolve o erro do bc.json)
+    // =====================================================
+    function normalizeBibleData(raw) {
+        const chapterToVerses = (ch) => {
+            if (Array.isArray(ch)) {
+                return ch.map(v => (typeof v === 'string') ? v : (v.text || v.texto || v.verse || v.content || '')).filter(t => t);
+            }
+            if (ch && typeof ch === 'object') {
+                const arr = ch.verses || ch.versiculos || ch.vs || null;
+                if (Array.isArray(arr)) {
+                    return arr.map(v => (typeof v === 'string') ? v : (v.text || v.texto || v.verse || v.content || '')).filter(t => t);
+                }
+                return Object.keys(ch).sort((a, b) => parseInt(a) - parseInt(b))
+                    .map(k => (typeof ch[k] === 'string') ? ch[k] : (ch[k] && (ch[k].text || ch[k].texto)) || '')
+                    .filter(t => t);
+            }
+            return [];
+        };
+
+        const bookToStandard = (b) => {
+            if (!b || typeof b !== 'object') return null;
+            const name = b.name || b.nome || b.title || b.titulo || b.book || null;
+            const chaptersRaw = b.chapters || b.capitulos || b.ch || null;
+            if (!name || !chaptersRaw) return null;
+
+            let chaptersArr = null;
+            if (Array.isArray(chaptersRaw)) chaptersArr = chaptersRaw;
+            else if (typeof chaptersRaw === 'object') {
+                chaptersArr = Object.keys(chaptersRaw).sort((a, b) => parseInt(a) - parseInt(b)).map(k => chaptersRaw[k]);
+            }
+            if (!chaptersArr) return null;
+
+            const chapters = chaptersArr.map(chapterToVerses).filter(c => c.length);
+            return chapters.length ? { name, chapters } : null;
+        };
+
+        // FORMATO 1: array de livros
+        if (Array.isArray(raw)) {
+            const books = raw.map(bookToStandard).filter(Boolean);
+            if (books.length) return books;
+            return null;
+        }
+
+        // FORMATO 2 e 3: objeto com lista de livros ou chaveado por nome
+        if (raw && typeof raw === 'object') {
+            const arr = raw.books || raw.livros || raw.Bible || raw.bible || null;
+            if (Array.isArray(arr)) {
+                const books = arr.map(bookToStandard).filter(Boolean);
+                if (books.length) return books;
+            }
+
+            const books = [];
+            for (const [bookName, chaptersObj] of Object.entries(raw)) {
+                if (!chaptersObj || typeof chaptersObj !== 'object') continue;
+                const chapters = Object.keys(chaptersObj)
+                    .sort((a, b) => parseInt(a) - parseInt(b))
+                    .map(k => chapterToVerses(chaptersObj[k]))
+                    .filter(c => c.length);
+                if (chapters.length) books.push({ name: bookName, chapters });
+            }
+            if (books.length) return books;
+        }
+
+        return null;
+    }
+
+    // =====================================================
     // ===== BÍBLIA: CARREGAMENTO E LEITURA =====
     // =====================================================
     function renderVersionButtons() {
@@ -842,7 +910,9 @@
         try {
             const response = await fetch(`pt-br/${state.version}.json`);
             if (!response.ok) throw new Error('Falha ao carregar');
-            state.data = await response.json();
+            const rawDados = await response.json();
+            state.data = normalizeBibleData(rawDados);
+            if (!state.data) throw new Error('Formato do JSON não reconhecido');
             
             if (state.currentBookName) {
                 const bookIdx = state.data.findIndex(b => b.name === state.currentBookName);
@@ -864,7 +934,7 @@
         } catch (error) {
             console.error("Erro ao carregar a versão:", error);
             document.getElementById('leitor-biblia').innerHTML = 
-                `<p style="color:#ef4444; text-align:center; padding: 2rem;">Erro ao carregar os dados. Verifique se a pasta <strong>pt-br/</strong> e o arquivo <strong>${state.version}.json</strong> existem.</p>`;
+                `<p style="color:#ef4444; text-align:center; padding: 2rem;">Erro ao carregar os dados. Verifique se a pasta <strong>pt-br/</strong> e o arquivo <strong>${state.version}.json</strong> existem e se o formato do JSON é válido.</p>`;
         } finally {
             document.getElementById('loading').style.display = 'none';
         }
@@ -959,7 +1029,6 @@
     }
 
     // ===== NAVEGAÇÃO COM ANTIGO E NOVO TESTAMENTO =====
-    // Detecta o NT pelo livro de MATEUS (funciona p/ 66 e 73 livros - Bíblia Católica)
     function updateBookChapterSelectors() {
         const bookSelect = document.getElementById('select-book');
         let ntStart = state.data.findIndex(b => normalizeText(b.name).startsWith('mateus'));
@@ -1006,7 +1075,6 @@
         'jr':'jeremias','lm':'lamentacoes','ez':'ezequiel','dn':'daniel','os':'oseias','jl':'joel','am':'amos',
         'ob':'obadias','jn':'jonas','mq':'miqueias','na':'naum','hc':'habacuque','sf':'sofonias','ag':'ageu',
         'zc':'zacarias','ml':'malaquias',
-        // Livros católicos (deuterocanônicos)
         'tb':'tobias','tob':'tobias','jt':'judite','jdt':'judite','sb':'sabedoria','eclo':'eclesiastico',
         'sir':'siracida','bar':'baruc','1mc':'1macabeus','2mc':'2macabeus','1mac':'1macabeus','2mac':'2macabeus',
         'mt':'mateus','mc':'marcos','lc':'lucas','at':'atos','rm':'romanos',
