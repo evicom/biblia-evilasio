@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Sagrada — José Evilasio Marques</title>
+    <title>Bíblia Sagrada</title>
     <style>
         :root {
             --bg-primary: #121212;
@@ -11,10 +11,12 @@
             --bg-tertiary: #2d2d2d;
             --text-primary: #e0e0e0;
             --text-secondary: #a0a0a0;
-            --accent: #d4af37; /* Dourado elegante */
+            --accent: #d4af37;
             --accent-hover: #fbbf24;
             --border: #333333;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --jesus-color: #ef4444;
+            --god-color: #60a5fa;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +28,6 @@
             line-height: 1.6; 
         }
         
-        /* Header & Toolbars */
         header { 
             background: var(--bg-secondary); 
             border-bottom: 1px solid var(--border); 
@@ -34,25 +35,6 @@
             top: 0; 
             z-index: 100; 
             box-shadow: var(--shadow);
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0.8rem 1rem;
-        }
-
-        .app-title { 
-            font-size: 1.1rem; 
-            font-weight: 700; 
-            color: var(--accent); 
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem; 
-            letter-spacing: 0.5px;
         }
 
         .toolbar { 
@@ -73,7 +55,6 @@
             flex-wrap: wrap;
         }
 
-        /* Botões de Ícone (Navegar, Buscar, Anotações) */
         .icon-btn { 
             background: var(--bg-tertiary); 
             border: 1px solid var(--border); 
@@ -95,7 +76,6 @@
             transform: translateY(-2px);
         }
 
-        /* Controles de Fonte */
         .font-controls {
             display: flex;
             align-items: center;
@@ -122,7 +102,6 @@
         .font-btn:hover { background: var(--border); }
         .font-display { font-size: 0.85rem; color: var(--text-secondary); min-width: 40px; text-align: center; }
 
-        /* Botões de Versão */
         .version-btn { 
             background: transparent; 
             border: 1px solid var(--border); 
@@ -140,7 +119,6 @@
             border-color: var(--accent); 
         }
 
-        /* Barra de Navegação do Capítulo */
         .nav-bar { 
             display: flex; 
             justify-content: space-between; 
@@ -169,7 +147,6 @@
             text-align: center;
         }
 
-        /* Leitor */
         #leitor-biblia { 
             max-width: 800px; 
             margin: 0 auto; 
@@ -193,6 +170,7 @@
             padding: 0.5rem; 
             border-radius: 6px; 
             transition: background 0.2s; 
+            user-select: text;
         }
         .versiculo:hover { 
             background: rgba(212, 175, 55, 0.08); 
@@ -204,10 +182,42 @@
             vertical-align: super; 
             margin-right: 0.3rem; 
             cursor: pointer; 
+            user-select: none;
         }
         .num-verso:hover { text-decoration: underline; }
 
-        /* Loading */
+        /* Palavras de Jesus e Deus */
+        .palavras-jesus { 
+            color: var(--jesus-color); 
+            font-style: italic;
+        }
+        .palavras-deus { 
+            color: var(--god-color); 
+            font-style: italic;
+        }
+
+        /* Botão de compartilhamento de seleção */
+        #share-selection-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        #share-selection-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.5);
+        }
+
         #loading { 
             display: none; 
             text-align: center; 
@@ -216,7 +226,6 @@
             color: var(--accent); 
         }
 
-        /* Modais */
         .modal { 
             display: none; 
             position: fixed; 
@@ -258,7 +267,6 @@
         }
         .close:hover { color: var(--text-primary); }
 
-        /* Elementos de Formulário no Modal */
         select, input, textarea { 
             width: 100%; 
             padding: 0.7rem; 
@@ -287,7 +295,6 @@
         }
         .btn-primary:hover { background: var(--accent-hover); }
 
-        /* Resultados de Busca */
         .search-result { 
             padding: 0.8rem; 
             border-bottom: 1px solid var(--border); 
@@ -299,7 +306,6 @@
         .search-ref { font-weight: bold; color: var(--accent); font-size: 0.9rem; margin-bottom: 0.2rem; }
         .search-result mark { background: rgba(212, 175, 55, 0.3); color: var(--text-primary); padding: 0 2px; border-radius: 2px; }
 
-        /* Anotações Salvas */
         .saved-note-item {
             padding: 0.8rem;
             border-bottom: 1px solid var(--border);
@@ -308,7 +314,6 @@
         }
         .saved-note-item:hover { background: var(--bg-tertiary); }
 
-        /* Botões de Compartilhamento */
         .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
         .share-btn { 
             padding: 0.7rem; 
@@ -324,12 +329,12 @@
         }
         .share-btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .whatsapp { background: #25D366; }
+        .instagram { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
         .telegram { background: #0088cc; }
         .facebook { background: #3b5998; }
         .twitter { background: #000000; border: 1px solid #333; }
         .copy { background: var(--bg-tertiary); color: var(--text-primary); grid-column: span 2; border: 1px solid var(--border); }
 
-        /* Footer */
         footer { 
             text-align: center; 
             padding: 2rem 1rem; 
@@ -344,11 +349,6 @@
 <body>
 
 <header>
-    <div class="top-bar">
-        <div class="app-title">✝️ Bíblia Sagrada</div>
-        <div style="font-size: 0.8rem; color: var(--text-secondary);">José Evilasio Marques</div>
-    </div>
-    
     <div class="toolbar">
         <button class="icon-btn" title="Navegar" onclick="openModal('modal-nav')">📖</button>
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
@@ -362,7 +362,6 @@
     </div>
 
     <div class="version-tabs" id="version-buttons">
-        <!-- Botões de versão gerados via JS -->
     </div>
 </header>
 
@@ -375,11 +374,12 @@
 <div id="loading">Carregando Escrituras...</div>
 <div id="leitor-biblia"></div>
 
+<button id="share-selection-btn" onclick="shareSelection()">📤 Compartilhar Seleção</button>
+
 <footer>
-    Bíblia Sagrada v2.0 · José Evilasio Marques · © 2025
+    Bíblia Sagrada v2.0 · © 2025
 </footer>
 
-<!-- MODAL DE NAVEGAÇÃO -->
 <div id="modal-nav" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -391,7 +391,6 @@
     </div>
 </div>
 
-<!-- MODAL DE BUSCA -->
 <div id="modal-search" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -406,7 +405,6 @@
     </div>
 </div>
 
-<!-- MODAL DE ANOTAÇÕES -->
 <div id="modal-notes" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -423,7 +421,6 @@
     </div>
 </div>
 
-<!-- MODAL DE COMPARTILHAMENTO -->
 <div id="modal-share" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -433,6 +430,7 @@
         <p id="share-text" style="font-style:italic; background:var(--bg-tertiary); padding:1rem; border-left:3px solid var(--accent); border-radius: 0 8px 8px 0; margin-bottom:1rem; line-height: 1.6;"></p>
         <div class="share-grid">
             <a id="share-wa" class="share-btn whatsapp" target="_blank">💬 WhatsApp</a>
+            <a id="share-ig" class="share-btn instagram" target="_blank">📸 Instagram</a>
             <a id="share-tg" class="share-btn telegram" target="_blank">✈️ Telegram</a>
             <a id="share-fb" class="share-btn facebook" target="_blank">f Facebook</a>
             <a id="share-tw" class="share-btn twitter" target="_blank">𝕏 Twitter/X</a>
@@ -442,22 +440,26 @@
 </div>
 
 <script>
-    // --- ESTADO DA APLICAÇÃO ---
     const state = {
         version: 'arc',
         bookIndex: 0,
         chapterIndex: 0,
         fontSize: 110,
         data: null,
-        notes: JSON.parse(localStorage.getItem('biblia_notas') || '{}')
+        notes: JSON.parse(localStorage.getItem('biblia_notas') || '{}'),
+        currentBookName: null,
+        currentChapterNum: null
     };
 
     const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'KJA': 'kja' };
 
-    // --- INICIALIZAÇÃO ---
     document.addEventListener('DOMContentLoaded', () => {
         renderVersionButtons();
         loadVersion('ARC');
+        
+        // Monitora seleção de texto
+        document.addEventListener('mouseup', checkSelection);
+        document.addEventListener('touchend', checkSelection);
     });
 
     function renderVersionButtons() {
@@ -472,8 +474,13 @@
         }
     }
 
-    // --- CARREGAMENTO DOS DADOS ---
     async function loadVersion(versionLabel) {
+        // Salva posição atual antes de mudar
+        if (state.data) {
+            state.currentBookName = state.data[state.bookIndex]?.name;
+            state.currentChapterNum = state.chapterIndex + 1;
+        }
+
         state.version = versions[versionLabel];
         document.getElementById('loading').style.display = 'block';
         document.getElementById('leitor-biblia').innerHTML = '';
@@ -487,8 +494,26 @@
             if (!response.ok) throw new Error('Falha ao carregar');
             state.data = await response.json();
             
-            state.bookIndex = 0;
-            state.chapterIndex = 0;
+            // Tenta restaurar posição anterior
+            if (state.currentBookName) {
+                const bookIdx = state.data.findIndex(b => b.name === state.currentBookName);
+                if (bookIdx !== -1) {
+                    state.bookIndex = bookIdx;
+                    const targetChapter = state.currentChapterNum - 1;
+                    if (targetChapter >= 0 && targetChapter < state.data[bookIdx].chapters.length) {
+                        state.chapterIndex = targetChapter;
+                    } else {
+                        state.chapterIndex = 0;
+                    }
+                } else {
+                    state.bookIndex = 0;
+                    state.chapterIndex = 0;
+                }
+            } else {
+                state.bookIndex = 0;
+                state.chapterIndex = 0;
+            }
+            
             updateBookChapterSelectors();
             renderChapter();
         } catch (error) {
@@ -500,7 +525,44 @@
         }
     }
 
-    // --- RENDERIZAÇÃO ---
+    function processVerseText(text) {
+        // Processa texto para destacar palavras de Jesus e Deus
+        let processed = text;
+        
+        // Padrões para palavras de Jesus
+        const jesusPatterns = [
+            /(?:disse|respondeu|falou|perguntou|exclamou|declarou)\s+(?:Jesus|ele)\s*[:：]\s*["""]([^""""]+)["""]/gi,
+            /(?:Jesus|ele)\s+(?:disse|respondeu|falou|perguntou|exclamou|declarou)\s*[:：]\s*["""]([^""""]+)["""]/gi,
+            /["""]([^""""]+)["""]\s*,?\s*(?:disse|respondeu)\s+(?:Jesus|o Senhor)/gi
+        ];
+        
+        // Padrões para palavras de Deus
+        const godPatterns = [
+            /(?:disse|falou|ordenou|declarou)\s+(?:Deus|o Senhor|o SENHOR|Yahweh)\s*[:：]\s*["""]([^""""]+)["""]/gi,
+            /(?:Deus|o Senhor|o SENHOR)\s+(?:disse|falou|ordenou|declarou)\s*[:：]\s*["""]([^""""]+)["""]/gi
+        ];
+        
+        // Aplica destaque para palavras de Jesus (vermelho)
+        jesusPatterns.forEach(pattern => {
+            processed = processed.replace(pattern, (match, quote) => {
+                return match.replace(quote, `<span class="palavras-jesus">${quote}</span>`);
+            });
+        });
+        
+        // Aplica destaque para palavras de Deus (azul)
+        godPatterns.forEach(pattern => {
+            processed = processed.replace(pattern, (match, quote) => {
+                // Não aplicar se já foi aplicado para Jesus
+                if (!match.includes('palavras-jesus')) {
+                    return match.replace(quote, `<span class="palavras-deus">${quote}</span>`);
+                }
+                return match;
+            });
+        });
+        
+        return processed;
+    }
+
     function renderChapter() {
         const book = state.data[state.bookIndex];
         const chapter = book.chapters[state.chapterIndex];
@@ -512,11 +574,13 @@
         chapter.forEach((verseText, index) => {
             const verseNum = index + 1;
             const ref = `${book.name} ${state.chapterIndex + 1}:${verseNum}`;
-            const safeText = verseText.replace(/'/g, "\\'");
+            
+            // Processa o texto para destacar palavras de Jesus e Deus
+            const processedText = processVerseText(verseText);
             
             const p = document.createElement('p');
             p.className = 'versiculo';
-            p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${safeText}')">${verseNum}</sup> ${verseText}`;
+            p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${verseText.replace(/'/g, "\\'")}')">${verseNum}</sup> ${processedText}`;
             
             p.onclick = () => openNoteModal(ref, verseText);
             reader.appendChild(p);
@@ -525,7 +589,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- NAVEGAÇÃO ---
     function changeChapter(direction) {
         const book = state.data[state.bookIndex];
         const newChapter = state.chapterIndex + direction;
@@ -567,7 +630,6 @@
         closeModal('modal-nav');
     }
 
-    // --- FUNCIONALIDADES DE UI ---
     function changeFontSize(delta) {
         state.fontSize = Math.max(80, Math.min(200, state.fontSize + delta));
         document.getElementById('leitor-biblia').style.fontSize = `${state.fontSize}%`;
@@ -589,7 +651,6 @@
         }
     };
 
-    // --- BUSCA ---
     function performSearch() {
         const query = document.getElementById('search-input').value.trim().toLowerCase();
         const resultsDiv = document.getElementById('search-results');
@@ -637,7 +698,6 @@
         renderChapter();
     }
 
-    // --- ANOTAÇÕES ---
     let currentNoteRef = '';
 
     function openNoteModal(ref, text) {
@@ -656,7 +716,6 @@
         }
         localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
         
-        // Feedback visual sutil
         const btn = document.querySelector('#modal-notes .btn-primary');
         const originalText = btn.textContent;
         btn.textContent = '✅ Salvo!';
@@ -680,7 +739,6 @@
         `).join('');
     }
 
-    // --- COMPARTILHAMENTO ---
     function openShareModal(ref, text) {
         const fullText = `"${text}"\n\n${ref} — Bíblia Sagrada`;
         const encodedText = encodeURIComponent(fullText);
@@ -688,6 +746,7 @@
 
         document.getElementById('share-text').textContent = fullText;
         document.getElementById('share-wa').href = `https://wa.me/?text=${encodedText}`;
+        document.getElementById('share-ig').href = `https://www.instagram.com/`;
         document.getElementById('share-tg').href = `https://t.me/share/url?url=${url}&text=${encodedText}`;
         document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
         document.getElementById('share-tw').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
@@ -705,6 +764,61 @@
         }).catch(err => {
             console.error('Erro ao copiar:', err);
         });
+    }
+
+    // Função para compartilhar texto selecionado
+    function checkSelection() {
+        const selection = window.getSelection();
+        const selectedText = selection.toString().trim();
+        const btn = document.getElementById('share-selection-btn');
+        
+        if (selectedText.length > 0) {
+            btn.style.display = 'block';
+            btn.dataset.selectedText = selectedText;
+        } else {
+            btn.style.display = 'none';
+        }
+    }
+
+    function shareSelection() {
+        const selectedText = document.getElementById('share-selection-btn').dataset.selectedText;
+        if (selectedText) {
+            // Encontra a referência do versículo mais próximo
+            const selection = window.getSelection();
+            let ref = 'Bíblia Sagrada';
+            
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                let node = range.startContainer;
+                while (node && !node.classList?.contains('versiculo')) {
+                    node = node.parentNode;
+                }
+                
+                if (node) {
+                    const book = state.data[state.bookIndex];
+                    const chapterNum = state.chapterIndex + 1;
+                    const verseIndex = Array.from(node.parentNode.children).filter(c => c.classList.contains('versiculo')).indexOf(node);
+                    if (verseIndex !== -1) {
+                        ref = `${book.name} ${chapterNum}:${verseIndex + 1}`;
+                    }
+                }
+            }
+            
+            const fullText = `"${selectedText}"\n\n${ref}`;
+            const encodedText = encodeURIComponent(fullText);
+            const url = encodeURIComponent(window.location.href);
+            
+            // Abre modal de compartilhamento com texto selecionado
+            document.getElementById('share-text').textContent = fullText;
+            document.getElementById('share-wa').href = `https://wa.me/?text=${encodedText}`;
+            document.getElementById('share-ig').href = `https://www.instagram.com/`;
+            document.getElementById('share-tg').href = `https://t.me/share/url?url=${url}&text=${encodedText}`;
+            document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            document.getElementById('share-tw').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
+            
+            openModal('modal-share');
+            document.getElementById('share-selection-btn').style.display = 'none';
+        }
     }
 </script>
 
