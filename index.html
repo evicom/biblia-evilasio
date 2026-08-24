@@ -171,7 +171,7 @@
         #leitor-biblia { 
             max-width: 800px; 
             margin: 0 auto; 
-            padding: 2rem 1.5rem 4rem 1.5rem; 
+            padding: 2rem 1.5rem 6rem 1.5rem; 
             font-family: 'Georgia', 'Merriweather', serif; 
             font-size: 110%; 
             line-height: 1.8; 
@@ -191,9 +191,35 @@
             padding: 0.5rem; 
             border-radius: 6px; 
             transition: background 0.2s; 
-            user-select: text;
+            /* seleção nativa desativada p/ funcionar o pressionar 3s */
+            user-select: none; 
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none;
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
+
+        /* Animação de preenchimento enquanto segura (3s) */
+        .versiculo-pressionando { animation: pressFill 3s linear forwards; }
+        @keyframes pressFill {
+            from { background: rgba(212, 175, 55, 0.05); }
+            to   { background: rgba(212, 175, 55, 0.35); }
+        }
+
+        /* Versículo selecionado no modo seleção */
+        .versiculo-selecionado { 
+            background: rgba(163, 230, 53, 0.12) !important; 
+            border-left: 3px solid var(--jesus-color); 
+            padding-left: 0.7rem; 
+            position: relative;
+        }
+        .versiculo-selecionado::after {
+            content: '✔';
+            position: absolute;
+            top: 0.4rem;
+            right: 0.6rem;
+            color: var(--jesus-color);
+            font-size: 0.9rem;
+        }
 
         .versiculo-com-nota { 
             border-left: 3px solid var(--accent); 
@@ -235,26 +261,36 @@
         .palavras-jesus { color: var(--jesus-color); font-style: italic; }
         .palavras-deus { color: var(--god-color); font-style: italic; }
 
-        #share-selection-btn {
-            display: none;
+        /* ===== BARRA DO MODO SELEÇÃO ===== */
+        #selection-bar {
             position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background: var(--accent);
+            bottom: 0; left: 0; right: 0;
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--jesus-color);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            z-index: 999;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+            flex-wrap: wrap;
+        }
+        #selection-bar.visible { display: flex; }
+        #selection-count { color: var(--jesus-color); font-weight: 700; font-size: 0.9rem; flex: 1; min-width: 150px; }
+        .selection-btn {
+            background: var(--jesus-color);
             color: var(--bg-primary);
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-            z-index: 999;
-            transition: all 0.3s ease;
+            transition: 0.2s;
         }
-        #share-selection-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.5);
-        }
+        .selection-btn:hover { opacity: 0.9; }
+        .selection-btn.cancel { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
+        .selection-hint { width: 100%; font-size: 0.75rem; color: var(--text-secondary); }
 
         #player-bar {
             position: fixed;
@@ -501,7 +537,13 @@
 <div id="loading">Carregando Escrituras...</div>
 <div id="leitor-biblia"></div>
 
-<button id="share-selection-btn" onclick="shareSelection()">📤 Compartilhar Seleção</button>
+<!-- BARRA DO MODO SELEÇÃO (pressionar 3s num versículo) -->
+<div id="selection-bar">
+    <span id="selection-count">0 versículos</span>
+    <button class="selection-btn" onclick="shareSelected()">📤 Compartilhar</button>
+    <button class="selection-btn cancel" onclick="exitSelectionMode()">✖ Concluir</button>
+    <span class="selection-hint">Toque em outros versículos para adicionar ou remover da seleção.</span>
+</div>
 
 <div id="player-bar">
     <span id="player-info">—</span>
@@ -600,7 +642,7 @@
             <h3>Compartilhar</h3>
             <span class="close" onclick="closeModal('modal-share')">&times;</span>
         </div>
-        <p id="share-text" style="font-style:italic; background:var(--bg-tertiary); padding:1rem; border-left:3px solid var(--accent); border-radius: 0 8px 8px 0; margin-bottom:1rem; line-height: 1.6;"></p>
+        <p id="share-text" style="font-style:italic; background:var(--bg-tertiary); padding:1rem; border-left:3px solid var(--accent); border-radius: 0 8px 8px 0; margin-bottom:1rem; line-height: 1.6; white-space: pre-line;"></p>
         <div class="share-grid">
             <a id="share-wa" class="share-btn whatsapp" target="_blank">💬 WhatsApp</a>
             <a id="share-ig" class="share-btn instagram" target="_blank">📸 Instagram</a>
@@ -649,10 +691,8 @@
         currentChapterNum: null
     };
 
-    // ===== VERSÕES DISPONÍVEIS (BC = Bíblia Católica) =====
     const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'BC': 'bc' };
 
-    // ===== LIVROS DEUTEROCANÔNICOS (aparecem no Navegar só na versão BC) =====
     const DEUTEROCANONICOS = ['tobias','judite','sabedoria','eclesiastico','siracida','baruc','1macabeus','2macabeus','3macabeus','4macabeus'];
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -674,8 +714,6 @@
             if (document.visibilityState === 'visible') requestWakeLock();
         });
         document.addEventListener('touchend', () => requestWakeLock(), { passive: true });
-        document.addEventListener('mouseup', checkSelection);
-        document.addEventListener('touchend', checkSelection);
     });
 
     // ===== TELA SEMPRE ATIVA (WAKE LOCK) =====
@@ -815,9 +853,6 @@
 
     // =====================================================
     // ===== NORMALIZADOR UNIVERSAL DE JSON BÍBLICO =====
-    // Aceita os DOIS formatos dos seus JSONs:
-    //  1) ARC/ACF/NVI/AA: { id, name, chapters: [ ["versículo", ...], ... ] }
-    //  2) BC (Católica):  { livro, capitulos: [ { capitulo, versiculos: [{numero, texto}] } ] }
     // =====================================================
     function normalizeBibleData(raw) {
         const chapterToVerses = (ch) => {
@@ -978,8 +1013,105 @@
         });
     }
 
+    // =====================================================
+    // ===== SELEÇÃO POR PRESSIONAR 3s + COMPARTILHAR =====
+    // =====================================================
+    const APP_LINK = 'https://evicom.github.io/biblia-evilasio/';
+    const LONG_PRESS_MS = 3000;
+    let selectionMode = false;
+    let selectedVerses = new Set();
+    let pressTimer = null;
+    let suppressClick = false;
+
+    function shareHeader() {
+        return `📖 BÍBLIA EVILASIO\n✍️ Criado por José Evilasio Marques\n📲 Baixe o app: ${APP_LINK}\n━━━━━━━━━━━━━━\n\n`;
+    }
+
+    function shareFooter() {
+        return `\n\n━━━━━━━━━━━━━━\nVersão: ${state.version.toUpperCase()}`;
+    }
+
+    function startPress(el, index) {
+        if (selectionMode) return;
+        clearTimeout(pressTimer);
+        el.classList.add('versiculo-pressionando');
+        pressTimer = setTimeout(() => {
+            el.classList.remove('versiculo-pressionando');
+            suppressClick = true;
+            if (navigator.vibrate) navigator.vibrate(60);
+            enterSelectionMode(index, el);
+        }, LONG_PRESS_MS);
+    }
+
+    function endPress(el) {
+        clearTimeout(pressTimer);
+        if (el) el.classList.remove('versiculo-pressionando');
+    }
+
+    function enterSelectionMode(index, el) {
+        selectionMode = true;
+        selectedVerses.clear();
+        document.querySelectorAll('.versiculo').forEach(v => v.classList.remove('versiculo-selecionado'));
+        selectedVerses.add(index);
+        el.classList.add('versiculo-selecionado');
+        updateSelectionBar();
+        document.getElementById('selection-bar').classList.add('visible');
+    }
+
+    function toggleVerse(index, el) {
+        if (selectedVerses.has(index)) selectedVerses.delete(index);
+        else selectedVerses.add(index);
+        el.classList.toggle('versiculo-selecionado', selectedVerses.has(index));
+        if (selectedVerses.size === 0) { exitSelectionMode(); return; }
+        updateSelectionBar();
+    }
+
+    function updateSelectionBar() {
+        document.getElementById('selection-count').textContent =
+            selectedVerses.size === 1 ? '1 versículo selecionado' : `${selectedVerses.size} versículos selecionados`;
+    }
+
+    function exitSelectionMode() {
+        selectionMode = false;
+        selectedVerses.clear();
+        document.querySelectorAll('.versiculo').forEach(v => v.classList.remove('versiculo-selecionado', 'versiculo-pressionando'));
+        document.getElementById('selection-bar').classList.remove('visible');
+    }
+
+    function shareSelected() {
+        const book = state.data[state.bookIndex];
+        const chapter = book.chapters[state.chapterIndex];
+        const idxs = [...selectedVerses].sort((a, b) => a - b);
+
+        // Agrupa versículos consecutivos (ex: 3-5)
+        const groups = [];
+        idxs.forEach(i => {
+            const last = groups[groups.length - 1];
+            if (last && i === last.end + 1) last.end = i;
+            else groups.push({ start: i, end: i });
+        });
+
+        const blocks = groups.map(g => {
+            const texts = [];
+            for (let i = g.start; i <= g.end; i++) texts.push(chapter[i]);
+            const ref = g.start === g.end
+                ? `${book.name} ${state.chapterIndex + 1}:${g.start + 1}`
+                : `${book.name} ${state.chapterIndex + 1}:${g.start + 1}-${g.end + 1}`;
+            return `"${texts.join(' ')}"\n${ref}`;
+        });
+
+        const fullText = shareHeader() + blocks.join('\n\n') + shareFooter();
+        setShareLinks(fullText);
+        openModal('modal-share');
+        exitSelectionMode();
+    }
+
+    // =====================================================
+    // ===== RENDERIZAÇÃO DO CAPÍTULO =====
+    // =====================================================
     function renderChapter() {
         if (tts.speaking) stopSpeech();
+        exitSelectionMode();
 
         const book = state.data[state.bookIndex];
         const chapter = book.chapters[state.chapterIndex];
@@ -996,7 +1128,22 @@
             const p = document.createElement('p');
             p.className = 'versiculo';
             p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${verseText.replace(/'/g, "\\'")}')">${verseNum}</sup> ${processedText}`;
-            p.onclick = () => openNoteModal(ref, verseText);
+
+            // Pressionar 3s (toque ou mouse) → modo seleção
+            p.addEventListener('touchstart', () => startPress(p, index), { passive: true });
+            p.addEventListener('touchend', () => endPress(p));
+            p.addEventListener('touchmove', () => endPress(p));
+            p.addEventListener('mousedown', () => startPress(p, index));
+            p.addEventListener('mouseup', () => endPress(p));
+            p.addEventListener('mouseleave', () => endPress(p));
+            p.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            p.onclick = () => {
+                if (suppressClick) { suppressClick = false; return; }
+                if (selectionMode) toggleVerse(index, p);
+                else openNoteModal(ref, verseText);
+            };
+
             reader.appendChild(p);
         });
 
@@ -1044,7 +1191,7 @@
             if (idx >= ntStart) {
                 ntBooks.push(entry);
             } else if (state.version === 'bc' && DEUTEROCANONICOS.includes(normalizeText(book.name).replace(/\s+/g, ''))) {
-                deutBooks.push(entry); // grupo extra só na Bíblia Católica
+                deutBooks.push(entry);
             } else {
                 otBooks.push(entry);
             }
@@ -1075,7 +1222,7 @@
     }
 
     // =====================================================
-    // ===== 🔑 CHAVE BÍBLICA (inclui livros católicos) =====
+    // ===== 🔑 CHAVE BÍBLICA =====
     // =====================================================
     const ABREV = {
         'gn':'genesis','ge':'genesis','ex':'exodo','lv':'levitico','nm':'numeros','nu':'numeros','dt':'deuteronomio',
@@ -1268,17 +1415,17 @@
     }
 
     // =====================================================
-    // ===== COMPARTILHAMENTO =====
+    // ===== COMPARTILHAMENTO (COM CABEÇALHO DO APP) =====
     // =====================================================
     function openShareModal(ref, text) {
-        const fullText = `"${text}"\n\n${ref} — Bíblia Evilasio`;
+        const fullText = shareHeader() + `"${text}"\n${ref}` + shareFooter();
         setShareLinks(fullText);
         openModal('modal-share');
     }
 
     function setShareLinks(fullText) {
         const encodedText = encodeURIComponent(fullText);
-        const url = encodeURIComponent(window.location.href);
+        const url = encodeURIComponent(APP_LINK);
         document.getElementById('share-text').textContent = fullText;
         document.getElementById('share-wa').href = `https://wa.me/?text=${encodedText}`;
         document.getElementById('share-ig').href = `https://www.instagram.com/`;
@@ -1295,43 +1442,6 @@
             btn.textContent = '✅ Copiado!';
             setTimeout(() => btn.textContent = originalText, 2000);
         }).catch(err => console.error('Erro ao copiar:', err));
-    }
-
-    function checkSelection() {
-        const selection = window.getSelection();
-        const selectedText = selection.toString().trim();
-        const btn = document.getElementById('share-selection-btn');
-        
-        if (selectedText.length > 0) {
-            btn.style.display = 'block';
-            btn.dataset.selectedText = selectedText;
-        } else {
-            btn.style.display = 'none';
-        }
-    }
-
-    function shareSelection() {
-        const selectedText = document.getElementById('share-selection-btn').dataset.selectedText;
-        if (!selectedText) return;
-        
-        const selection = window.getSelection();
-        let ref = 'Bíblia Evilasio';
-        
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            let node = range.startContainer;
-            while (node && !node.classList?.contains('versiculo')) node = node.parentNode;
-            
-            if (node) {
-                const book = state.data[state.bookIndex];
-                const verseIndex = Array.from(node.parentNode.children).filter(c => c.classList.contains('versiculo')).indexOf(node);
-                if (verseIndex !== -1) ref = `${book.name} ${state.chapterIndex + 1}:${verseIndex + 1}`;
-            }
-        }
-        
-        setShareLinks(`"${selectedText}"\n\n${ref}`);
-        openModal('modal-share');
-        document.getElementById('share-selection-btn').style.display = 'none';
     }
 
     // =====================================================
