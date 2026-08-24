@@ -26,8 +26,8 @@
             --accent-hover: #fbbf24;
             --border: #333333;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            --jesus-color: #ef4444;
-            --god-color: #60a5fa;
+            --jesus-color: #a3e635; /* VERDE LIMÃO */
+            --god-color: #60a5fa;   /* AZUL */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -207,6 +207,7 @@
         }
         .num-verso:hover { text-decoration: underline; }
 
+        /* Palavras de Jesus (VERDE LIMÃO) e de Deus (AZUL) */
         .palavras-jesus { color: var(--jesus-color); font-style: italic; }
         .palavras-deus { color: var(--god-color); font-style: italic; }
 
@@ -306,6 +307,7 @@
             padding-bottom: 0.8rem; 
         }
         .modal-header h3 { color: var(--accent); }
+        #sync-status { font-size: 1rem; margin-left: 0.4rem; cursor: help; }
         .close { 
             font-size: 1.8rem; 
             cursor: pointer; 
@@ -342,6 +344,19 @@
             transition: 0.2s;
         }
         .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 0.7rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.2s;
+            margin-top: 0.5rem;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
         .search-result { 
             padding: 0.8rem; 
@@ -410,7 +425,7 @@
     <div class="toolbar">
         <button class="icon-btn" title="Navegar" onclick="openModal('modal-nav')">📖</button>
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
-        <button class="icon-btn" title="Anotações" onclick="openModal('modal-notes')">📝</button>
+        <button class="icon-btn" title="Anotações (sincronizadas na nuvem)" onclick="openModal('modal-notes')">📝</button>
         <button class="icon-btn" id="tts-btn" title="Ouvir capítulo em voz alta" onclick="toggleSpeech()">🔊</button>
         <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
         
@@ -447,7 +462,7 @@
 </div>
 
 <footer>
-    Bíblia Sagrada v3.1 · © 2025
+    Bíblia Sagrada v3.2 · © 2025
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -477,16 +492,17 @@
     </div>
 </div>
 
-<!-- MODAL ANOTAÇÕES -->
+<!-- MODAL ANOTAÇÕES (COM SYNC NA NUVEM) -->
 <div id="modal-notes" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>📝 Anotações</h3>
+            <h3>📝 Anotações <span id="sync-status" title="Status da sincronização"></span></h3>
             <span class="close" onclick="closeModal('modal-notes')">&times;</span>
         </div>
         <p id="note-reference" style="font-weight:bold; color:var(--accent); margin-bottom:0.5rem;"></p>
         <textarea id="note-text" placeholder="Escreva sua anotação aqui..." rows="4"></textarea>
         <button class="btn-primary" onclick="saveNote()">💾 Salvar Anotação</button>
+        <button class="btn-secondary" onclick="manualSync()">🔄 Sincronizar com a nuvem agora</button>
         <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
             <h4 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Anotações Salvas:</h4>
             <div id="saved-notes-list" style="max-height:200px; overflow-y:auto;"></div>
@@ -556,6 +572,7 @@
         renderVersionButtons();
         loadVersion('ARC');
         initVoices();
+        cloudLoad(); // baixa anotações da nuvem ao abrir
         document.addEventListener('mouseup', checkSelection);
         document.addEventListener('touchend', checkSelection);
     });
@@ -595,6 +612,95 @@
         }
     }
 
+    // =====================================================
+    // ===== SINCRONIZAÇÃO NA NUVEM (JSONBIN) =====
+    // =====================================================
+    const JSONBIN_BIN_ID = '6a8ba1f2da38895dfe0893cb';
+    const JSONBIN_MASTER_KEY = '$2a$10$7RKspIivKIrNbrHnp8LdA.182ZJr7cYRlN72x.fon.97gr8P/hdXG';
+    const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+    let syncTimer = null;
+
+    function setSyncStatus(status) {
+        const el = document.getElementById('sync-status');
+        if (!el) return;
+        const map = {
+            'syncing': ['☁️⏳', 'Sincronizando com a nuvem...'],
+            'ok':      ['☁️✅', 'Anotações sincronizadas na nuvem'],
+            'error':   ['☁️❌', 'Falha na sincronização — salvo apenas neste aparelho'],
+            'local':   ['📱', 'Salvo apenas neste aparelho']
+        };
+        const [icon, title] = map[status] || map['local'];
+        el.textContent = icon;
+        el.title = title;
+    }
+
+    async function cloudLoad() {
+        try {
+            const res = await fetch(`${JSONBIN_URL}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_MASTER_KEY }
+            });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const json = await res.json();
+            const record = json.record || {};
+            const rawCloud = (record.notes && typeof record.notes === 'object') ? record.notes : record;
+
+            // aceita apenas pares referência → texto
+            const cloudNotes = {};
+            for (const [k, v] of Object.entries(rawCloud)) {
+                if (typeof v === 'string') cloudNotes[k] = v;
+            }
+
+            // mescla: anotações deste aparelho têm prioridade em conflitos
+            state.notes = { ...cloudNotes, ...state.notes };
+            localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
+            setSyncStatus('ok');
+            return true;
+        } catch (e) {
+            console.warn('Nuvem (JSONBin) indisponível. Usando anotações locais.', e);
+            setSyncStatus('error');
+            return false;
+        }
+    }
+
+    async function cloudSave() {
+        try {
+            const res = await fetch(JSONBIN_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_MASTER_KEY
+                },
+                body: JSON.stringify({
+                    notes: state.notes,
+                    atualizadoEm: new Date().toISOString()
+                })
+            });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            setSyncStatus('ok');
+            return true;
+        } catch (e) {
+            console.error('Erro ao salvar na nuvem (JSONBin):', e);
+            setSyncStatus('error');
+            return false;
+        }
+    }
+
+    function scheduleCloudSync() {
+        setSyncStatus('syncing');
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(cloudSave, 1500); // espera 1,5s para não enviar a cada tecla
+    }
+
+    async function manualSync() {
+        setSyncStatus('syncing');
+        await cloudLoad();
+        await cloudSave();
+        renderSavedNotes();
+    }
+
+    // =====================================================
+    // ===== BÍBLIA: CARREGAMENTO E LEITURA =====
+    // =====================================================
     function renderVersionButtons() {
         const container = document.getElementById('version-buttons');
         container.innerHTML = '';
@@ -684,7 +790,7 @@
     }
 
     function renderChapter() {
-        if (tts.speaking) stopSpeech(); // para a leitura ao trocar de capítulo
+        if (tts.speaking) stopSpeech();
 
         const book = state.data[state.bookIndex];
         const chapter = book.chapters[state.chapterIndex];
@@ -805,6 +911,9 @@
         renderChapter();
     }
 
+    // =====================================================
+    // ===== ANOTAÇÕES (LOCAL + NUVEM) =====
+    // =====================================================
     let currentNoteRef = '';
 
     function openNoteModal(ref, text) {
@@ -824,7 +933,9 @@
         const originalText = btn.textContent;
         btn.textContent = '✅ Salvo!';
         setTimeout(() => btn.textContent = originalText, 1500);
+        
         renderSavedNotes();
+        scheduleCloudSync(); // envia para o JSONBin
     }
 
     function renderSavedNotes() {
@@ -842,6 +953,9 @@
         `).join('');
     }
 
+    // =====================================================
+    // ===== COMPARTILHAMENTO =====
+    // =====================================================
     function openShareModal(ref, text) {
         const fullText = `"${text}"\n\n${ref} — Bíblia Sagrada`;
         setShareLinks(fullText);
@@ -907,7 +1021,7 @@
     }
 
     // =====================================================
-    // ===== LEITURA EM VOZ ALTA (TTS - Web Speech API) =====
+    // ===== LEITURA EM VOZ ALTA (TTS) =====
     // =====================================================
     const tts = { speaking: false, paused: false, verseIndex: 0, rate: 1, voice: null, voices: [] };
 
