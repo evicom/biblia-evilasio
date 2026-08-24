@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Sagrada</title>
+    <title>Bíblia Evilasio</title>
 
     <!-- ===== PWA: MANIFEST E META TAGS ===== -->
     <link rel="manifest" href="manifest.json">
@@ -58,13 +58,16 @@
             flex-wrap: wrap;
         }
 
+        /* Versões + zoom de fonte na MESMA linha (mobile e desktop) */
         .version-tabs { 
             display: flex; 
             justify-content: center; 
+            align-items: center;
             gap: 0.5rem; 
             padding: 0.6rem 1rem;
             flex-wrap: wrap;
         }
+        #version-buttons { display: contents; }
 
         .icon-btn { 
             background: var(--bg-tertiary); 
@@ -193,20 +196,23 @@
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
 
-        /* BARRA LATERAL DOURADA = versículo com anotação */
         .versiculo-com-nota { 
             border-left: 3px solid var(--accent); 
             background: rgba(212, 175, 55, 0.06); 
             padding-left: 0.7rem; 
         }
 
-        /* Destaque do versículo sendo lido em voz alta (azul) */
         .versiculo-ativo { 
             background: rgba(96, 165, 250, 0.12) !important; 
             border-left: 3px solid var(--god-color); 
         }
 
-        /* NAVEGAÇÃO NO FIM DO CAPÍTULO */
+        /* Destaque temporário da Chave Bíblica */
+        .versiculo-destaque { 
+            background: rgba(163, 230, 53, 0.18) !important; 
+            border-left: 3px solid var(--jesus-color); 
+        }
+
         .bottom-nav {
             display: flex;
             justify-content: space-between;
@@ -228,7 +234,6 @@
         }
         .num-verso:hover { text-decoration: underline; }
 
-        /* Palavras de Jesus (VERDE LIMÃO) e de Deus (AZUL) */
         .palavras-jesus { color: var(--jesus-color); font-style: italic; }
         .palavras-deus { color: var(--god-color); font-style: italic; }
 
@@ -354,6 +359,12 @@
             outline: none;
             border-color: var(--accent);
         }
+        select optgroup { 
+            color: var(--accent); 
+            font-weight: 700; 
+            background: var(--bg-secondary);
+        }
+        select option { color: var(--text-primary); background: var(--bg-secondary); }
         #note-text { min-height: 220px; resize: vertical; line-height: 1.6; }
 
         .note-ref-badge {
@@ -370,6 +381,20 @@
 
         .notes-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 0.6rem; }
         .notes-hint { font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 0.8rem; }
+
+        /* Atalhos da Chave Bíblica */
+        .key-quick { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
+        .key-quick button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.3rem 0.7rem;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+        .key-quick button:hover { border-color: var(--accent); color: var(--accent); }
 
         .btn-primary {
             background: var(--accent);
@@ -455,18 +480,21 @@
     <div class="toolbar">
         <button class="icon-btn" title="Navegar" onclick="openModal('modal-nav')">📖</button>
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
+        <button class="icon-btn" title="Chave Bíblica (ir para referência)" onclick="openModal('modal-key')">🔑</button>
         <button class="icon-btn" title="Anotações (sincronizadas na nuvem)" onclick="openModal('modal-notes')">📝</button>
         <button class="icon-btn" id="tts-btn" title="Ouvir capítulo em voz alta" onclick="toggleSpeech()">🔊</button>
         <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
-        
+    </div>
+
+    <!-- Versões + zoom de fonte juntos (lado a lado no mobile) -->
+    <div class="version-tabs">
+        <div id="version-buttons"></div>
         <div class="font-controls">
             <button class="font-btn" onclick="changeFontSize(-10)" title="Diminuir fonte">−</button>
             <span id="font-size-display" class="font-display">110%</span>
             <button class="font-btn" onclick="changeFontSize(10)" title="Aumentar fonte">+</button>
         </div>
     </div>
-
-    <div class="version-tabs" id="version-buttons"></div>
 </header>
 
 <div class="nav-bar">
@@ -492,10 +520,10 @@
 </div>
 
 <footer>
-    Bíblia Sagrada evilasio v9 · © 2026
+    Bíblia evilasio v1 · © 2026
 </footer>
 
-<!-- MODAL NAVEGAÇÃO -->
+<!-- MODAL NAVEGAÇÃO (ANTIGO + NOVO TESTAMENTO) -->
 <div id="modal-nav" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -523,7 +551,37 @@
     </div>
 </div>
 
-<!-- MODAL ANOTAÇÕES (REORGANIZADO) -->
+<!-- MODAL CHAVE BÍBLICA -->
+<div id="modal-key" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🔑 Chave Bíblica</h3>
+            <span class="close" onclick="closeModal('modal-key')">&times;</span>
+        </div>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.8rem;">
+            Digite uma referência, ex.: <strong>Jo 3:16</strong> · <strong>sl 23</strong> · <strong>1 Co 13:4</strong> · <strong>Gênesis 1:1</strong>
+        </p>
+        <div style="display:flex; gap:0.5rem;">
+            <input type="text" id="key-input" placeholder="Ex.: Jo 3:16" style="margin-bottom:0;" autocomplete="off">
+            <button class="btn-primary" style="width:auto; padding:0 1.2rem;" onclick="goToReference()">🔑 Abrir</button>
+        </div>
+        <div id="key-feedback" style="margin-top:0.8rem; font-size:0.9rem; color:var(--text-secondary);"></div>
+        <div class="key-quick">
+            <button onclick="quickRef('Gn 1:1')">Gn 1:1</button>
+            <button onclick="quickRef('Sl 23')">Sl 23</button>
+            <button onclick="quickRef('Sl 91')">Sl 91</button>
+            <button onclick="quickRef('Is 53')">Is 53</button>
+            <button onclick="quickRef('Mt 5')">Mt 5</button>
+            <button onclick="quickRef('Jo 3:16')">Jo 3:16</button>
+            <button onclick="quickRef('Rm 8:28')">Rm 8:28</button>
+            <button onclick="quickRef('1 Co 13')">1 Co 13</button>
+            <button onclick="quickRef('Fp 4:13')">Fp 4:13</button>
+            <button onclick="quickRef('Ap 21')">Ap 21</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ANOTAÇÕES -->
 <div id="modal-notes" class="modal">
     <div class="modal-content modal-large">
         <div class="modal-header">
@@ -603,12 +661,15 @@
         loadVersion('ARC');
         initVoices();
         cloudLoad();
-        requestWakeLock(); // tela sempre ativa
+        requestWakeLock();
 
-        // Esconde o botão de instalar se o app já está instalado (rodando standalone)
         if (isAppInstalled()) {
             document.getElementById('install-btn').style.display = 'none';
         }
+
+        document.getElementById('key-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') goToReference();
+        });
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') requestWakeLock();
@@ -637,13 +698,13 @@
                window.navigator.standalone === true;
     }
 
-    // ===== PWA: SERVICE WORKER (OFFLINE) =====
+    // ===== PWA: SERVICE WORKER =====
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
                 .then(reg => {
                     console.log('✅ Service Worker registrado:', reg.scope);
-                    reg.update(); // força verificação de nova versão do SW
+                    reg.update();
                 })
                 .catch(err => console.error('❌ Erro ao registrar SW:', err));
         });
@@ -815,8 +876,6 @@
 
     // =====================================================
     // ===== DESTAQUE DAS FALAS (DEUS = AZUL / JESUS = VERDE LIMÃO) =====
-    // Método robusto: analisa QUEM FALA antes dos dois-pontos (:)
-    // Funciona com ou sem aspas, em todas as versões.
     // =====================================================
     function processVerseText(text) {
         const colonIndex = text.search(/[:：]/);
@@ -828,14 +887,10 @@
 
         const introLower = intro.toLowerCase();
 
-        // Precisa ter um verbo de fala na introdução
         const hasSpeechVerb = /(disse|disser|dizia|diz\b|dizer|dize\b|respondeu|respondendo|responde\b|falou|fala\b|falando|falar|perguntou|perguntando|exclamou|declarou|ordenou|mandou|dizendo)/.test(introLower);
         if (!hasSpeechVerb) return text;
 
-        // Jesus tem prioridade
         const isJesus = /jesus/.test(introLower);
-
-        // Se a fala é DIRIGIDA a Deus ("ao Senhor", "a Deus"), quem fala é outra pessoa
         const addressedToGod = /(ao senhor|a deus|ao seu deus|perante o senhor|diante do senhor)/.test(introLower);
         const isGod = !addressedToGod && /(deus|senhor|yahweh|jeová|todo-poderoso)/.test(introLower);
 
@@ -878,7 +933,6 @@
             reader.appendChild(p);
         });
 
-        // Botões de navegação NO FIM do capítulo
         const bottomNav = document.createElement('div');
         bottomNav.className = 'bottom-nav';
         bottomNav.innerHTML = `
@@ -909,11 +963,19 @@
         }
     }
 
+    // ===== NAVEGAÇÃO COM ANTIGO E NOVO TESTAMENTO =====
     function updateBookChapterSelectors() {
         const bookSelect = document.getElementById('select-book');
-        bookSelect.innerHTML = state.data.map((book, idx) => 
-            `<option value="${idx}" ${idx === state.bookIndex ? 'selected' : ''}>${book.name}</option>`
-        ).join('');
+        const otBooks = [];
+        const ntBooks = [];
+        state.data.forEach((book, idx) => {
+            const entry = `<option value="${idx}" ${idx === state.bookIndex ? 'selected' : ''}>${book.name}</option>`;
+            if (idx < 39) otBooks.push(entry);
+            else ntBooks.push(entry);
+        });
+        let html = `<optgroup label="📜 Antigo Testamento">${otBooks.join('')}</optgroup>`;
+        if (ntBooks.length) html += `<optgroup label="✝️ Novo Testamento">${ntBooks.join('')}</optgroup>`;
+        bookSelect.innerHTML = html;
         updateChapterSelect(false);
     }
 
@@ -932,6 +994,102 @@
         state.chapterIndex = parseInt(document.getElementById('select-chapter').value);
         renderChapter();
         closeModal('modal-nav');
+    }
+
+    // =====================================================
+    // ===== 🔑 CHAVE BÍBLICA (ir direto para a referência) =====
+    // =====================================================
+    const ABREV = {
+        'gn':'genesis','ge':'genesis','ex':'exodo','lv':'levitico','nm':'numeros','nu':'numeros','dt':'deuteronomio',
+        'js':'josue','jz':'juizes','rt':'rute','1sm':'1samuel','2sm':'2samuel','1rs':'1reis','2rs':'2reis',
+        '1cr':'1cronicas','2cr':'2cronicas','ed':'esdras','ne':'neemias','et':'ester','sl':'salmos','sa':'salmos',
+        'pv':'proverbios','pr':'proverbios','ec':'eclesiastes','ct':'cantares','cn':'cantares','is':'isaias',
+        'jr':'jeremias','lm':'lamentacoes','ez':'ezequiel','dn':'daniel','os':'oseias','jl':'joel','am':'amos',
+        'ob':'obadias','jn':'jonas','mq':'miqueias','na':'naum','hc':'habacuque','sf':'sofonias','ag':'ageu',
+        'zc':'zacarias','ml':'malaquias','mt':'mateus','mc':'marcos','lc':'lucas','at':'atos','rm':'romanos',
+        '1co':'1corintios','2co':'2corintios','gl':'galatas','ef':'efesios','fp':'filipenses','cl':'colossenses',
+        '1ts':'1tessalonicenses','2ts':'2tessalonicenses','1tm':'1timoteo','2tm':'2timoteo','tt':'tito',
+        'fm':'filemom','hb':'hebreus','tg':'tiago','1pe':'1pedro','2pe':'2pedro','1jo':'1joao','2jo':'2joao',
+        '3jo':'3joao','jd':'judas','ap':'apocalipse'
+    };
+
+    function normalizeText(s) {
+        return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    }
+
+    function findBookIndex(raw) {
+        const qAcc = (raw || '').toLowerCase().trim();
+        const q = normalizeText(raw);
+        const qCompact = q.replace(/\s+/g, '');
+        if (!q) return -1;
+
+        // 1) nome exato (com ou sem acento)
+        let i = state.data.findIndex(b => b.name.toLowerCase() === qAcc || normalizeText(b.name) === q);
+        if (i > -1) return i;
+
+        // 2) abreviações
+        if (ABREV[qCompact]) {
+            i = state.data.findIndex(b => normalizeText(b.name) === ABREV[qCompact]);
+            if (i > -1) return i;
+        }
+
+        // 3) nome começa com o que foi digitado (mín. 2 letras)
+        if (q.length >= 2) {
+            i = state.data.findIndex(b => normalizeText(b.name).startsWith(q));
+            if (i > -1) return i;
+        }
+
+        // 4) o que foi digitado começa com o nome (ex.: "joao 3")
+        i = state.data.findIndex(b => q.startsWith(normalizeText(b.name)));
+        return i;
+    }
+
+    function goToReference() {
+        const input = document.getElementById('key-input').value.trim();
+        const feedback = document.getElementById('key-feedback');
+        if (!input) {
+            feedback.innerHTML = 'Digite uma referência, ex.: <strong>Jo 3:16</strong>';
+            return;
+        }
+
+        let bookQuery = input, chapter = 1, verse = 0;
+        const m = input.match(/^(.*?)\s*(\d+)\s*(?:[:.,]\s*(\d+))?\s*$/);
+        if (m) {
+            bookQuery = (m[1] || '').trim();
+            chapter = parseInt(m[2], 10);
+            verse = m[3] ? parseInt(m[3], 10) : 0;
+        }
+
+        const bIdx = bookQuery ? findBookIndex(bookQuery) : -1;
+        if (bIdx === -1) {
+            feedback.innerHTML = '❌ Livro não encontrado. Tente: <strong>Jo 3:16</strong>, <strong>sl 23</strong>, <strong>1 Co 13</strong>...';
+            return;
+        }
+
+        const book = state.data[bIdx];
+        state.bookIndex = bIdx;
+        state.chapterIndex = Math.min(Math.max(chapter, 1), book.chapters.length) - 1;
+        updateBookChapterSelectors();
+        renderChapter();
+        closeModal('modal-key');
+        document.getElementById('key-input').value = '';
+        feedback.textContent = '';
+
+        if (verse > 0) {
+            setTimeout(() => {
+                const el = document.querySelectorAll('.versiculo')[verse - 1];
+                if (el) {
+                    el.classList.add('versiculo-destaque');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => el.classList.remove('versiculo-destaque'), 3000);
+                }
+            }, 200);
+        }
+    }
+
+    function quickRef(ref) {
+        document.getElementById('key-input').value = ref;
+        goToReference();
     }
 
     function changeFontSize(delta) {
@@ -1014,7 +1172,7 @@
         btn.textContent = '✅ Salvo!';
         
         updateNoteMarkers();
-        scheduleCloudSync(); // salva na nuvem automaticamente
+        scheduleCloudSync();
         
         setTimeout(() => {
             btn.textContent = originalText;
