@@ -1,11 +1,9 @@
-// Service Worker - Bíblia Sagrada (José Evilasio Marques)
-// Estratégia: cache-first para assets estáticos, com fallback offline.
-
-const CACHE_VERSION = 'v3';
+// Service Worker - Bíblia Sagrada
+// Estratégia: cache-first com atualização em segundo plano (stale-while-revalidate)
+const CACHE_VERSION = 'v4'; // ⬅️ aumente a versão a cada atualização para forçar novo cache
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
-// Lista de arquivos essenciais para o app funcionar 100% offline.
-// Ajuste os caminhos abaixo caso seus arquivos estejam em pastas diferentes.
+// Arquivos essenciais do app
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -19,16 +17,28 @@ const PRECACHE_ASSETS = [
   './icons/icon-512.png'
 ];
 
-// Instalação: faz o cache inicial dos arquivos essenciais
+// Bíblias em JSON (cacheadas na instalação para 100% offline)
+const BIBLE_JSONS = [
+  './pt-br/arc.json',
+  './pt-br/acf.json',
+  './pt-br/nvi.json',
+  './pt-br/aa.json',
+  './pt-br/kja.json'
+];
+
+// Instalação: cache inicial
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_ASSETS))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await cache.addAll(PRECACHE_ASSETS);
+      // allSettled: se um JSON falhar, não quebra a instalação
+      await Promise.allSettled(BIBLE_JSONS.map((url) => cache.add(url)));
+      return self.skipWaiting();
+    })
   );
 });
 
-// Ativação: remove caches antigos de versões anteriores
+// Ativação: remove caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -41,17 +51,14 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: estratégia "cache first, fallback to network"
-// e atualiza o cache em segundo plano (stale-while-revalidate)
+// Fetch: cache primeiro, atualiza em segundo plano
 self.addEventListener('fetch', (event) => {
-  // Apenas requisições GET
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const networkFetch = fetch(event.request)
         .then((networkResponse) => {
-          // Atualiza o cache com a versão mais recente
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
@@ -61,13 +68,12 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // Se offline e não há cache, tenta retornar a página principal
+          // Offline sem cache: retorna a página principal
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }
         });
 
-      // Retorna o cache imediatamente se existir, senão espera a rede
       return cachedResponse || networkFetch;
     })
   );
