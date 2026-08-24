@@ -15,7 +15,7 @@ App web progressivo (PWA) com a **Bíblia Sagrada completa em português**, incl
 | **ACF** | Almeida Corrigida Fiel |
 | **NVI** | Nova Versão Internacional |
 | **AA**  | Almeida Atualizada |
-| **BC**  | Bíblia Católica (com deuterocanônicos: Tobias, Judite, Sabedoria, Eclesiástico, Baruc e Macabeus) |
+| **CATOLICO**  | Bíblia Católica (com deuterocanônicos: Tobias, Judite, Sabedoria, Eclesiástico, Baruc e Macabeus) |
 
 Os textos ficam na pasta `pt-br/` em arquivos `.json` (um por versão), o que torna o app totalmente offline e fácil de ampliar com novos idiomas ou versões.
 
