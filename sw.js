@@ -1,9 +1,7 @@
-// Service Worker - Bíblia Sagrada
-// Estratégia: cache-first com atualização em segundo plano (stale-while-revalidate)
-const CACHE_VERSION = 'v1'; // ⬅️ aumente a versão a cada atualização para forçar novo cache
+// Service Worker - Bíblia Sagrada (José Evilasio Marques)
+const CACHE_VERSION = 'v1';
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
-// Arquivos essenciais do app
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -17,28 +15,24 @@ const PRECACHE_ASSETS = [
   './icons/icon-512.png'
 ];
 
-// Bíblias em JSON (cacheadas na instalação para 100% offline)
 const BIBLE_JSONS = [
   './pt-br/arc.json',
   './pt-br/acf.json',
   './pt-br/nvi.json',
   './pt-br/aa.json',
-  './pt-br/kja.json'
+  './pt-br/bc.json'
 ];
 
-// Instalação: cache inicial
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.addAll(PRECACHE_ASSETS);
-      // allSettled: se um JSON falhar, não quebra a instalação
       await Promise.allSettled(BIBLE_JSONS.map((url) => cache.add(url)));
       return self.skipWaiting();
     })
   );
 });
 
-// Ativação: remove caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -51,10 +45,24 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: cache primeiro, atualiza em segundo plano
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  // Navegações (HTML): REDE PRIMEIRO → sempre versão nova; cache só se offline
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((res) => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
+          return res;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  // Demais arquivos: cache primeiro, atualiza em segundo plano
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const networkFetch = fetch(event.request)
@@ -68,7 +76,6 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // Offline sem cache: retorna a página principal
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }
