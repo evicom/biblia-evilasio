@@ -462,7 +462,7 @@
 </div>
 
 <footer>
-    Bíblia Sagrada v3.2 · © 2025
+    Bíblia Sagrada v3.3 · © 2025
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -688,7 +688,7 @@
     function scheduleCloudSync() {
         setSyncStatus('syncing');
         clearTimeout(syncTimer);
-        syncTimer = setTimeout(cloudSave, 1500); // espera 1,5s para não enviar a cada tecla
+        syncTimer = setTimeout(cloudSave, 1500);
     }
 
     async function manualSync() {
@@ -758,34 +758,47 @@
         }
     }
 
+    // =====================================================
+    // ===== DESTAQUE DAS FALAS (DEUS = AZUL / JESUS = VERDE LIMÃO) =====
+    // Detecta quem fala MESMO SEM ASPAS (ex: "E disse Deus: Haja luz...")
+    // =====================================================
     function processVerseText(text) {
         let processed = text;
-        
+
+        // ===== FALAS DE JESUS → VERDE LIMÃO =====
         const jesusPatterns = [
-            /(?:disse|respondeu|falou|perguntou|exclamou|declarou)\s+(?:Jesus|ele)\s*[:：]\s*["""]([^""""]+)["""]/gi,
-            /(?:Jesus|ele)\s+(?:disse|respondeu|falou|perguntou|exclamou|declarou)\s*[:：]\s*["""]([^""""]+)["""]/gi
+            // "Disse-lhes Jesus:", "E disse Jesus:", "Respondeu Jesus:"
+            /((?:disse|respondeu|falou|perguntou|exclamou|declarou|dizia|diz)(?:\s+mais)?(?:[-\s]+lhes)?\s+(?:o Senhor Jesus|Jesus)(?:\s+(?:a|ao|aos|à|às|lhes)[^:：]*)?\s*[:：])([\s\S]+)$/i,
+            // "Jesus disse:", "Jesus lhes disse:", "Jesus respondeu:"
+            /((?:o Senhor Jesus|Jesus)\s+(?:lhes\s+)?(?:disse|respondeu|falou|perguntou|exclamou|declarou|dizia|diz)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i,
+            // "Respondendo Jesus, disse:"
+            /((?:respondendo|respondeu)\s+Jesus\s*,?\s*(?:disse|falou|dizia)\s*[:：])([\s\S]+)$/i
         ];
-        
+
+        // ===== FALAS DE DEUS → AZUL =====
         const godPatterns = [
-            /(?:disse|falou|ordenou|declarou)\s+(?:Deus|o Senhor|o SENHOR|Yahweh)\s*[:：]\s*["""]([^""""]+)["""]/gi,
-            /(?:Deus|o Senhor|o SENHOR)\s+(?:disse|falou|ordenou|declarou)\s*[:：]\s*["""]([^""""]+)["""]/gi
+            // "Disse Deus:", "Disse o SENHOR a Moisés:", "Falou mais o Senhor:"
+            /((?:disse|falou|ordenou|declarou|dizia|diz)(?:\s+mais)?\s+(?:o Senhor Deus|o SENHOR Deus|o Senhor|o SENHOR|Deus|Yahweh|o Todo-Poderoso)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i,
+            // "Deus disse:", "O Senhor falou a Moisés:"
+            /((?:o Senhor Deus|o SENHOR Deus|o Senhor|o SENHOR|Deus|Yahweh|o Todo-Poderoso)\s+(?:lhes\s+)?(?:disse|falou|ordenou|declarou|dizia|diz)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i
         ];
-        
-        jesusPatterns.forEach(pattern => {
-            processed = processed.replace(pattern, (match, quote) => {
-                return match.replace(quote, `<span class="palavras-jesus">${quote}</span>`);
-            });
-        });
-        
-        godPatterns.forEach(pattern => {
-            processed = processed.replace(pattern, (match, quote) => {
-                if (!match.includes('palavras-jesus')) {
-                    return match.replace(quote, `<span class="palavras-deus">${quote}</span>`);
-                }
-                return match;
-            });
-        });
-        
+
+        // Jesus tem prioridade (verde limão)
+        for (const p of jesusPatterns) {
+            if (p.test(processed)) {
+                return processed.replace(p, (m, intro, speech) =>
+                    `${intro}<span class="palavras-jesus">${speech}</span>`);
+            }
+        }
+
+        // Depois Deus (azul)
+        for (const p of godPatterns) {
+            if (p.test(processed)) {
+                return processed.replace(p, (m, intro, speech) =>
+                    `${intro}<span class="palavras-deus">${speech}</span>`);
+            }
+        }
+
         return processed;
     }
 
@@ -935,7 +948,7 @@
         setTimeout(() => btn.textContent = originalText, 1500);
         
         renderSavedNotes();
-        scheduleCloudSync(); // envia para o JSONBin
+        scheduleCloudSync(); // envia para o JSONBin com a nova chave
     }
 
     function renderSavedNotes() {
