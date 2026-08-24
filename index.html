@@ -192,10 +192,20 @@
             user-select: text;
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
-        .versiculo-ativo { 
-            background: rgba(212, 175, 55, 0.15) !important; 
+
+        /* BARRA LATERAL DOURADA = versículo com anotação 📝 */
+        .versiculo-com-nota { 
             border-left: 3px solid var(--accent); 
+            background: rgba(212, 175, 55, 0.06); 
+            padding-left: 0.7rem; 
         }
+
+        /* Destaque do versículo sendo lido em voz alta (azul) */
+        .versiculo-ativo { 
+            background: rgba(96, 165, 250, 0.12) !important; 
+            border-left: 3px solid var(--god-color); 
+        }
+
         .num-verso { 
             color: var(--accent); 
             font-weight: bold; 
@@ -462,18 +472,19 @@
 </div>
 
 <footer>
-    Bíblia Sagrada v3.3 · © 2025
+    Bíblia Sagrada v3.4 · © 2025
 </footer>
 
-<!-- MODAL NAVEGAÇÃO -->
+<!-- MODAL NAVEGAÇÃO (CORRIGIDO) -->
 <div id="modal-nav" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>📖 Navegar</h3>
             <span class="close" onclick="closeModal('modal-nav')">&times;</span>
         </div>
-        <select id="select-book" onchange="updateChapterSelect()"></select>
+        <select id="select-book" onchange="updateChapterSelect(true)"></select>
         <select id="select-chapter" onchange="goToChapter()"></select>
+        <button class="btn-primary" onclick="goToChapter()">📖 Ir para o capítulo</button>
     </div>
 </div>
 
@@ -572,7 +583,7 @@
         renderVersionButtons();
         loadVersion('ARC');
         initVoices();
-        cloudLoad(); // baixa anotações da nuvem ao abrir
+        cloudLoad();
         document.addEventListener('mouseup', checkSelection);
         document.addEventListener('touchend', checkSelection);
     });
@@ -644,16 +655,15 @@
             const record = json.record || {};
             const rawCloud = (record.notes && typeof record.notes === 'object') ? record.notes : record;
 
-            // aceita apenas pares referência → texto
             const cloudNotes = {};
             for (const [k, v] of Object.entries(rawCloud)) {
                 if (typeof v === 'string') cloudNotes[k] = v;
             }
 
-            // mescla: anotações deste aparelho têm prioridade em conflitos
             state.notes = { ...cloudNotes, ...state.notes };
             localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
             setSyncStatus('ok');
+            updateNoteMarkers();
             return true;
         } catch (e) {
             console.warn('Nuvem (JSONBin) indisponível. Usando anotações locais.', e);
@@ -696,6 +706,7 @@
         await cloudLoad();
         await cloudSave();
         renderSavedNotes();
+        updateNoteMarkers();
     }
 
     // =====================================================
@@ -760,30 +771,21 @@
 
     // =====================================================
     // ===== DESTAQUE DAS FALAS (DEUS = AZUL / JESUS = VERDE LIMÃO) =====
-    // Detecta quem fala MESMO SEM ASPAS (ex: "E disse Deus: Haja luz...")
     // =====================================================
     function processVerseText(text) {
         let processed = text;
 
-        // ===== FALAS DE JESUS → VERDE LIMÃO =====
         const jesusPatterns = [
-            // "Disse-lhes Jesus:", "E disse Jesus:", "Respondeu Jesus:"
             /((?:disse|respondeu|falou|perguntou|exclamou|declarou|dizia|diz)(?:\s+mais)?(?:[-\s]+lhes)?\s+(?:o Senhor Jesus|Jesus)(?:\s+(?:a|ao|aos|à|às|lhes)[^:：]*)?\s*[:：])([\s\S]+)$/i,
-            // "Jesus disse:", "Jesus lhes disse:", "Jesus respondeu:"
             /((?:o Senhor Jesus|Jesus)\s+(?:lhes\s+)?(?:disse|respondeu|falou|perguntou|exclamou|declarou|dizia|diz)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i,
-            // "Respondendo Jesus, disse:"
             /((?:respondendo|respondeu)\s+Jesus\s*,?\s*(?:disse|falou|dizia)\s*[:：])([\s\S]+)$/i
         ];
 
-        // ===== FALAS DE DEUS → AZUL =====
         const godPatterns = [
-            // "Disse Deus:", "Disse o SENHOR a Moisés:", "Falou mais o Senhor:"
             /((?:disse|falou|ordenou|declarou|dizia|diz)(?:\s+mais)?\s+(?:o Senhor Deus|o SENHOR Deus|o Senhor|o SENHOR|Deus|Yahweh|o Todo-Poderoso)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i,
-            // "Deus disse:", "O Senhor falou a Moisés:"
             /((?:o Senhor Deus|o SENHOR Deus|o Senhor|o SENHOR|Deus|Yahweh|o Todo-Poderoso)\s+(?:lhes\s+)?(?:disse|falou|ordenou|declarou|dizia|diz)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i
         ];
 
-        // Jesus tem prioridade (verde limão)
         for (const p of jesusPatterns) {
             if (p.test(processed)) {
                 return processed.replace(p, (m, intro, speech) =>
@@ -791,7 +793,6 @@
             }
         }
 
-        // Depois Deus (azul)
         for (const p of godPatterns) {
             if (p.test(processed)) {
                 return processed.replace(p, (m, intro, speech) =>
@@ -800,6 +801,20 @@
         }
 
         return processed;
+    }
+
+    // =====================================================
+    // ===== BARRA LATERAL NOS VERSÍCULOS COM ANOTAÇÃO =====
+    // =====================================================
+    function updateNoteMarkers() {
+        if (!state.data) return;
+        const book = state.data[state.bookIndex];
+        document.querySelectorAll('.versiculo').forEach((el, i) => {
+            const ref = `${book.name} ${state.chapterIndex + 1}:${i + 1}`;
+            const hasNote = !!state.notes[ref];
+            el.classList.toggle('versiculo-com-nota', hasNote);
+            if (hasNote) el.title = '📝 Possui anotação — toque para ver/editar';
+        });
     }
 
     function renderChapter() {
@@ -823,6 +838,8 @@
             p.onclick = () => openNoteModal(ref, verseText);
             reader.appendChild(p);
         });
+
+        updateNoteMarkers(); // aplica as barras douradas
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -845,24 +862,28 @@
         }
     }
 
+    // ===== NAVEGAÇÃO CORRIGIDA =====
     function updateBookChapterSelectors() {
         const bookSelect = document.getElementById('select-book');
         bookSelect.innerHTML = state.data.map((book, idx) => 
             `<option value="${idx}" ${idx === state.bookIndex ? 'selected' : ''}>${book.name}</option>`
         ).join('');
-        updateChapterSelect();
+        updateChapterSelect(false);
     }
 
-    function updateChapterSelect() {
+    function updateChapterSelect(resetChapter) {
         state.bookIndex = parseInt(document.getElementById('select-book').value);
         const book = state.data[state.bookIndex];
         const chapSelect = document.getElementById('select-chapter');
+        // Ao trocar de livro, volta para o Capítulo 1 (corrige o bug do "não entra")
+        const target = resetChapter ? 0 : Math.min(state.chapterIndex, book.chapters.length - 1);
         chapSelect.innerHTML = book.chapters.map((_, idx) => 
-            `<option value="${idx}" ${idx === state.chapterIndex ? 'selected' : ''}>Capítulo ${idx + 1}</option>`
+            `<option value="${idx}" ${idx === target ? 'selected' : ''}>Capítulo ${idx + 1}</option>`
         ).join('');
     }
 
     function goToChapter() {
+        state.bookIndex = parseInt(document.getElementById('select-book').value);
         state.chapterIndex = parseInt(document.getElementById('select-chapter').value);
         renderChapter();
         closeModal('modal-nav');
@@ -948,7 +969,8 @@
         setTimeout(() => btn.textContent = originalText, 1500);
         
         renderSavedNotes();
-        scheduleCloudSync(); // envia para o JSONBin com a nova chave
+        updateNoteMarkers(); // atualiza a barra dourada na hora
+        scheduleCloudSync();
     }
 
     function renderSavedNotes() {
