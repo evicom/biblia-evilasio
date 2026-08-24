@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Evilasio</title>
+    <title>Bíblia Sagrada</title>
 
     <!-- ===== PWA: MANIFEST E META TAGS ===== -->
     <link rel="manifest" href="manifest.json">
@@ -58,7 +58,6 @@
             flex-wrap: wrap;
         }
 
-        /* Versões + zoom de fonte na MESMA linha (mobile e desktop) */
         .version-tabs { 
             display: flex; 
             justify-content: center; 
@@ -207,7 +206,6 @@
             border-left: 3px solid var(--god-color); 
         }
 
-        /* Destaque temporário da Chave Bíblica */
         .versiculo-destaque { 
             background: rgba(163, 230, 53, 0.18) !important; 
             border-left: 3px solid var(--jesus-color); 
@@ -258,7 +256,6 @@
             box-shadow: 0 6px 16px rgba(212, 175, 55, 0.5);
         }
 
-        /* ===== PLAYER DE ÁUDIO (TTS) ===== */
         #player-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -382,7 +379,6 @@
         .notes-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 0.6rem; }
         .notes-hint { font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 0.8rem; }
 
-        /* Atalhos da Chave Bíblica */
         .key-quick { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
         .key-quick button {
             background: var(--bg-tertiary);
@@ -486,7 +482,6 @@
         <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
     </div>
 
-    <!-- Versões + zoom de fonte juntos (lado a lado no mobile) -->
     <div class="version-tabs">
         <div id="version-buttons"></div>
         <div class="font-controls">
@@ -508,7 +503,6 @@
 
 <button id="share-selection-btn" onclick="shareSelection()">📤 Compartilhar Seleção</button>
 
-<!-- PLAYER DE LEITURA EM VOZ ALTA -->
 <div id="player-bar">
     <span id="player-info">—</span>
     <button class="player-btn" id="player-play" onclick="toggleSpeech()" title="Pausar / Continuar">⏸</button>
@@ -520,10 +514,10 @@
 </div>
 
 <footer>
-    Bíblia evilasio v1 · © 2026
+    Bíblia Sagrada v1 · Criado por José Evilasio Marques · © 2026
 </footer>
 
-<!-- MODAL NAVEGAÇÃO (ANTIGO + NOVO TESTAMENTO) -->
+<!-- MODAL NAVEGAÇÃO -->
 <div id="modal-nav" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -559,7 +553,7 @@
             <span class="close" onclick="closeModal('modal-key')">&times;</span>
         </div>
         <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.8rem;">
-            Digite uma referência, ex.: <strong>Jo 3:16</strong> · <strong>sl 23</strong> · <strong>1 Co 13:4</strong> · <strong>Gênesis 1:1</strong>
+            Digite uma referência, ex.: <strong>Jo 3:16</strong> · <strong>sl 23</strong> · <strong>1 Co 13:4</strong> · <strong>Tb 4</strong> · <strong>Gênesis 1:1</strong>
         </p>
         <div style="display:flex; gap:0.5rem;">
             <input type="text" id="key-input" placeholder="Ex.: Jo 3:16" style="margin-bottom:0;" autocomplete="off">
@@ -571,6 +565,7 @@
             <button onclick="quickRef('Sl 23')">Sl 23</button>
             <button onclick="quickRef('Sl 91')">Sl 91</button>
             <button onclick="quickRef('Is 53')">Is 53</button>
+            <button onclick="quickRef('Tb 4')">Tb 4</button>
             <button onclick="quickRef('Mt 5')">Mt 5</button>
             <button onclick="quickRef('Jo 3:16')">Jo 3:16</button>
             <button onclick="quickRef('Rm 8:28')">Rm 8:28</button>
@@ -654,7 +649,8 @@
         currentChapterNum: null
     };
 
-    const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'KJA': 'kja' };
+    // ===== VERSÕES DISPONÍVEIS (KJA saiu, BC - Bíblia Católica entrou) =====
+    const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'BC': 'bc' };
 
     document.addEventListener('DOMContentLoaded', () => {
         renderVersionButtons();
@@ -692,7 +688,6 @@
         }
     }
 
-    // ===== PWA: DETECÇÃO DE APP INSTALADO =====
     function isAppInstalled() {
         return window.matchMedia('(display-mode: standalone)').matches ||
                window.navigator.standalone === true;
@@ -738,6 +733,7 @@
 
     // =====================================================
     // ===== SINCRONIZAÇÃO NA NUVEM (JSONBIN) =====
+    // ⚠️ AO COPIAR ESTE PROJETO: troque pelas SUAS chaves!
     // =====================================================
     const JSONBIN_BIN_ID = '6a8ba1f2da38895dfe0893cb';
     const JSONBIN_MASTER_KEY = '$2a$10$8Wm2Ixc0mRA38i0rNyecw.HFCnENmYPaEOnz6iIeon0uyxDxgzHAS';
@@ -748,7 +744,7 @@
         const el = document.getElementById('sync-status');
         if (!el) return;
         const map = {
-            'syncing': ['☁️⏳', 'Sincronizando com a nuvem...'],
+            'syncing': ['☁️', 'Sincronizando com a nuvem...'],
             'ok':      ['☁️✅', 'Anotações sincronizadas na nuvem'],
             'error':   ['☁️❌', 'Falha na sincronização — salvo apenas neste aparelho'],
             'local':   ['📱', 'Salvo apenas neste aparelho']
@@ -899,7 +895,6 @@
         return text;
     }
 
-    // ===== BARRA LATERAL NOS VERSÍCULOS COM ANOTAÇÃO =====
     function updateNoteMarkers() {
         if (!state.data) return;
         const book = state.data[state.bookIndex];
@@ -964,13 +959,17 @@
     }
 
     // ===== NAVEGAÇÃO COM ANTIGO E NOVO TESTAMENTO =====
+    // Detecta o NT pelo livro de MATEUS (funciona p/ 66 e 73 livros - Bíblia Católica)
     function updateBookChapterSelectors() {
         const bookSelect = document.getElementById('select-book');
+        let ntStart = state.data.findIndex(b => normalizeText(b.name).startsWith('mateus'));
+        if (ntStart === -1) ntStart = 39;
+
         const otBooks = [];
         const ntBooks = [];
         state.data.forEach((book, idx) => {
             const entry = `<option value="${idx}" ${idx === state.bookIndex ? 'selected' : ''}>${book.name}</option>`;
-            if (idx < 39) otBooks.push(entry);
+            if (idx < ntStart) otBooks.push(entry);
             else ntBooks.push(entry);
         });
         let html = `<optgroup label="📜 Antigo Testamento">${otBooks.join('')}</optgroup>`;
@@ -997,7 +996,7 @@
     }
 
     // =====================================================
-    // ===== 🔑 CHAVE BÍBLICA (ir direto para a referência) =====
+    // ===== 🔑 CHAVE BÍBLICA (inclui livros católicos) =====
     // =====================================================
     const ABREV = {
         'gn':'genesis','ge':'genesis','ex':'exodo','lv':'levitico','nm':'numeros','nu':'numeros','dt':'deuteronomio',
@@ -1006,7 +1005,11 @@
         'pv':'proverbios','pr':'proverbios','ec':'eclesiastes','ct':'cantares','cn':'cantares','is':'isaias',
         'jr':'jeremias','lm':'lamentacoes','ez':'ezequiel','dn':'daniel','os':'oseias','jl':'joel','am':'amos',
         'ob':'obadias','jn':'jonas','mq':'miqueias','na':'naum','hc':'habacuque','sf':'sofonias','ag':'ageu',
-        'zc':'zacarias','ml':'malaquias','mt':'mateus','mc':'marcos','lc':'lucas','at':'atos','rm':'romanos',
+        'zc':'zacarias','ml':'malaquias',
+        // Livros católicos (deuterocanônicos)
+        'tb':'tobias','tob':'tobias','jt':'judite','jdt':'judite','sb':'sabedoria','eclo':'eclesiastico',
+        'sir':'siracida','bar':'baruc','1mc':'1macabeus','2mc':'2macabeus','1mac':'1macabeus','2mac':'2macabeus',
+        'mt':'mateus','mc':'marcos','lc':'lucas','at':'atos','rm':'romanos',
         '1co':'1corintios','2co':'2corintios','gl':'galatas','ef':'efesios','fp':'filipenses','cl':'colossenses',
         '1ts':'1tessalonicenses','2ts':'2tessalonicenses','1tm':'1timoteo','2tm':'2timoteo','tt':'tito',
         'fm':'filemom','hb':'hebreus','tg':'tiago','1pe':'1pedro','2pe':'2pedro','1jo':'1joao','2jo':'2joao',
@@ -1023,23 +1026,19 @@
         const qCompact = q.replace(/\s+/g, '');
         if (!q) return -1;
 
-        // 1) nome exato (com ou sem acento)
         let i = state.data.findIndex(b => b.name.toLowerCase() === qAcc || normalizeText(b.name) === q);
         if (i > -1) return i;
 
-        // 2) abreviações
         if (ABREV[qCompact]) {
             i = state.data.findIndex(b => normalizeText(b.name) === ABREV[qCompact]);
             if (i > -1) return i;
         }
 
-        // 3) nome começa com o que foi digitado (mín. 2 letras)
         if (q.length >= 2) {
             i = state.data.findIndex(b => normalizeText(b.name).startsWith(q));
             if (i > -1) return i;
         }
 
-        // 4) o que foi digitado começa com o nome (ex.: "joao 3")
         i = state.data.findIndex(b => q.startsWith(normalizeText(b.name)));
         return i;
     }
@@ -1062,7 +1061,7 @@
 
         const bIdx = bookQuery ? findBookIndex(bookQuery) : -1;
         if (bIdx === -1) {
-            feedback.innerHTML = '❌ Livro não encontrado. Tente: <strong>Jo 3:16</strong>, <strong>sl 23</strong>, <strong>1 Co 13</strong>...';
+            feedback.innerHTML = '❌ Livro não encontrado. Tente: <strong>Jo 3:16</strong>, <strong>sl 23</strong>, <strong>Tb 4</strong>...';
             return;
         }
 
