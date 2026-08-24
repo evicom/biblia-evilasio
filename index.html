@@ -169,7 +169,7 @@
         #leitor-biblia { 
             max-width: 800px; 
             margin: 0 auto; 
-            padding: 2rem 1.5rem 6rem 1.5rem; 
+            padding: 2rem 1.5rem 4rem 1.5rem; 
             font-family: 'Georgia', 'Merriweather', serif; 
             font-size: 110%; 
             line-height: 1.8; 
@@ -193,7 +193,7 @@
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
 
-        /* BARRA LATERAL DOURADA = versículo com anotação 📝 */
+        /* BARRA LATERAL DOURADA = versículo com anotação */
         .versiculo-com-nota { 
             border-left: 3px solid var(--accent); 
             background: rgba(212, 175, 55, 0.06); 
@@ -205,6 +205,17 @@
             background: rgba(96, 165, 250, 0.12) !important; 
             border-left: 3px solid var(--god-color); 
         }
+
+        /* NAVEGAÇÃO NO FIM DO CAPÍTULO */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .bottom-nav .nav-btn { flex: 1; padding: 0.9rem; font-size: 1rem; }
 
         .num-verso { 
             color: var(--accent); 
@@ -303,11 +314,12 @@
             border-radius: 12px; 
             width: 90%; 
             max-width: 500px; 
-            max-height: 80vh; 
+            max-height: 85vh; 
             overflow-y: auto; 
             position: relative; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
+        .modal-large { max-width: 640px; }
         .modal-header { 
             display: flex; 
             justify-content: space-between; 
@@ -342,6 +354,23 @@
             outline: none;
             border-color: var(--accent);
         }
+        #note-text { min-height: 220px; resize: vertical; line-height: 1.6; }
+
+        .note-ref-badge {
+            display: inline-block;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .notes-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 0.6rem; }
+        .notes-hint { font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 0.8rem; }
+
         .btn-primary {
             background: var(--accent);
             color: var(--bg-primary);
@@ -364,9 +393,8 @@
             font-weight: 600;
             width: 100%;
             transition: 0.2s;
-            margin-top: 0.5rem;
         }
-        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-secondary:hover { border-color: #ef4444; color: #ef4444; }
 
         .search-result { 
             padding: 0.8rem; 
@@ -378,14 +406,6 @@
         .search-result:hover { background: var(--bg-tertiary); }
         .search-ref { font-weight: bold; color: var(--accent); font-size: 0.9rem; margin-bottom: 0.2rem; }
         .search-result mark { background: rgba(212, 175, 55, 0.3); color: var(--text-primary); padding: 0 2px; border-radius: 2px; }
-
-        .saved-note-item {
-            padding: 0.8rem;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .saved-note-item:hover { background: var(--bg-tertiary); }
 
         .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
         .share-btn { 
@@ -472,10 +492,10 @@
 </div>
 
 <footer>
-    Bíblia Sagrada Evicom v8 · © 2026
+    Bíblia Sagrada v3.5 · © 2025
 </footer>
 
-<!-- MODAL NAVEGAÇÃO (CORRIGIDO) -->
+<!-- MODAL NAVEGAÇÃO -->
 <div id="modal-nav" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -503,21 +523,20 @@
     </div>
 </div>
 
-<!-- MODAL ANOTAÇÕES (COM SYNC NA NUVEM) -->
+<!-- MODAL ANOTAÇÕES (REORGANIZADO) -->
 <div id="modal-notes" class="modal">
-    <div class="modal-content">
+    <div class="modal-content modal-large">
         <div class="modal-header">
             <h3>📝 Anotações <span id="sync-status" title="Status da sincronização"></span></h3>
             <span class="close" onclick="closeModal('modal-notes')">&times;</span>
         </div>
-        <p id="note-reference" style="font-weight:bold; color:var(--accent); margin-bottom:0.5rem;"></p>
-        <textarea id="note-text" placeholder="Escreva sua anotação aqui..." rows="4"></textarea>
-        <button class="btn-primary" onclick="saveNote()">💾 Salvar Anotação</button>
-        <button class="btn-secondary" onclick="manualSync()">🔄 Sincronizar com a nuvem agora</button>
-        <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-            <h4 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Anotações Salvas:</h4>
-            <div id="saved-notes-list" style="max-height:200px; overflow-y:auto;"></div>
+        <p id="note-reference" class="note-ref-badge">—</p>
+        <textarea id="note-text" placeholder="Escreva aqui a sua anotação, reflexão ou estudo deste versículo..."></textarea>
+        <div class="notes-actions">
+            <button class="btn-primary" onclick="saveNote()">💾 Salvar Anotação</button>
+            <button class="btn-secondary" onclick="deleteNote()">🗑️ Apagar</button>
         </div>
+        <p class="notes-hint">☁️ Ao salvar, sua anotação é guardada neste aparelho e na nuvem automaticamente.</p>
     </div>
 </div>
 
@@ -584,15 +603,48 @@
         loadVersion('ARC');
         initVoices();
         cloudLoad();
+        requestWakeLock(); // tela sempre ativa
+
+        // Esconde o botão de instalar se o app já está instalado (rodando standalone)
+        if (isAppInstalled()) {
+            document.getElementById('install-btn').style.display = 'none';
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') requestWakeLock();
+        });
+        document.addEventListener('touchend', () => requestWakeLock(), { passive: true });
         document.addEventListener('mouseup', checkSelection);
         document.addEventListener('touchend', checkSelection);
     });
+
+    // ===== TELA SEMPRE ATIVA (WAKE LOCK) =====
+    let wakeLock = null;
+    async function requestWakeLock() {
+        if (!('wakeLock' in navigator)) return;
+        if (wakeLock) return;
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => { wakeLock = null; });
+        } catch (err) {
+            wakeLock = null;
+        }
+    }
+
+    // ===== PWA: DETECÇÃO DE APP INSTALADO =====
+    function isAppInstalled() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.navigator.standalone === true;
+    }
 
     // ===== PWA: SERVICE WORKER (OFFLINE) =====
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('✅ Service Worker registrado:', reg.scope))
+                .then(reg => {
+                    console.log('✅ Service Worker registrado:', reg.scope);
+                    reg.update(); // força verificação de nova versão do SW
+                })
                 .catch(err => console.error('❌ Erro ao registrar SW:', err));
         });
     }
@@ -701,14 +753,6 @@
         syncTimer = setTimeout(cloudSave, 1500);
     }
 
-    async function manualSync() {
-        setSyncStatus('syncing');
-        await cloudLoad();
-        await cloudSave();
-        renderSavedNotes();
-        updateNoteMarkers();
-    }
-
     // =====================================================
     // ===== BÍBLIA: CARREGAMENTO E LEITURA =====
     // =====================================================
@@ -771,41 +815,36 @@
 
     // =====================================================
     // ===== DESTAQUE DAS FALAS (DEUS = AZUL / JESUS = VERDE LIMÃO) =====
+    // Método robusto: analisa QUEM FALA antes dos dois-pontos (:)
+    // Funciona com ou sem aspas, em todas as versões.
     // =====================================================
     function processVerseText(text) {
-        let processed = text;
+        const colonIndex = text.search(/[:：]/);
+        if (colonIndex === -1) return text;
 
-        const jesusPatterns = [
-            /((?:disse|respondeu|falou|perguntou|exclamou|declarou|dizia|diz)(?:\s+mais)?(?:[-\s]+lhes)?\s+(?:o Senhor Jesus|Jesus)(?:\s+(?:a|ao|aos|à|às|lhes)[^:：]*)?\s*[:：])([\s\S]+)$/i,
-            /((?:o Senhor Jesus|Jesus)\s+(?:lhes\s+)?(?:disse|respondeu|falou|perguntou|exclamou|declarou|dizia|diz)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i,
-            /((?:respondendo|respondeu)\s+Jesus\s*,?\s*(?:disse|falou|dizia)\s*[:：])([\s\S]+)$/i
-        ];
+        const intro = text.slice(0, colonIndex + 1);
+        const speech = text.slice(colonIndex + 1);
+        if (!speech.trim()) return text;
 
-        const godPatterns = [
-            /((?:disse|falou|ordenou|declarou|dizia|diz)(?:\s+mais)?\s+(?:o Senhor Deus|o SENHOR Deus|o Senhor|o SENHOR|Deus|Yahweh|o Todo-Poderoso)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i,
-            /((?:o Senhor Deus|o SENHOR Deus|o Senhor|o SENHOR|Deus|Yahweh|o Todo-Poderoso)\s+(?:lhes\s+)?(?:disse|falou|ordenou|declarou|dizia|diz)(?:\s+(?:a|ao|aos|à|às)[^:：]*)?\s*[:：])([\s\S]+)$/i
-        ];
+        const introLower = intro.toLowerCase();
 
-        for (const p of jesusPatterns) {
-            if (p.test(processed)) {
-                return processed.replace(p, (m, intro, speech) =>
-                    `${intro}<span class="palavras-jesus">${speech}</span>`);
-            }
-        }
+        // Precisa ter um verbo de fala na introdução
+        const hasSpeechVerb = /(disse|disser|dizia|diz\b|dizer|dize\b|respondeu|respondendo|responde\b|falou|fala\b|falando|falar|perguntou|perguntando|exclamou|declarou|ordenou|mandou|dizendo)/.test(introLower);
+        if (!hasSpeechVerb) return text;
 
-        for (const p of godPatterns) {
-            if (p.test(processed)) {
-                return processed.replace(p, (m, intro, speech) =>
-                    `${intro}<span class="palavras-deus">${speech}</span>`);
-            }
-        }
+        // Jesus tem prioridade
+        const isJesus = /jesus/.test(introLower);
 
-        return processed;
+        // Se a fala é DIRIGIDA a Deus ("ao Senhor", "a Deus"), quem fala é outra pessoa
+        const addressedToGod = /(ao senhor|a deus|ao seu deus|perante o senhor|diante do senhor)/.test(introLower);
+        const isGod = !addressedToGod && /(deus|senhor|yahweh|jeová|todo-poderoso)/.test(introLower);
+
+        if (isJesus) return intro + '<span class="palavras-jesus">' + speech + '</span>';
+        if (isGod) return intro + '<span class="palavras-deus">' + speech + '</span>';
+        return text;
     }
 
-    // =====================================================
     // ===== BARRA LATERAL NOS VERSÍCULOS COM ANOTAÇÃO =====
-    // =====================================================
     function updateNoteMarkers() {
         if (!state.data) return;
         const book = state.data[state.bookIndex];
@@ -839,7 +878,15 @@
             reader.appendChild(p);
         });
 
-        updateNoteMarkers(); // aplica as barras douradas
+        // Botões de navegação NO FIM do capítulo
+        const bottomNav = document.createElement('div');
+        bottomNav.className = 'bottom-nav';
+        bottomNav.innerHTML = `
+            <button class="nav-btn" onclick="changeChapter(-1)">◀ Anterior</button>
+            <button class="nav-btn" onclick="changeChapter(1)">Próximo ▶</button>`;
+        reader.appendChild(bottomNav);
+
+        updateNoteMarkers();
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -862,7 +909,6 @@
         }
     }
 
-    // ===== NAVEGAÇÃO CORRIGIDA =====
     function updateBookChapterSelectors() {
         const bookSelect = document.getElementById('select-book');
         bookSelect.innerHTML = state.data.map((book, idx) => 
@@ -875,7 +921,6 @@
         state.bookIndex = parseInt(document.getElementById('select-book').value);
         const book = state.data[state.bookIndex];
         const chapSelect = document.getElementById('select-chapter');
-        // Ao trocar de livro, volta para o Capítulo 1 (corrige o bug do "não entra")
         const target = resetChapter ? 0 : Math.min(state.chapterIndex, book.chapters.length - 1);
         chapSelect.innerHTML = book.chapters.map((_, idx) => 
             `<option value="${idx}" ${idx === target ? 'selected' : ''}>Capítulo ${idx + 1}</option>`
@@ -895,7 +940,7 @@
         document.getElementById('font-size-display').textContent = `${state.fontSize}%`;
     }
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; if (id === 'modal-notes') renderSavedNotes(); }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     window.onclick = (event) => {
@@ -946,15 +991,16 @@
     }
 
     // =====================================================
-    // ===== ANOTAÇÕES (LOCAL + NUVEM) =====
+    // ===== ANOTAÇÕES (LOCAL + NUVEM AUTOMÁTICA) =====
     // =====================================================
     let currentNoteRef = '';
 
     function openNoteModal(ref, text) {
         currentNoteRef = ref;
-        document.getElementById('note-reference').textContent = ref;
+        document.getElementById('note-reference').textContent = '📍 ' + ref;
         document.getElementById('note-text').value = state.notes[ref] || '';
         openModal('modal-notes');
+        setTimeout(() => document.getElementById('note-text').focus(), 200);
     }
 
     function saveNote() {
@@ -966,26 +1012,24 @@
         const btn = document.querySelector('#modal-notes .btn-primary');
         const originalText = btn.textContent;
         btn.textContent = '✅ Salvo!';
-        setTimeout(() => btn.textContent = originalText, 1500);
         
-        renderSavedNotes();
-        updateNoteMarkers(); // atualiza a barra dourada na hora
-        scheduleCloudSync();
+        updateNoteMarkers();
+        scheduleCloudSync(); // salva na nuvem automaticamente
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            closeModal('modal-notes');
+        }, 900);
     }
 
-    function renderSavedNotes() {
-        const list = document.getElementById('saved-notes-list');
-        const refs = Object.keys(state.notes);
-        if (refs.length === 0) {
-            list.innerHTML = '<p style="color:var(--text-secondary); font-size:0.9rem; text-align:center;">Nenhuma anotação salva ainda.</p>';
-            return;
-        }
-        list.innerHTML = refs.map(ref => `
-            <div class="saved-note-item" onclick="document.getElementById('note-reference').textContent='${ref}'; document.getElementById('note-text').value=state.notes['${ref}']; currentNoteRef='${ref}';">
-                <div style="color:var(--accent); font-size:0.85rem; font-weight:600; margin-bottom:0.2rem;">${ref}</div>
-                <div style="font-size:0.9rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${state.notes[ref]}</div>
-            </div>
-        `).join('');
+    function deleteNote() {
+        if (!state.notes[currentNoteRef]) { closeModal('modal-notes'); return; }
+        delete state.notes[currentNoteRef];
+        localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
+        document.getElementById('note-text').value = '';
+        updateNoteMarkers();
+        scheduleCloudSync();
+        closeModal('modal-notes');
     }
 
     // =====================================================
