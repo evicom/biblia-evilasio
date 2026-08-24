@@ -1,6 +1,6 @@
 // Service Worker - Bíblia Sagrada
 // Estratégia: cache-first com atualização em segundo plano (stale-while-revalidate)
-const CACHE_VERSION = 'v5'; // ⬅️ aumente a versão a cada atualização para forçar novo cache
+const CACHE_VERSION = 'v7'; // ⬅️ aumente a versão a cada atualização para forçar novo cache
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
 // Arquivos essenciais do app
