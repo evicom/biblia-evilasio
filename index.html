@@ -168,6 +168,39 @@
             text-align: center;
         }
 
+        /* ===== BARRA "CONTINUAR LEITURA" ===== */
+        #continue-bar {
+            display: none;
+            max-width: 900px;
+            margin: 0.6rem auto 0 auto;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+        #continue-bar.visible { display: flex; }
+        #continue-ref {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.35rem 0.9rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        #continue-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
         #leitor-biblia { 
             max-width: 800px; 
             margin: 0 auto; 
@@ -233,6 +266,18 @@
             background: rgba(163, 230, 53, 0.18) !important; 
             border-left: 3px solid var(--jesus-color); 
         }
+
+        /* Estrelinha de favorito */
+        .fav-btn {
+            color: var(--text-secondary);
+            margin-left: 0.4rem;
+            cursor: pointer;
+            font-size: 0.8em;
+            vertical-align: super;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .fav-btn.fav-on { color: var(--accent); }
 
         .bottom-nav {
             display: flex;
@@ -458,6 +503,14 @@
         .search-ref { font-weight: bold; color: var(--accent); font-size: 0.9rem; margin-bottom: 0.2rem; }
         .search-result mark { background: rgba(212, 175, 55, 0.3); color: var(--text-primary); padding: 0 2px; border-radius: 2px; }
 
+        .saved-note-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .saved-note-item:hover { background: var(--bg-tertiary); }
+
         .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
         .share-btn { 
             padding: 0.7rem; 
@@ -478,6 +531,7 @@
         .facebook { background: #3b5998; }
         .twitter { background: #000000; border: 1px solid #333; }
         .copy { background: var(--bg-tertiary); color: var(--text-primary); grid-column: span 2; border: 1px solid var(--border); }
+        .imgbtn { background: linear-gradient(45deg, #d4af37, #fbbf24); color: var(--bg-primary); grid-column: span 2; }
 
         .install-step {
             background: var(--bg-tertiary);
@@ -508,6 +562,7 @@
         <button class="icon-btn" title="Navegar" onclick="openModal('modal-nav')">📖</button>
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
         <button class="icon-btn" title="Plano de Leitura" onclick="openPlano()">📅</button>
+        <button class="icon-btn" title="Versículos Favoritos" onclick="openModal('modal-favs')">⭐</button>
         <button class="icon-btn" id="tts-btn" title="Ouvir capítulo em voz alta" onclick="toggleSpeech()">🔊</button>
         <div class="font-controls">
             <button class="font-btn" onclick="changeFontSize(-10)" title="Diminuir fonte">−</button>
@@ -526,6 +581,13 @@
     <button class="nav-btn" onclick="changeChapter(-1)">◀ Anterior</button>
     <span id="current-reference">Gênesis 1</span>
     <button class="nav-btn" onclick="changeChapter(1)">Próximo ▶</button>
+</div>
+
+<!-- BARRA CONTINUAR LEITURA -->
+<div id="continue-bar">
+    <span>🔖 Continuar de onde parou:</span>
+    <button id="continue-ref" onclick="goContinue()">—</button>
+    <button id="continue-close" onclick="dismissContinue()" title="Dispensar">✖</button>
 </div>
 
 <div id="loading">Carregando Escrituras...</div>
@@ -550,7 +612,7 @@
 </div>
 
 <footer>
-    Bíblia Evilasio v1.1 · Criado por José Evilasio Marques · © 2026
+    Bíblia Evilasio v1.1 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -592,6 +654,17 @@
     </div>
 </div>
 
+<!-- MODAL FAVORITOS -->
+<div id="modal-favs" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>⭐ Versículos Favoritos</h3>
+            <span class="close" onclick="closeModal('modal-favs')">&times;</span>
+        </div>
+        <div id="favs-list"></div>
+    </div>
+</div>
+
 <!-- MODAL ANOTAÇÕES -->
 <div id="modal-notes" class="modal">
     <div class="modal-content modal-large">
@@ -624,11 +697,25 @@
             <a id="share-fb" class="share-btn facebook" target="_blank">f Facebook</a>
             <a id="share-tw" class="share-btn twitter" target="_blank">𝕏 Twitter/X</a>
             <button class="share-btn copy" onclick="copyToClipboard()">📋 Copiar Texto</button>
+            <button class="share-btn imgbtn" onclick="openVerseImage()">🖼️ Gerar Imagem p/ Instagram</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL INSTALAR APP (instruções por plataforma) -->
+<!-- MODAL IMAGEM DO VERSÍCULO -->
+<div id="modal-img" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🖼️ Imagem do Versículo</h3>
+            <span class="close" onclick="closeModal('modal-img')">&times;</span>
+        </div>
+        <img id="verse-img" style="width:100%; border-radius:8px; border:1px solid var(--border);" alt="Versículo">
+        <p class="notes-hint">📱 No celular: segure a imagem para salvar ou compartilhar. 💻 No PC: clique em Baixar.</p>
+        <a id="img-download" class="btn-primary" style="display:block; text-align:center; text-decoration:none;" download="biblia-evilasio.png">⬇️ Baixar Imagem</a>
+    </div>
+</div>
+
+<!-- MODAL INSTALAR APP -->
 <div id="modal-install" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -667,8 +754,10 @@
         fontSize: 110,
         data: null,
         notes: JSON.parse(localStorage.getItem('biblia_notas') || '{}'),
+        favs: JSON.parse(localStorage.getItem('biblia_favoritos') || '{}'),
         currentBookName: null,
-        currentChapterNum: null
+        currentChapterNum: null,
+        pendingJump: null
     };
 
     const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'BC': 'bc' };
@@ -681,6 +770,7 @@
         initVoices();
         cloudLoad();
         requestWakeLock();
+        checkContinue();
 
         if (isAppInstalled()) {
             document.getElementById('install-btn').style.display = 'none';
@@ -722,7 +812,7 @@
         });
     }
 
-    // ===== PWA: INSTALAÇÃO (por plataforma) =====
+    // ===== PWA: INSTALAÇÃO =====
     let deferredPrompt = null;
 
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -746,7 +836,6 @@
             alert('✅ O app já está instalado neste aparelho!');
             return;
         }
-        // Android/PC com suporte nativo: abre o prompt do sistema
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choice) => {
@@ -757,12 +846,72 @@
             });
             return;
         }
-        // iPhone e demais: mostra só o passo a passo da plataforma
         const plat = detectPlatform();
         document.querySelectorAll('.install-step').forEach(el => {
             el.style.display = (el.dataset.plat === plat) ? 'block' : 'none';
         });
         openModal('modal-install');
+    }
+
+    // =====================================================
+    // ===== 🔖 CONTINUAR LEITURA =====
+    // =====================================================
+    let pendingContinue = null;
+
+    function saveLastReading() {
+        const book = state.data[state.bookIndex];
+        localStorage.setItem('biblia_ultima_leitura', JSON.stringify({
+            version: state.version,
+            book: book.name,
+            chapter: state.chapterIndex + 1
+        }));
+    }
+
+    function checkContinue() {
+        const saved = JSON.parse(localStorage.getItem('biblia_ultima_leitura') || 'null');
+        if (!saved) return;
+        if (saved.version === 'arc' && saved.book === 'Gênesis' && saved.chapter === 1) return;
+        pendingContinue = saved;
+        document.getElementById('continue-ref').textContent = `${saved.book} ${saved.chapter}`;
+        document.getElementById('continue-bar').classList.add('visible');
+    }
+
+    function goContinue() {
+        const saved = pendingContinue;
+        document.getElementById('continue-bar').classList.remove('visible');
+        if (!saved || !state.data) return;
+        if (saved.version !== state.version) {
+            state.pendingJump = { book: saved.book, chapter: saved.chapter };
+            const label = Object.keys(versions).find(k => versions[k] === saved.version) || 'ARC';
+            loadVersion(label);
+        } else {
+            jumpToBookChapter(saved.book, saved.chapter);
+        }
+        pendingContinue = null;
+    }
+
+    function dismissContinue() {
+        pendingContinue = null;
+        document.getElementById('continue-bar').classList.remove('visible');
+    }
+
+    function jumpToBookChapter(bookName, chapter, verse) {
+        const bIdx = state.data.findIndex(b => b.name === bookName);
+        if (bIdx === -1) return;
+        state.bookIndex = bIdx;
+        state.chapterIndex = Math.min(Math.max(chapter, 1), state.data[bIdx].chapters.length) - 1;
+        updateBookChapterSelectors();
+        renderChapter();
+        if (verse) {
+            setTimeout(() => {
+                const el = document.querySelectorAll('.versiculo')[verse - 1];
+                if (el) {
+                    el.classList.add('versiculo-destaque');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => el.classList.remove('versiculo-destaque'), 3000);
+                }
+            }, 200);
+        }
     }
 
     // =====================================================
@@ -924,7 +1073,11 @@
     }
 
     async function loadVersion(versionLabel) {
-        if (state.data) {
+        if (state.pendingJump) {
+            state.currentBookName = state.pendingJump.book;
+            state.currentChapterNum = state.pendingJump.chapter;
+            state.pendingJump = null;
+        } else if (state.data) {
             state.currentBookName = state.data[state.bookIndex]?.name;
             state.currentChapterNum = state.chapterIndex + 1;
         }
@@ -1002,8 +1155,49 @@
             const ref = `${book.name} ${state.chapterIndex + 1}:${i + 1}`;
             const hasNote = !!state.notes[ref];
             el.classList.toggle('versiculo-com-nota', hasNote);
-            if (hasNote) el.title = '📝 Possui anotação — toque para ver/editar';
         });
+    }
+
+    function updateFavMarkers() {
+        document.querySelectorAll('.fav-btn').forEach(el => {
+            const on = !!state.favs[el.dataset.ref];
+            el.classList.toggle('fav-on', on);
+            el.textContent = on ? '★' : '☆';
+        });
+    }
+
+    // =====================================================
+    // ===== ⭐ FAVORITOS =====
+    // =====================================================
+    function toggleFav(ref, text) {
+        if (state.favs[ref]) delete state.favs[ref];
+        else state.favs[ref] = text;
+        localStorage.setItem('biblia_favoritos', JSON.stringify(state.favs));
+        updateFavMarkers();
+    }
+
+    function renderFavs() {
+        const list = document.getElementById('favs-list');
+        const refs = Object.keys(state.favs);
+        if (!refs.length) {
+            list.innerHTML = '<p style="color:var(--text-secondary); text-align:center; font-size:.9rem;">Nenhum favorito ainda.<br>Toque na ☆ ao lado do número do versículo para salvar. ⭐</p>';
+            return;
+        }
+        list.innerHTML = refs.map(ref => `
+            <div class="saved-note-item" style="display:flex; justify-content:space-between; gap:.6rem; align-items:center;">
+                <div style="flex:1;" onclick="openFav('${ref.replace(/'/g, "\\'")}')">
+                    <div style="color:var(--accent); font-weight:600; font-size:.85rem;">⭐ ${ref}</div>
+                    <div style="font-size:.85rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${state.favs[ref]}</div>
+                </div>
+                <button class="player-btn" title="Remover favorito" onclick="toggleFav('${ref.replace(/'/g, "\\'")}',''); renderFavs();">🗑</button>
+            </div>`).join('');
+    }
+
+    function openFav(ref) {
+        const m = ref.match(/^(.*)\s+(\d+):(\d+)$/);
+        if (!m) return;
+        closeModal('modal-favs');
+        jumpToBookChapter(m[1], parseInt(m[2], 10), parseInt(m[3], 10));
     }
 
     // =====================================================
@@ -1015,13 +1209,42 @@
     let selectedVerses = new Set();
     let pressTimer = null;
     let suppressClick = false;
+    let lastShareBlocks = [];
 
     function shareHeader() {
-        return `📖 BÍBLIA EVILASIO\n✍️ Criado por José Evilasio Marques\n📲 Baixe o app: ${APP_LINK}\n━━━━━━━━━━━━━━\n\n`;
+        return `📖 BÍBLIA EVILASIO\n✍️ Criado por José Evilasio Marques\n📲 Baixe o app: ${APP_LINK}\n💛 Ajude esse projeto: PIX 91980818289\n━━━━━━━━━━━━━━\n\n`;
     }
 
     function shareFooter() {
         return `\n\n━━━━━━━━━━━━━━\nVersão: ${state.version.toUpperCase()}`;
+    }
+
+    // Mensagens de reflexão (escolhida pelo versículo → sempre a mesma p/ cada ref)
+    const REFLEXOES = [
+        '🙏 Reflexão: Que esta Palavra ilumine o seu dia e fortaleça a sua fé.',
+        '🙏 Reflexão: Guarde esta promessa no coração e confie no tempo de Deus.',
+        '🙏 Reflexão: Deus fala conosco através da Sua Palavra — reserve um momento para meditar.',
+        '🙏 Reflexão: Antes de seguir em frente, feche os olhos e agradeça a Deus por esta mensagem.',
+        '🙏 Reflexão: "Lâmpada para os meus pés é tua palavra" (Sl 119:105).',
+        '🙏 Reflexão: Compartilhe esta mensagem — alguém precisa ouvir esta palavra hoje.',
+        '🙏 Reflexão: Descanse no Senhor: Ele cuida de cada detalhe da sua vida.',
+        '🙏 Reflexão: Fé é confiar no que Deus disse, mesmo quando ainda não vemos.',
+        '🙏 Reflexão: Deixe que este versículo transforme a sua maneira de pensar hoje.',
+        '🙏 Reflexão: O Senhor é fiel: o que Ele prometeu, Ele é poderoso para cumprir.'
+    ];
+
+    function pickReflexao(ref) {
+        let h = 0;
+        for (const ch of ref) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+        return REFLEXOES[h % REFLEXOES.length];
+    }
+
+    function buildShareText(blocks) {
+        const refsStr = blocks.map(b => b.ref).join('; ');
+        return shareHeader() +
+            blocks.map(b => `"${b.text}"\n${b.ref}`).join('\n\n') +
+            `\n\n${pickReflexao(refsStr)}` +
+            shareFooter();
     }
 
     function startPress(el, index) {
@@ -1089,13 +1312,90 @@
             const ref = g.start === g.end
                 ? `${book.name} ${state.chapterIndex + 1}:${g.start + 1}`
                 : `${book.name} ${state.chapterIndex + 1}:${g.start + 1}-${g.end + 1}`;
-            return `"${texts.join(' ')}"\n${ref}`;
+            return { text: texts.join(' '), ref };
         });
 
-        const fullText = shareHeader() + blocks.join('\n\n') + shareFooter();
-        setShareLinks(fullText);
+        lastShareBlocks = blocks;
+        setShareLinks(buildShareText(blocks));
         openModal('modal-share');
         exitSelectionMode();
+    }
+
+    // =====================================================
+    // ===== 🖼️ VERSÍCULO COMO IMAGEM =====
+    // =====================================================
+    function wrapText(ctx, text, maxWidth) {
+        const words = text.split(' ');
+        const lines = [];
+        let line = '';
+        for (const w of words) {
+            const test = line ? line + ' ' + w : w;
+            if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
+            else line = test;
+        }
+        if (line) lines.push(line);
+        return lines;
+    }
+
+    function generateVerseImage(text, ref) {
+        const W = 1080, H = 1350;
+        const canvas = document.createElement('canvas');
+        canvas.width = W; canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        const g = ctx.createLinearGradient(0, 0, 0, H);
+        g.addColorStop(0, '#101010');
+        g.addColorStop(1, '#1e1e1e');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.strokeStyle = '#d4af37';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(42, 42, W - 84, H - 84);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#d4af37';
+        ctx.font = 'bold 46px Georgia, serif';
+        ctx.fillText('BÍBLIA EVILASIO', W / 2, 140);
+        ctx.fillStyle = '#a0a0a0';
+        ctx.font = '30px Georgia, serif';
+        ctx.fillText('✦ ✦ ✦', W / 2, 190);
+
+        let size = 40;
+        let lines;
+        do {
+            ctx.font = `italic ${size}px Georgia, serif`;
+            lines = wrapText(ctx, `"${text}"`, W - 220);
+            if (lines.length * (size + 18) <= H - 640) break;
+            size -= 4;
+        } while (size > 24);
+
+        ctx.fillStyle = '#e0e0e0';
+        let y = H / 2 - (lines.length * (size + 18)) / 2 + 30;
+        lines.forEach(l => { ctx.fillText(l, W / 2, y); y += size + 18; });
+
+        ctx.fillStyle = '#a3e635';
+        ctx.font = 'bold 44px Georgia, serif';
+        ctx.fillText(ref, W / 2, y + 55);
+
+        ctx.fillStyle = '#d4af37';
+        ctx.font = 'bold 32px Georgia, serif';
+        ctx.fillText('Ajude esse trabalho com um PIX 91980818289', W / 2, H - 150);
+        ctx.fillStyle = '#a0a0a0';
+        ctx.font = '28px Georgia, serif';
+        ctx.fillText('evicom.github.io/biblia-evilasio', W / 2, H - 100);
+
+        return canvas.toDataURL('image/png');
+    }
+
+    function openVerseImage() {
+        if (!lastShareBlocks.length) return;
+        const text = lastShareBlocks.map(b => b.text).join(' ');
+        const ref = lastShareBlocks.map(b => b.ref).join('; ');
+        const url = generateVerseImage(text, ref);
+        document.getElementById('verse-img').src = url;
+        document.getElementById('img-download').href = url;
+        openModal('modal-img');
     }
 
     // =====================================================
@@ -1220,13 +1520,8 @@
     }
 
     function openReading(bookName, cap) {
-        const bIdx = state.data.findIndex(b => b.name === bookName);
-        if (bIdx === -1) return;
-        state.bookIndex = bIdx;
-        state.chapterIndex = cap - 1;
-        updateBookChapterSelectors();
-        renderChapter();
         closeModal('modal-plano');
+        jumpToBookChapter(bookName, cap);
     }
 
     // =====================================================
@@ -1247,10 +1542,11 @@
             const verseNum = index + 1;
             const ref = `${book.name} ${state.chapterIndex + 1}:${verseNum}`;
             const processedText = processVerseText(verseText);
+            const safeText = verseText.replace(/'/g, "\\'");
             
             const p = document.createElement('p');
             p.className = 'versiculo';
-            p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${verseText.replace(/'/g, "\\'")}')">${verseNum}</sup> ${processedText}`;
+            p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${safeText}')">${verseNum}</sup><sup class="fav-btn" data-ref="${ref}" onclick="event.stopPropagation(); toggleFav(this.dataset.ref, '${safeText}')">☆</sup> ${processedText}`;
 
             p.addEventListener('touchstart', () => startPress(p, index), { passive: true });
             p.addEventListener('touchend', () => endPress(p));
@@ -1263,7 +1559,7 @@
             p.onclick = () => {
                 if (suppressClick) { suppressClick = false; return; }
                 if (selectionMode) toggleVerse(index, p);
-                else openNoteModal(ref, verseText); // anotação DIRETA no versículo
+                else openNoteModal(ref, verseText);
             };
 
             reader.appendChild(p);
@@ -1277,6 +1573,8 @@
         reader.appendChild(bottomNav);
 
         updateNoteMarkers();
+        updateFavMarkers();
+        saveLastReading();
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1353,7 +1651,10 @@
         document.getElementById('font-size-display').textContent = `${state.fontSize}%`;
     }
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+        if (id === 'modal-favs') renderFavs();
+    }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     window.onclick = (event) => {
@@ -1446,11 +1747,11 @@
     }
 
     // =====================================================
-    // ===== COMPARTILHAMENTO (COM CABEÇALHO DO APP) =====
+    // ===== COMPARTILHAMENTO (CABEÇALHO + REFLEXÃO) =====
     // =====================================================
     function openShareModal(ref, text) {
-        const fullText = shareHeader() + `"${text}"\n${ref}` + shareFooter();
-        setShareLinks(fullText);
+        lastShareBlocks = [{ text, ref }];
+        setShareLinks(buildShareText(lastShareBlocks));
         openModal('modal-share');
     }
 
@@ -1529,14 +1830,12 @@
         speakCurrentVerse();
     }
 
-    // PAUSA: cancela a fala, mas guarda o versículo atual
     function pauseSpeech() {
         speechSynthesis.cancel();
         tts.paused = true;
         updatePlayerUI();
     }
 
-    // CONTINUAR: recomeça a fala do versículo em que parou
     function resumeSpeech() {
         tts.paused = false;
         updatePlayerUI();
