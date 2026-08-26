@@ -26,8 +26,8 @@
             --accent-hover: #fbbf24;
             --border: #333333;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            --jesus-color: #a3e635; /* VERDE LIMÃO */
-            --god-color: #60a5fa;   /* AZUL */
+            --jesus-color: #a3e635;
+            --god-color: #60a5fa;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -191,21 +191,18 @@
             padding: 0.5rem; 
             border-radius: 6px; 
             transition: background 0.2s; 
-            /* seleção nativa desativada p/ funcionar o pressionar 3s */
             user-select: none; 
             -webkit-user-select: none; 
             -webkit-touch-callout: none;
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
 
-        /* Animação de preenchimento enquanto segura (3s) */
         .versiculo-pressionando { animation: pressFill 3s linear forwards; }
         @keyframes pressFill {
             from { background: rgba(212, 175, 55, 0.05); }
             to   { background: rgba(212, 175, 55, 0.35); }
         }
 
-        /* Versículo selecionado no modo seleção */
         .versiculo-selecionado { 
             background: rgba(163, 230, 53, 0.12) !important; 
             border-left: 3px solid var(--jesus-color); 
@@ -291,6 +288,16 @@
         .selection-btn:hover { opacity: 0.9; }
         .selection-btn.cancel { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
         .selection-hint { width: 100%; font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* ===== PLANO DE LEITURA ===== */
+        .plano-hint { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem; }
+        .plano-opt { margin-top: 0.5rem; text-align: left; }
+        .plano-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .plano-progress { height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden; margin: 0.6rem 0; }
+        .plano-progress > div { height: 100%; background: var(--accent); transition: width 0.3s; }
+        .plano-daynav { display: flex; align-items: center; justify-content: space-between; margin: 0.8rem 0; }
+        .plano-reads { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.9rem; }
+        .plano-read { text-align: left; }
 
         #player-bar {
             position: fixed;
@@ -415,19 +422,6 @@
         .notes-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 0.6rem; }
         .notes-hint { font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 0.8rem; }
 
-        .key-quick { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
-        .key-quick button {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 0.3rem 0.7rem;
-            border-radius: 16px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: 0.2s;
-        }
-        .key-quick button:hover { border-color: var(--accent); color: var(--accent); }
-
         .btn-primary {
             background: var(--accent);
             color: var(--bg-primary);
@@ -451,7 +445,7 @@
             width: 100%;
             transition: 0.2s;
         }
-        .btn-secondary:hover { border-color: #ef4444; color: #ef4444; }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
         .search-result { 
             padding: 0.8rem; 
@@ -489,9 +483,10 @@
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 0.8rem;
+            padding: 0.9rem;
             margin-bottom: 0.8rem;
             font-size: 0.9rem;
+            line-height: 1.7;
         }
         .install-step strong { color: var(--accent); }
 
@@ -512,19 +507,18 @@
     <div class="toolbar">
         <button class="icon-btn" title="Navegar" onclick="openModal('modal-nav')">📖</button>
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
-        <button class="icon-btn" title="Chave Bíblica (ir para referência)" onclick="openModal('modal-key')">🔑</button>
-        <button class="icon-btn" title="Anotações (sincronizadas na nuvem)" onclick="openModal('modal-notes')">📝</button>
+        <button class="icon-btn" title="Plano de Leitura" onclick="openPlano()">📅</button>
         <button class="icon-btn" id="tts-btn" title="Ouvir capítulo em voz alta" onclick="toggleSpeech()">🔊</button>
-        <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
-    </div>
-
-    <div class="version-tabs">
-        <div id="version-buttons"></div>
         <div class="font-controls">
             <button class="font-btn" onclick="changeFontSize(-10)" title="Diminuir fonte">−</button>
             <span id="font-size-display" class="font-display">110%</span>
             <button class="font-btn" onclick="changeFontSize(10)" title="Aumentar fonte">+</button>
         </div>
+        <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
+    </div>
+
+    <div class="version-tabs">
+        <div id="version-buttons"></div>
     </div>
 </header>
 
@@ -537,7 +531,7 @@
 <div id="loading">Carregando Escrituras...</div>
 <div id="leitor-biblia"></div>
 
-<!-- BARRA DO MODO SELEÇÃO (pressionar 3s num versículo) -->
+<!-- BARRA DO MODO SELEÇÃO -->
 <div id="selection-bar">
     <span id="selection-count">0 versículos</span>
     <button class="selection-btn" onclick="shareSelected()">📤 Compartilhar</button>
@@ -556,7 +550,7 @@
 </div>
 
 <footer>
-    Bíblia Evilasio v1.0 · Criado por José Evilasio Marques · © 2026
+    Bíblia Evilasio v1.1 · Criado por José Evilasio Marques · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -587,34 +581,14 @@
     </div>
 </div>
 
-<!-- MODAL CHAVE BÍBLICA -->
-<div id="modal-key" class="modal">
+<!-- MODAL PLANO DE LEITURA -->
+<div id="modal-plano" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>🔑 Chave Bíblica</h3>
-            <span class="close" onclick="closeModal('modal-key')">&times;</span>
+            <h3>📅 Plano de Leitura</h3>
+            <span class="close" onclick="closeModal('modal-plano')">&times;</span>
         </div>
-        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.8rem;">
-            Digite uma referência, ex.: <strong>Jo 3:16</strong> · <strong>sl 23</strong> · <strong>1 Co 13:4</strong> · <strong>Tb 4</strong> · <strong>Gênesis 1:1</strong>
-        </p>
-        <div style="display:flex; gap:0.5rem;">
-            <input type="text" id="key-input" placeholder="Ex.: Jo 3:16" style="margin-bottom:0;" autocomplete="off">
-            <button class="btn-primary" style="width:auto; padding:0 1.2rem;" onclick="goToReference()">🔑 Abrir</button>
-        </div>
-        <div id="key-feedback" style="margin-top:0.8rem; font-size:0.9rem; color:var(--text-secondary);"></div>
-        <div class="key-quick">
-            <button onclick="quickRef('Gn 1:1')">Gn 1:1</button>
-            <button onclick="quickRef('Sl 23')">Sl 23</button>
-            <button onclick="quickRef('Sl 91')">Sl 91</button>
-            <button onclick="quickRef('Is 53')">Is 53</button>
-            <button onclick="quickRef('Tb 4')">Tb 4</button>
-            <button onclick="quickRef('Mt 5')">Mt 5</button>
-            <button onclick="quickRef('Jo 3:16')">Jo 3:16</button>
-            <button onclick="quickRef('Rm 8:28')">Rm 8:28</button>
-            <button onclick="quickRef('1 Co 13')">1 Co 13</button>
-            <button onclick="quickRef('Fp 4:13')">Fp 4:13</button>
-            <button onclick="quickRef('Ap 21')">Ap 21</button>
-        </div>
+        <div id="plano-content"></div>
     </div>
 </div>
 
@@ -654,24 +628,30 @@
     </div>
 </div>
 
-<!-- MODAL INSTALAR APP -->
+<!-- MODAL INSTALAR APP (instruções por plataforma) -->
 <div id="modal-install" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>📲 Instalar App</h3>
             <span class="close" onclick="closeModal('modal-install')">&times;</span>
         </div>
-        <div class="install-step">
+        <div class="install-step" data-plat="android">
             <strong>🤖 Android (Chrome):</strong><br>
-            Toque no menu (⋮) → "Adicionar à tela inicial" ou "Instalar app".
+            1. Toque no menu <strong>⋮</strong> do Chrome.<br>
+            2. Escolha <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong>.<br>
+            3. Confirme. O ícone aparecerá na sua tela inicial.
         </div>
-        <div class="install-step">
-            <strong>🍎 iPhone (Safari):</strong><br>
-            Toque no botão Compartilhar → "Adicionar à Tela de Início".
+        <div class="install-step" data-plat="ios">
+            <strong>🍎 iPhone / iPad — use o SAFARI:</strong><br>
+            1. Abra este site no <strong>Safari</strong> (no Chrome do iPhone a opção não existe).<br>
+            2. Toque no botão <strong>Compartilhar</strong> (quadrado com seta ↑).<br>
+            3. Role a lista e toque em <strong>"Adicionar à Tela de Início"</strong>.<br>
+            4. Toque em <strong>"Adicionar"</strong> no canto superior.
         </div>
-        <div class="install-step">
+        <div class="install-step" data-plat="pc">
             <strong>💻 Computador (Chrome/Edge):</strong><br>
-            Clique no ícone de instalar na barra de endereço.
+            1. Clique no <strong>ícone de instalar (⊕)</strong> no lado direito da barra de endereço.<br>
+            2. Clique em <strong>"Instalar"</strong>.
         </div>
         <p style="font-size:0.85rem; color:var(--text-secondary); text-align:center;">
             Após instalar, o app funciona 100% offline! ✨
@@ -706,17 +686,13 @@
             document.getElementById('install-btn').style.display = 'none';
         }
 
-        document.getElementById('key-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') goToReference();
-        });
-
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') requestWakeLock();
         });
         document.addEventListener('touchend', () => requestWakeLock(), { passive: true });
     });
 
-    // ===== TELA SEMPRE ATIVA (WAKE LOCK) =====
+    // ===== TELA SEMPRE ATIVA =====
     let wakeLock = null;
     async function requestWakeLock() {
         if (!('wakeLock' in navigator)) return;
@@ -746,7 +722,7 @@
         });
     }
 
-    // ===== PWA: INSTALAÇÃO =====
+    // ===== PWA: INSTALAÇÃO (por plataforma) =====
     let deferredPrompt = null;
 
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -758,7 +734,19 @@
         document.getElementById('install-btn').style.display = 'none';
     });
 
+    function detectPlatform() {
+        const ua = navigator.userAgent;
+        if (/iphone|ipad|ipod/i.test(ua)) return 'ios';
+        if (/android/i.test(ua)) return 'android';
+        return 'pc';
+    }
+
     function installApp() {
+        if (isAppInstalled()) {
+            alert('✅ O app já está instalado neste aparelho!');
+            return;
+        }
+        // Android/PC com suporte nativo: abre o prompt do sistema
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choice) => {
@@ -767,9 +755,14 @@
                 }
                 deferredPrompt = null;
             });
-        } else {
-            openModal('modal-install');
+            return;
         }
+        // iPhone e demais: mostra só o passo a passo da plataforma
+        const plat = detectPlatform();
+        document.querySelectorAll('.install-step').forEach(el => {
+            el.style.display = (el.dataset.plat === plat) ? 'block' : 'none';
+        });
+        openModal('modal-install');
     }
 
     // =====================================================
@@ -1083,7 +1076,6 @@
         const chapter = book.chapters[state.chapterIndex];
         const idxs = [...selectedVerses].sort((a, b) => a - b);
 
-        // Agrupa versículos consecutivos (ex: 3-5)
         const groups = [];
         idxs.forEach(i => {
             const last = groups[groups.length - 1];
@@ -1104,6 +1096,137 @@
         setShareLinks(fullText);
         openModal('modal-share');
         exitSelectionMode();
+    }
+
+    // =====================================================
+    // ===== 📅 PLANO DE LEITURA =====
+    // =====================================================
+    const PLANS = [
+        { id: 'biblia365', nome: '📖 Bíblia completa em 1 ano (365 dias)', dias: 365, corpus: 'all' },
+        { id: 'biblia180', nome: '📖 Bíblia completa em 180 dias', dias: 180, corpus: 'all' },
+        { id: 'biblia90',  nome: '📖 Bíblia completa em 90 dias', dias: 90,  corpus: 'all' },
+        { id: 'nt90',      nome: '✝️ Novo Testamento em 90 dias', dias: 90,  corpus: 'nt' },
+        { id: 'ev30',      nome: '✝️ Evangelhos em 30 dias', dias: 30, corpus: 'evangelhos' },
+        { id: 'sl30',      nome: '🎵 Salmos em 30 dias', dias: 30, corpus: 'salmos' }
+    ];
+    let plano = JSON.parse(localStorage.getItem('biblia_plano') || 'null');
+    let planoDayView = 0;
+
+    function savePlano() { localStorage.setItem('biblia_plano', JSON.stringify(plano)); }
+
+    function localDateStr() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getCorpusChapters(corpus) {
+        const ntStart = state.data.findIndex(b => normalizeText(b.name).includes('mateus'));
+        const list = [];
+        state.data.forEach((book, bi) => {
+            const n = normalizeText(book.name);
+            let inc = false;
+            if (corpus === 'all') inc = true;
+            else if (corpus === 'nt') inc = (ntStart !== -1 && bi >= ntStart);
+            else if (corpus === 'salmos') inc = n.includes('salmos');
+            else if (corpus === 'evangelhos') inc = ['mateus', 'marcos', 'lucas', 'joao'].some(g => n === g || n.startsWith(g + ' '));
+            if (inc) book.chapters.forEach((_, ci) => list.push({ book: book.name, cap: ci + 1 }));
+        });
+        return list;
+    }
+
+    function buildPlanDays(plan) {
+        const chapters = getCorpusChapters(plan.corpus);
+        const per = Math.max(1, Math.ceil(chapters.length / plan.dias));
+        const days = [];
+        for (let i = 0; i < chapters.length; i += per) days.push(chapters.slice(i, i + per));
+        return days;
+    }
+
+    function openPlano() {
+        if (!state.data) return;
+        renderPlano();
+        openModal('modal-plano');
+    }
+
+    function renderPlano() {
+        const box = document.getElementById('plano-content');
+        if (!plano || !plano.planId) {
+            box.innerHTML = `<p class="plano-hint">Escolha um plano — a contagem começa <strong>hoje</strong> e seu progresso fica salvo:</p>` +
+                PLANS.map(p => `<button class="btn-secondary plano-opt" onclick="startPlan('${p.id}')">${p.nome}</button>`).join('');
+            return;
+        }
+        const plan = PLANS.find(p => p.id === plano.planId);
+        if (!plan) { plano = null; savePlano(); return renderPlano(); }
+
+        const days = buildPlanDays(plan);
+        const start = new Date(plano.start + 'T00:00:00');
+        const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const todayNum = Math.max(1, Math.floor((hoje - start) / 86400000) + 1);
+
+        if (planoDayView < 1 || planoDayView > days.length) {
+            planoDayView = Math.min(Math.max(todayNum, 1), days.length);
+        }
+        const day = planoDayView;
+        const done = (plano.done || []).includes(day);
+        const doneCount = (plano.done || []).filter(d => d <= days.length).length;
+        const pct = Math.round((doneCount / days.length) * 100);
+        const readings = days[day - 1] || [];
+
+        box.innerHTML = `
+            <div class="plano-top">
+                <strong style="color:var(--accent)">${plan.nome}</strong>
+                <span style="font-size:.85rem;color:var(--text-secondary)">${doneCount}/${days.length} dias · ${pct}%</span>
+            </div>
+            <div class="plano-progress"><div style="width:${pct}%"></div></div>
+            <div class="plano-daynav">
+                <button class="player-btn" onclick="planoNav(-1)">◀</button>
+                <span style="font-weight:700">Dia ${day}${day === todayNum ? ' (hoje)' : ''}</span>
+                <button class="player-btn" onclick="planoNav(1)">▶</button>
+            </div>
+            <div class="plano-reads">
+                ${readings.map(r => `<button class="btn-secondary plano-read" onclick="openReading('${r.book.replace(/'/g, "\\'")}', ${r.cap})">📖 ${r.book} ${r.cap}</button>`).join('')}
+            </div>
+            <button class="btn-primary" onclick="togglePlanoDone(${day})">${done ? '↩️ Desmarcar dia concluído' : '✅ Marcar dia como concluído'}</button>
+            <button class="btn-secondary" style="margin-top:.5rem" onclick="resetPlano()">🔄 Trocar / recomeçar plano</button>
+        `;
+    }
+
+    function startPlan(id) {
+        plano = { planId: id, start: localDateStr(), done: [] };
+        planoDayView = 1;
+        savePlano();
+        renderPlano();
+    }
+
+    function planoNav(d) {
+        planoDayView += d;
+        renderPlano();
+    }
+
+    function togglePlanoDone(day) {
+        plano.done = plano.done || [];
+        const i = plano.done.indexOf(day);
+        if (i > -1) plano.done.splice(i, 1);
+        else plano.done.push(day);
+        savePlano();
+        renderPlano();
+    }
+
+    function resetPlano() {
+        plano = null;
+        planoDayView = 0;
+        savePlano();
+        renderPlano();
+    }
+
+    function openReading(bookName, cap) {
+        const bIdx = state.data.findIndex(b => b.name === bookName);
+        if (bIdx === -1) return;
+        state.bookIndex = bIdx;
+        state.chapterIndex = cap - 1;
+        updateBookChapterSelectors();
+        renderChapter();
+        closeModal('modal-plano');
     }
 
     // =====================================================
@@ -1129,7 +1252,6 @@
             p.className = 'versiculo';
             p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${verseText.replace(/'/g, "\\'")}')">${verseNum}</sup> ${processedText}`;
 
-            // Pressionar 3s (toque ou mouse) → modo seleção
             p.addEventListener('touchstart', () => startPress(p, index), { passive: true });
             p.addEventListener('touchend', () => endPress(p));
             p.addEventListener('touchmove', () => endPress(p));
@@ -1141,7 +1263,7 @@
             p.onclick = () => {
                 if (suppressClick) { suppressClick = false; return; }
                 if (selectionMode) toggleVerse(index, p);
-                else openNoteModal(ref, verseText);
+                else openNoteModal(ref, verseText); // anotação DIRETA no versículo
             };
 
             reader.appendChild(p);
@@ -1221,99 +1343,8 @@
         closeModal('modal-nav');
     }
 
-    // =====================================================
-    // ===== 🔑 CHAVE BÍBLICA =====
-    // =====================================================
-    const ABREV = {
-        'gn':'genesis','ge':'genesis','ex':'exodo','lv':'levitico','nm':'numeros','nu':'numeros','dt':'deuteronomio',
-        'js':'josue','jz':'juizes','rt':'rute','1sm':'1samuel','2sm':'2samuel','1rs':'1reis','2rs':'2reis',
-        '1cr':'1cronicas','2cr':'2cronicas','ed':'esdras','ne':'neemias','et':'ester','sl':'salmos','sa':'salmos',
-        'pv':'proverbios','pr':'proverbios','ec':'eclesiastes','ct':'cantares','cn':'cantares','is':'isaias',
-        'jr':'jeremias','lm':'lamentacoes','ez':'ezequiel','dn':'daniel','os':'oseias','jl':'joel','am':'amos',
-        'ob':'obadias','jn':'jonas','mq':'miqueias','na':'naum','hc':'habacuque','sf':'sofonias','ag':'ageu',
-        'zc':'zacarias','ml':'malaquias',
-        'tb':'tobias','tob':'tobias','jt':'judite','jdt':'judite','sb':'sabedoria','eclo':'eclesiastico',
-        'sir':'siracida','bar':'baruc','1mc':'1macabeus','2mc':'2macabeus','1mac':'1macabeus','2mac':'2macabeus',
-        'mt':'mateus','mc':'marcos','lc':'lucas','at':'atos','rm':'romanos',
-        '1co':'1corintios','2co':'2corintios','gl':'galatas','ef':'efesios','fp':'filipenses','cl':'colossenses',
-        '1ts':'1tessalonicenses','2ts':'2tessalonicenses','1tm':'1timoteo','2tm':'2timoteo','tt':'tito',
-        'fm':'filemom','hb':'hebreus','tg':'tiago','1pe':'1pedro','2pe':'2pedro','1jo':'1joao','2jo':'2joao',
-        '3jo':'3joao','jd':'judas','ap':'apocalipse'
-    };
-
     function normalizeText(s) {
         return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-    }
-
-    function findBookIndex(raw) {
-        const qAcc = (raw || '').toLowerCase().trim();
-        const q = normalizeText(raw);
-        const qCompact = q.replace(/\s+/g, '');
-        if (!q) return -1;
-
-        let i = state.data.findIndex(b => b.name.toLowerCase() === qAcc || normalizeText(b.name) === q);
-        if (i > -1) return i;
-
-        if (ABREV[qCompact]) {
-            i = state.data.findIndex(b => normalizeText(b.name) === ABREV[qCompact]);
-            if (i > -1) return i;
-        }
-
-        if (q.length >= 2) {
-            i = state.data.findIndex(b => normalizeText(b.name).startsWith(q));
-            if (i > -1) return i;
-        }
-
-        i = state.data.findIndex(b => q.startsWith(normalizeText(b.name)));
-        return i;
-    }
-
-    function goToReference() {
-        const input = document.getElementById('key-input').value.trim();
-        const feedback = document.getElementById('key-feedback');
-        if (!input) {
-            feedback.innerHTML = 'Digite uma referência, ex.: <strong>Jo 3:16</strong>';
-            return;
-        }
-
-        let bookQuery = input, chapter = 1, verse = 0;
-        const m = input.match(/^(.*?)\s*(\d+)\s*(?:[:.,]\s*(\d+))?\s*$/);
-        if (m) {
-            bookQuery = (m[1] || '').trim();
-            chapter = parseInt(m[2], 10);
-            verse = m[3] ? parseInt(m[3], 10) : 0;
-        }
-
-        const bIdx = bookQuery ? findBookIndex(bookQuery) : -1;
-        if (bIdx === -1) {
-            feedback.innerHTML = '❌ Livro não encontrado. Tente: <strong>Jo 3:16</strong>, <strong>sl 23</strong>, <strong>Tb 4</strong>...';
-            return;
-        }
-
-        const book = state.data[bIdx];
-        state.bookIndex = bIdx;
-        state.chapterIndex = Math.min(Math.max(chapter, 1), book.chapters.length) - 1;
-        updateBookChapterSelectors();
-        renderChapter();
-        closeModal('modal-key');
-        document.getElementById('key-input').value = '';
-        feedback.textContent = '';
-
-        if (verse > 0) {
-            setTimeout(() => {
-                const el = document.querySelectorAll('.versiculo')[verse - 1];
-                if (el) {
-                    el.classList.add('versiculo-destaque');
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => el.classList.remove('versiculo-destaque'), 3000);
-                }
-            }, 200);
-        }
-    }
-
-    function quickRef(ref) {
-        document.getElementById('key-input').value = ref;
-        goToReference();
     }
 
     function changeFontSize(delta) {
@@ -1445,7 +1476,7 @@
     }
 
     // =====================================================
-    // ===== LEITURA EM VOZ ALTA (TTS) =====
+    // ===== LEITURA EM VOZ ALTA (TTS) — PAUSA CORRIGIDA =====
     // =====================================================
     const tts = { speaking: false, paused: false, verseIndex: 0, rate: 1, voice: null, voices: [] };
 
@@ -1453,7 +1484,7 @@
         if (!('speechSynthesis' in window)) return;
         const load = () => {
             tts.voices = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('pt'));
-            tts.voice = tts.voices.find(v => v.lang.replace('_','-') === 'pt-BR') || tts.voices[0] || null;
+            tts.voice = tts.voices.find(v => v.lang.replace('_', '-') === 'pt-BR') || tts.voices[0] || null;
             renderVoiceSelect();
         };
         load();
@@ -1498,8 +1529,24 @@
         speakCurrentVerse();
     }
 
+    // PAUSA: cancela a fala, mas guarda o versículo atual
+    function pauseSpeech() {
+        speechSynthesis.cancel();
+        tts.paused = true;
+        updatePlayerUI();
+    }
+
+    // CONTINUAR: recomeça a fala do versículo em que parou
+    function resumeSpeech() {
+        tts.paused = false;
+        updatePlayerUI();
+        setTimeout(() => {
+            if (tts.speaking && !tts.paused) speakCurrentVerse();
+        }, 120);
+    }
+
     function speakCurrentVerse() {
-        if (!tts.speaking) return;
+        if (!tts.speaking || tts.paused) return;
         const book = state.data[state.bookIndex];
         const chapter = book.chapters[state.chapterIndex];
 
@@ -1517,7 +1564,7 @@
         utter.rate = tts.rate;
 
         utter.onend = () => {
-            if (!tts.speaking) return;
+            if (!tts.speaking || tts.paused) return;
             tts.verseIndex++;
             speakCurrentVerse();
         };
@@ -1537,18 +1584,6 @@
             `${state.data[state.bookIndex].name} ${state.chapterIndex + 1}:${idx + 1}`;
     }
 
-    function pauseSpeech() {
-        speechSynthesis.pause();
-        tts.paused = true;
-        updatePlayerUI();
-    }
-
-    function resumeSpeech() {
-        speechSynthesis.resume();
-        tts.paused = false;
-        updatePlayerUI();
-    }
-
     function stopSpeech() {
         speechSynthesis.cancel();
         tts.speaking = false;
@@ -1562,7 +1597,7 @@
     function changeRate(delta) {
         tts.rate = Math.min(2, Math.max(0.5, Math.round((tts.rate + delta) * 100) / 100));
         document.getElementById('player-rate').textContent = `${tts.rate}x`;
-        if (tts.speaking) {
+        if (tts.speaking && !tts.paused) {
             speechSynthesis.cancel();
             speakCurrentVerse();
         }
