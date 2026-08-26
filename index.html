@@ -227,8 +227,14 @@
             user-select: none; 
             -webkit-user-select: none; 
             -webkit-touch-callout: none;
+            touch-action: manipulation; /* duplo toque sem zoom e sem atraso */
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
+
+        /* Mobile: alinhado à esquerda p/ não separar demais as palavras */
+        @media (max-width: 640px) {
+            .versiculo { text-align: left; }
+        }
 
         .versiculo-pressionando { animation: pressFill 3s linear forwards; }
         @keyframes pressFill {
@@ -267,7 +273,6 @@
             border-left: 3px solid var(--jesus-color); 
         }
 
-        /* Estrelinha de favorito */
         .fav-btn {
             color: var(--text-secondary);
             margin-left: 0.4rem;
@@ -612,7 +617,7 @@
 </div>
 
 <footer>
-    Bíblia Evilasio v1.1 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evilasio v1.2 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -678,7 +683,7 @@
             <button class="btn-primary" onclick="saveNote()">💾 Salvar Anotação</button>
             <button class="btn-secondary" onclick="deleteNote()">🗑️ Apagar</button>
         </div>
-        <p class="notes-hint">☁️ Ao salvar, sua anotação é guardada neste aparelho e na nuvem automaticamente.</p>
+        <p class="notes-hint">💡 Dê <strong>2 toques</strong> no versículo para anotar · ☁️ salvo neste aparelho e na nuvem.</p>
     </div>
 </div>
 
@@ -1155,6 +1160,7 @@
             const ref = `${book.name} ${state.chapterIndex + 1}:${i + 1}`;
             const hasNote = !!state.notes[ref];
             el.classList.toggle('versiculo-com-nota', hasNote);
+            if (hasNote) el.title = '📝 Possui anotação — dê 2 toques para ver/editar';
         });
     }
 
@@ -1210,6 +1216,7 @@
     let pressTimer = null;
     let suppressClick = false;
     let lastShareBlocks = [];
+    let lastTap = { el: null, time: 0 }; // detecção de 2 toques (anotação)
 
     function shareHeader() {
         return `📖 BÍBLIA EVILASIO\n✍️ Criado por José Evilasio Marques\n📲 Baixe o app: ${APP_LINK}\n💛 Ajude esse projeto: PIX 91980818289\n━━━━━━━━━━━━━━\n\n`;
@@ -1219,7 +1226,6 @@
         return `\n\n━━━━━━━━━━━━━━\nVersão: ${state.version.toUpperCase()}`;
     }
 
-    // Mensagens de reflexão (escolhida pelo versículo → sempre a mesma p/ cada ref)
     const REFLEXOES = [
         '🙏 Reflexão: Que esta Palavra ilumine o seu dia e fortaleça a sua fé.',
         '🙏 Reflexão: Guarde esta promessa no coração e confie no tempo de Deus.',
@@ -1290,6 +1296,7 @@
     function exitSelectionMode() {
         selectionMode = false;
         selectedVerses.clear();
+        lastTap = { el: null, time: 0 };
         document.querySelectorAll('.versiculo').forEach(v => v.classList.remove('versiculo-selecionado', 'versiculo-pressionando'));
         document.getElementById('selection-bar').classList.remove('visible');
     }
@@ -1556,10 +1563,17 @@
             p.addEventListener('mouseleave', () => endPress(p));
             p.addEventListener('contextmenu', (e) => e.preventDefault());
 
+            // 1 toque: nada · 2 toques rápidos: anotação · modo seleção: adiciona
             p.onclick = () => {
                 if (suppressClick) { suppressClick = false; return; }
-                if (selectionMode) toggleVerse(index, p);
-                else openNoteModal(ref, verseText);
+                if (selectionMode) { toggleVerse(index, p); return; }
+                const now = Date.now();
+                if (lastTap.el === p && now - lastTap.time < 400) {
+                    lastTap = { el: null, time: 0 };
+                    openNoteModal(ref, verseText);
+                } else {
+                    lastTap = { el: p, time: now };
+                }
             };
 
             reader.appendChild(p);
