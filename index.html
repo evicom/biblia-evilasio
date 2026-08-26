@@ -168,7 +168,6 @@
             text-align: center;
         }
 
-        /* ===== BARRA "CONTINUAR LEITURA" ===== */
         #continue-bar {
             display: none;
             max-width: 900px;
@@ -227,11 +226,10 @@
             user-select: none; 
             -webkit-user-select: none; 
             -webkit-touch-callout: none;
-            touch-action: manipulation; /* duplo toque sem zoom e sem atraso */
+            touch-action: manipulation;
         }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
 
-        /* Mobile: alinhado à esquerda p/ não separar demais as palavras */
         @media (max-width: 640px) {
             .versiculo { text-align: left; }
         }
@@ -308,7 +306,6 @@
         .palavras-jesus { color: var(--jesus-color); font-style: italic; }
         .palavras-deus { color: var(--god-color); font-style: italic; }
 
-        /* ===== BARRA DO MODO SELEÇÃO ===== */
         #selection-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -339,7 +336,6 @@
         .selection-btn.cancel { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
         .selection-hint { width: 100%; font-size: 0.75rem; color: var(--text-secondary); }
 
-        /* ===== PLANO DE LEITURA ===== */
         .plano-hint { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem; }
         .plano-opt { margin-top: 0.5rem; text-align: left; }
         .plano-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
@@ -348,6 +344,13 @@
         .plano-daynav { display: flex; align-items: center; justify-content: space-between; margin: 0.8rem 0; }
         .plano-reads { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.9rem; }
         .plano-read { text-align: left; }
+
+        /* ===== GUIA DE AJUDA ===== */
+        .help-item { display: flex; gap: 0.7rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .help-item:last-child { border-bottom: none; }
+        .help-icon { font-size: 1.3rem; min-width: 2rem; text-align: center; }
+        .help-title { color: var(--accent); font-weight: 700; font-size: 0.95rem; margin-bottom: 0.15rem; }
+        .help-text { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
 
         #player-bar {
             position: fixed;
@@ -574,6 +577,7 @@
             <span id="font-size-display" class="font-display">110%</span>
             <button class="font-btn" onclick="changeFontSize(10)" title="Aumentar fonte">+</button>
         </div>
+        <button class="icon-btn" title="Como usar (ajuda)" onclick="openModal('modal-help')">❓</button>
         <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
     </div>
 
@@ -588,7 +592,6 @@
     <button class="nav-btn" onclick="changeChapter(1)">Próximo ▶</button>
 </div>
 
-<!-- BARRA CONTINUAR LEITURA -->
 <div id="continue-bar">
     <span>🔖 Continuar de onde parou:</span>
     <button id="continue-ref" onclick="goContinue()">—</button>
@@ -598,7 +601,6 @@
 <div id="loading">Carregando Escrituras...</div>
 <div id="leitor-biblia"></div>
 
-<!-- BARRA DO MODO SELEÇÃO -->
 <div id="selection-bar">
     <span id="selection-count">0 versículos</span>
     <button class="selection-btn" onclick="shareSelected()">📤 Compartilhar</button>
@@ -617,7 +619,7 @@
 </div>
 
 <footer>
-    Bíblia Evilasio v1.2 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evilasio v1.3 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -667,6 +669,146 @@
             <span class="close" onclick="closeModal('modal-favs')">&times;</span>
         </div>
         <div id="favs-list"></div>
+    </div>
+</div>
+
+<!-- MODAL AJUDA (GUIA COMPLETO) -->
+<div id="modal-help" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>❓ Como usar a Bíblia Evilasio</h3>
+            <span class="close" onclick="closeModal('modal-help')">&times;</span>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">📖</div>
+            <div>
+                <div class="help-title">Navegar pelos livros</div>
+                <div class="help-text">Toque em 📖 para abrir a lista de livros e capítulos. Os livros aparecem separados em <strong>Antigo Testamento</strong> e <strong>Novo Testamento</strong> — e na versão <strong>BC (Bíblia Católica)</strong> há ainda o grupo <strong>Livros Católicos (Deuterocanônicos)</strong>. Você também pode usar os botões ◀ Anterior / Próximo ▶ no topo e no fim de cada capítulo.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🔄</div>
+            <div>
+                <div class="help-title">Trocar de versão</div>
+                <div class="help-text">Na fileira <strong>ARC · ACF · NVI · AA · BC</strong>, toque na versão desejada. O app mantém você no mesmo livro e capítulo ao trocar.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🔍</div>
+            <div>
+                <div class="help-title">Buscar palavras</div>
+                <div class="help-text">Toque em 🔍, digite pelo menos 3 letras e veja todos os versículos que contêm a palavra na versão atual. Toque num resultado para ir direto ao capítulo.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">📅</div>
+            <div>
+                <div class="help-title">Plano de Leitura</div>
+                <div class="help-text">Toque em 📅 e escolha um plano (Bíblia em 1 ano, 180 ou 90 dias, Novo Testamento, Evangelhos ou Salmos). O app mostra as leituras do <strong>dia de hoje</strong>, deixa navegar pelos dias e marcar dias concluídos. Seu progresso fica salvo no aparelho.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">⭐</div>
+            <div>
+                <div class="help-title">Favoritar versículos</div>
+                <div class="help-text">Toque na <strong>☆</strong> que fica ao lado do número do versículo para favoritar (ela vira ★ dourada). O botão ⭐ da barra superior mostra a lista completa: toque para ir até o versículo ou em 🗑 para remover.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">📝</div>
+            <div>
+                <div class="help-title">Anotações</div>
+                <div class="help-text">Dê <strong>2 toques rápidos</strong> num versículo para escrever uma anotação. Versículos anotados ganham uma <strong>barra dourada</strong> ao lado. As anotações ficam salvas no aparelho e, com internet, são <strong>sincronizadas na nuvem</strong> automaticamente.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🎨</div>
+            <div>
+                <div class="help-title">Cores das falas</div>
+                <div class="help-text">Para facilitar a leitura, as <strong>palavras de Deus</strong> aparecem em <strong>azul</strong> e as <strong>palavras de Jesus</strong> em <strong>verde limão</strong>.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🔊</div>
+            <div>
+                <div class="help-title">Ouvir em voz alta</div>
+                <div class="help-text">Toque em 🔊 para o app ler o capítulo em voz alta, destacando o versículo lido. No player: <strong>⏸ pausa</strong> e <strong>▶ continua</strong> do mesmo versículo, <strong>⏹ para</strong>, <strong>− / +</strong> mudam a velocidade e o seletor troca a voz.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🔠</div>
+            <div>
+                <div class="help-title">Tamanho da fonte</div>
+                <div class="help-text">Os botões <strong>−</strong> e <strong>+</strong> ao lado do áudio diminuem ou aumentam o texto (de 80% a 200%). No celular o texto fica alinhado à esquerda para uma leitura mais confortável.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">📤</div>
+            <div>
+                <div class="help-title">Compartilhar 1 versículo</div>
+                <div class="help-text">Toque no <strong>número dourado</strong> do versículo. A mensagem já vai com o texto, a referência bíblica, uma <strong>reflexão</strong>, o cabeçalho do app e o link para baixar. Escolha WhatsApp, Instagram, Telegram, Facebook, X ou Copiar.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">✍️</div>
+            <div>
+                <div class="help-title">Compartilhar vários versículos</div>
+                <div class="help-text"><strong>Segure um versículo por 3 segundos</strong> (ele vai "enchendo" de dourado) para entrar no modo seleção. Depois, toque nos demais versículos para adicionar/remover e toque em <strong>📤 Compartilhar</strong>. Versículos seguidos viram intervalo (ex: João 3:16-18).</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🖼️</div>
+            <div>
+                <div class="help-title">Versículo como imagem</div>
+                <div class="help-text">Na tela de compartilhar, toque em <strong>🖼️ Gerar Imagem p/ Instagram</strong>. O app cria uma arte bonita com o versículo, a referência e o crédito do app. No celular, segure a imagem para salvar ou postar; no PC, clique em Baixar.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🔖</div>
+            <div>
+                <div class="help-title">Continuar leitura</div>
+                <div class="help-text">Ao abrir o app, uma barra mostra o <strong>último capítulo que você leu</strong> (mesmo de outra versão). Toque nela para continuar de onde parou.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">📲</div>
+            <div>
+                <div class="help-title">Instalar como aplicativo</div>
+                <div class="help-text">Toque em 📲 e siga o passo a passo do seu aparelho: <strong>Android</strong> (menu ⋮ do Chrome → Instalar app), <strong>iPhone</strong> (Safari → Compartilhar → Adicionar à Tela de Início) ou <strong>PC</strong> (ícone ⊕ na barra de endereço). Depois de instalado, o app abre em tela cheia e funciona <strong>100% offline</strong>.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">✈️</div>
+            <div>
+                <div class="help-title">Modo offline</div>
+                <div class="help-text">Após a primeira visita (ou instalação), todas as Bíblias ficam salvas no aparelho: você pode ler sem internet. Só as anotações na nuvem precisam de conexão.</div>
+            </div>
+        </div>
+
+        <div class="help-item">
+            <div class="help-icon">🔆</div>
+            <div>
+                <div class="help-title">Tela sempre ativa</div>
+                <div class="help-text">Enquanto você lê, o app tenta manter a tela acesa (em aparelhos compatíveis), para não apagar no meio da leitura.</div>
+            </div>
+        </div>
+
+        <p class="notes-hint" style="margin-top:1rem;">💛 Gostando do app? Ajude esse projeto com um PIX: <strong>91980818289</strong></p>
     </div>
 </div>
 
@@ -1216,7 +1358,7 @@
     let pressTimer = null;
     let suppressClick = false;
     let lastShareBlocks = [];
-    let lastTap = { el: null, time: 0 }; // detecção de 2 toques (anotação)
+    let lastTap = { el: null, time: 0 };
 
     function shareHeader() {
         return `📖 BÍBLIA EVILASIO\n✍️ Criado por José Evilasio Marques\n📲 Baixe o app: ${APP_LINK}\n💛 Ajude esse projeto: PIX 91980818289\n━━━━━━━━━━━━━━\n\n`;
@@ -1563,7 +1705,6 @@
             p.addEventListener('mouseleave', () => endPress(p));
             p.addEventListener('contextmenu', (e) => e.preventDefault());
 
-            // 1 toque: nada · 2 toques rápidos: anotação · modo seleção: adiciona
             p.onclick = () => {
                 if (suppressClick) { suppressClick = false; return; }
                 if (selectionMode) { toggleVerse(index, p); return; }
