@@ -1,6 +1,6 @@
 // Service Worker - Bíblia Evicom (José Evilasio Marques)
 // v5: HTML network-first + Bíblias offline + comando SKIP_WAITING p/ atualização
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
