@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Evilasio</title>
+    <title>Bíblia Evicom</title>
 
-    <!-- ===== PWA: MANIFEST E META TAGS ===== -->
+    <!-- ===== PWA ===== -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e1e1e">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bíblia Evilasio">
+    <meta name="apple-mobile-web-app-title" content="Bíblia Evicom">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
@@ -31,63 +31,15 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            background: var(--bg-primary); 
-            color: var(--text-primary); 
-            line-height: 1.6; 
-        }
-        
-        header { 
-            background: var(--bg-secondary); 
-            border-bottom: 1px solid var(--border); 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-            box-shadow: var(--shadow);
-        }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; }
 
-        .toolbar { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 0.75rem; 
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .version-tabs { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            gap: 0.5rem; 
-            padding: 0.6rem 1rem;
-            flex-wrap: wrap;
-        }
+        header { background: var(--bg-secondary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+        .toolbar { display: flex; justify-content: center; align-items: center; gap: 0.75rem; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+        .version-tabs { display: flex; justify-content: center; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; flex-wrap: wrap; }
         #version-buttons { display: contents; }
 
-        .icon-btn { 
-            background: var(--bg-tertiary); 
-            border: 1px solid var(--border); 
-            color: var(--text-primary); 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 10px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.3rem; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-        }
-        .icon-btn:hover { 
-            background: var(--accent); 
-            color: var(--bg-primary); 
-            border-color: var(--accent); 
-            transform: translateY(-2px);
-        }
+        .icon-btn { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; }
+        .icon-btn:hover { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); transform: translateY(-2px); }
 
         #install-btn { animation: pulse 2s infinite; }
         #tts-btn.active-tts { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
@@ -97,241 +49,59 @@
             100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
         }
 
-        .font-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--bg-tertiary);
-            padding: 0.2rem 0.6rem;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-        .font-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            cursor: pointer;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: 0.2s;
-        }
+        .font-controls { display: flex; align-items: center; gap: 0.5rem; background: var(--bg-tertiary); padding: 0.2rem 0.6rem; border-radius: 10px; border: 1px solid var(--border); }
+        .font-btn { background: transparent; border: none; color: var(--text-primary); font-size: 1.1rem; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: 0.2s; }
         .font-btn:hover { background: var(--border); }
         .font-display { font-size: 0.85rem; color: var(--text-secondary); min-width: 40px; text-align: center; }
 
-        .version-btn { 
-            background: transparent; 
-            border: 1px solid var(--border); 
-            color: var(--text-secondary); 
-            padding: 0.4rem 1rem; 
-            border-radius: 20px; 
-            cursor: pointer; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            transition: all 0.2s ease; 
-        }
-        .version-btn:hover, .version-btn.active { 
-            background: var(--accent); 
-            color: var(--bg-primary); 
-            border-color: var(--accent); 
-        }
+        .version-btn { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); padding: 0.4rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease; }
+        .version-btn:hover, .version-btn.active { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
 
-        .nav-bar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 0.8rem 1rem; 
-            background: var(--bg-primary); 
-            border-bottom: 1px solid var(--border); 
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .nav-btn {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; background: var(--bg-primary); border-bottom: 1px solid var(--border); max-width: 900px; margin: 0 auto; }
+        .nav-btn { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
         .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-        #current-reference { 
-            font-weight: 700; 
-            color: var(--accent); 
-            font-size: 1.1rem;
-            text-align: center;
-        }
+        #current-reference { font-weight: 700; color: var(--accent); font-size: 1.1rem; text-align: center; }
 
-        #continue-bar {
-            display: none;
-            max-width: 900px;
-            margin: 0.6rem auto 0 auto;
-            padding: 0.5rem 1rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--accent);
-            border-radius: 10px;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-            font-size: 0.9rem;
-        }
+        #continue-bar { display: none; max-width: 900px; margin: 0.6rem auto 0 auto; padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--accent); border-radius: 10px; align-items: center; justify-content: center; gap: 0.6rem; flex-wrap: wrap; font-size: 0.9rem; }
         #continue-bar.visible { display: flex; }
-        #continue-ref {
-            background: var(--accent);
-            color: var(--bg-primary);
-            border: none;
-            padding: 0.35rem 0.9rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        #continue-close {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            cursor: pointer;
-        }
+        #continue-ref { background: var(--accent); color: var(--bg-primary); border: none; padding: 0.35rem 0.9rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        #continue-close { background: transparent; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; }
 
-        #leitor-biblia { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 2rem 1.5rem 6rem 1.5rem; 
-            font-family: 'Georgia', 'Merriweather', serif; 
-            font-size: 110%; 
-            line-height: 1.8; 
-            color: var(--text-primary);
-        }
-        .capitulo-titulo { 
-            text-align: center; 
-            color: var(--accent); 
-            margin-bottom: 2rem; 
-            font-size: 2rem; 
-            font-weight: 700; 
-        }
-        .versiculo { 
-            margin-bottom: 1rem; 
-            text-align: justify; 
-            cursor: pointer; 
-            padding: 0.5rem; 
-            border-radius: 6px; 
-            transition: background 0.2s; 
-            user-select: none; 
-            -webkit-user-select: none; 
-            -webkit-touch-callout: none;
-            touch-action: manipulation;
-        }
+        #leitor-biblia { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 6rem 1.5rem; font-family: 'Georgia', 'Merriweather', serif; font-size: 110%; line-height: 1.8; color: var(--text-primary); }
+        .capitulo-titulo { text-align: center; color: var(--accent); margin-bottom: 2rem; font-size: 2rem; font-weight: 700; }
+        .versiculo { margin-bottom: 1rem; text-align: justify; cursor: pointer; padding: 0.5rem; border-radius: 6px; transition: background 0.2s; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
+        @media (max-width: 640px) { .versiculo { text-align: left; } }
 
-        @media (max-width: 640px) {
-            .versiculo { text-align: left; }
-        }
-
-        .versiculo-pressionando { animation: pressFill 3s linear forwards; }
+        /* Segurar 5s → preenche até ficar VERDE */
+        .versiculo-pressionando { animation: pressFill 5s linear forwards; }
         @keyframes pressFill {
             from { background: rgba(212, 175, 55, 0.05); }
-            to   { background: rgba(212, 175, 55, 0.35); }
+            55%  { background: rgba(212, 175, 55, 0.28); }
+            to   { background: rgba(163, 230, 53, 0.45); }
         }
 
-        .versiculo-selecionado { 
-            background: rgba(163, 230, 53, 0.12) !important; 
-            border-left: 3px solid var(--jesus-color); 
-            padding-left: 0.7rem; 
-            position: relative;
-        }
-        .versiculo-selecionado::after {
-            content: '✔';
-            position: absolute;
-            top: 0.4rem;
-            right: 0.6rem;
-            color: var(--jesus-color);
-            font-size: 0.9rem;
-        }
+        .versiculo-selecionado { background: rgba(163, 230, 53, 0.12) !important; border-left: 3px solid var(--jesus-color); padding-left: 0.7rem; position: relative; }
+        .versiculo-selecionado::after { content: '✔'; position: absolute; top: 0.4rem; right: 0.6rem; color: var(--jesus-color); font-size: 0.9rem; }
+        .versiculo-com-nota { border-left: 3px solid var(--accent); background: rgba(212, 175, 55, 0.06); padding-left: 0.7rem; }
+        .versiculo-ativo { background: rgba(96, 165, 250, 0.12) !important; border-left: 3px solid var(--god-color); }
+        .versiculo-destaque { background: rgba(163, 230, 53, 0.18) !important; border-left: 3px solid var(--jesus-color); }
 
-        .versiculo-com-nota { 
-            border-left: 3px solid var(--accent); 
-            background: rgba(212, 175, 55, 0.06); 
-            padding-left: 0.7rem; 
-        }
-
-        .versiculo-ativo { 
-            background: rgba(96, 165, 250, 0.12) !important; 
-            border-left: 3px solid var(--god-color); 
-        }
-
-        .versiculo-destaque { 
-            background: rgba(163, 230, 53, 0.18) !important; 
-            border-left: 3px solid var(--jesus-color); 
-        }
-
-        .fav-btn {
-            color: var(--text-secondary);
-            margin-left: 0.4rem;
-            cursor: pointer;
-            font-size: 0.8em;
-            vertical-align: super;
-            user-select: none;
-            transition: color 0.2s;
-        }
+        .fav-btn { color: var(--text-secondary); margin-left: 0.4rem; cursor: pointer; font-size: 0.8em; vertical-align: super; user-select: none; transition: color 0.2s; }
         .fav-btn.fav-on { color: var(--accent); }
 
-        .bottom-nav {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: 2.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
+        .bottom-nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
         .bottom-nav .nav-btn { flex: 1; padding: 0.9rem; font-size: 1rem; }
 
-        .num-verso { 
-            color: var(--accent); 
-            font-weight: bold; 
-            font-size: 0.75em; 
-            vertical-align: super; 
-            margin-right: 0.3rem; 
-            cursor: pointer; 
-            user-select: none;
-        }
+        .num-verso { color: var(--accent); font-weight: bold; font-size: 0.75em; vertical-align: super; margin-right: 0.3rem; cursor: pointer; user-select: none; }
         .num-verso:hover { text-decoration: underline; }
-
         .palavras-jesus { color: var(--jesus-color); font-style: italic; }
         .palavras-deus { color: var(--god-color); font-style: italic; }
 
-        #selection-bar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--bg-secondary);
-            border-top: 2px solid var(--jesus-color);
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.6rem;
-            padding: 0.7rem 1rem;
-            z-index: 999;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
-            flex-wrap: wrap;
-        }
+        #selection-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); border-top: 2px solid var(--jesus-color); display: none; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.7rem 1rem; z-index: 999; box-shadow: 0 -4px 12px rgba(0,0,0,0.4); flex-wrap: wrap; }
         #selection-bar.visible { display: flex; }
         #selection-count { color: var(--jesus-color); font-weight: 700; font-size: 0.9rem; flex: 1; min-width: 150px; }
-        .selection-btn {
-            background: var(--jesus-color);
-            color: var(--bg-primary);
-            border: none;
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .selection-btn { background: var(--jesus-color); color: var(--bg-primary); border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .selection-btn:hover { opacity: 0.9; }
         .selection-btn.cancel { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
         .selection-hint { width: 100%; font-size: 0.75rem; color: var(--text-secondary); }
@@ -345,193 +115,59 @@
         .plano-reads { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.9rem; }
         .plano-read { text-align: left; }
 
-        /* ===== GUIA DE AJUDA ===== */
         .help-item { display: flex; gap: 0.7rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
         .help-item:last-child { border-bottom: none; }
         .help-icon { font-size: 1.3rem; min-width: 2rem; text-align: center; }
         .help-title { color: var(--accent); font-weight: 700; font-size: 0.95rem; margin-bottom: 0.15rem; }
         .help-text { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
 
-        #player-bar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1rem;
-            z-index: 998;
-            flex-wrap: wrap;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
-        }
+        #player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); border-top: 1px solid var(--border); display: none; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem 1rem; z-index: 998; flex-wrap: wrap; box-shadow: 0 -4px 12px rgba(0,0,0,0.4); }
         #player-bar.visible { display: flex; }
         #player-info { color: var(--accent); font-weight: 700; font-size: 0.9rem; min-width: 110px; text-align: center; }
-        .player-btn {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .player-btn { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .player-btn:hover { background: var(--accent); color: var(--bg-primary); }
         #player-rate { color: var(--text-secondary); font-size: 0.85rem; min-width: 42px; text-align: center; }
-        #voice-select {
-            width: auto; margin: 0; padding: 0.35rem 0.5rem;
-            font-size: 0.8rem; max-width: 150px;
-        }
+        #voice-select { width: auto; margin: 0; padding: 0.35rem 0.5rem; font-size: 0.8rem; max-width: 150px; }
 
-        #loading { 
-            display: none; 
-            text-align: center; 
-            padding: 3rem; 
-            font-size: 1.1rem; 
-            color: var(--accent); 
-        }
+        #loading { display: none; text-align: center; padding: 3rem; font-size: 1.1rem; color: var(--accent); }
 
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.7); 
-            backdrop-filter: blur(4px);
-            z-index: 1000; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        .modal-content { 
-            background: var(--bg-secondary); 
-            border: 1px solid var(--border);
-            padding: 1.5rem; 
-            border-radius: 12px; 
-            width: 90%; 
-            max-width: 500px; 
-            max-height: 85vh; 
-            overflow-y: auto; 
-            position: relative; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--bg-secondary); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .modal-large { max-width: 640px; }
-        .modal-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 1rem; 
-            border-bottom: 1px solid var(--border); 
-            padding-bottom: 0.8rem; 
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
         .modal-header h3 { color: var(--accent); }
         #sync-status { font-size: 1rem; margin-left: 0.4rem; cursor: help; }
-        .close { 
-            font-size: 1.8rem; 
-            cursor: pointer; 
-            color: var(--text-secondary); 
-            line-height: 1;
-            transition: 0.2s;
-        }
+        .close { font-size: 1.8rem; cursor: pointer; color: var(--text-secondary); line-height: 1; transition: 0.2s; }
         .close:hover { color: var(--text-primary); }
 
-        select, input, textarea { 
-            width: 100%; 
-            padding: 0.7rem; 
-            background: var(--bg-tertiary); 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            color: var(--text-primary); 
-            font-family: inherit;
-            font-size: 0.95rem;
-            margin-bottom: 0.8rem;
-        }
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        select optgroup { 
-            color: var(--accent); 
-            font-weight: 700; 
-            background: var(--bg-secondary);
-        }
+        select, input, textarea { width: 100%; padding: 0.7rem; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; margin-bottom: 0.8rem; }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+        select optgroup { color: var(--accent); font-weight: 700; background: var(--bg-secondary); }
         select option { color: var(--text-primary); background: var(--bg-secondary); }
-        #note-text { min-height: 220px; resize: vertical; line-height: 1.6; }
+        #note-text { min-height: 200px; resize: vertical; line-height: 1.6; }
+        #ai-question { min-height: 90px; resize: vertical; }
+        #note-view-text { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-height: 120px; white-space: pre-line; font-size: 0.95rem; margin-bottom: 0.8rem; }
 
-        .note-ref-badge {
-            display: inline-block;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 0.3rem 0.9rem;
-            border-radius: 20px;
-            font-weight: 700;
-            margin-bottom: 0.8rem;
-            font-size: 0.9rem;
-        }
-
-        .notes-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 0.6rem; }
+        .note-ref-badge { display: inline-block; background: var(--bg-tertiary); border: 1px solid var(--accent); color: var(--accent); padding: 0.3rem 0.9rem; border-radius: 20px; font-weight: 700; margin-bottom: 0.8rem; font-size: 0.9rem; }
+        .notes-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .notes-actions.tri { grid-template-columns: 1fr 1fr 1fr; }
         .notes-hint { font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 0.8rem; }
 
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg-primary);
-            border: none;
-            padding: 0.7rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            transition: 0.2s;
-        }
+        .btn-primary { background: var(--accent); color: var(--bg-primary); border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
         .btn-primary:hover { background: var(--accent-hover); }
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-            padding: 0.7rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            transition: 0.2s;
-        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
         .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-        .search-result { 
-            padding: 0.8rem; 
-            border-bottom: 1px solid var(--border); 
-            cursor: pointer; 
-            border-radius: 6px;
-            transition: 0.2s;
-        }
+        .search-result { padding: 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; border-radius: 6px; transition: 0.2s; }
         .search-result:hover { background: var(--bg-tertiary); }
         .search-ref { font-weight: bold; color: var(--accent); font-size: 0.9rem; margin-bottom: 0.2rem; }
         .search-result mark { background: rgba(212, 175, 55, 0.3); color: var(--text-primary); padding: 0 2px; border-radius: 2px; }
 
-        .saved-note-item {
-            padding: 0.8rem;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .saved-note-item { padding: 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
         .saved-note-item:hover { background: var(--bg-tertiary); }
 
         .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
-        .share-btn { 
-            padding: 0.7rem; 
-            border: none; 
-            border-radius: 8px; 
-            color: white; 
-            cursor: pointer; 
-            text-align: center; 
-            text-decoration: none; 
-            font-size: 0.9rem; 
-            font-weight: 600;
-            transition: 0.2s;
-        }
+        .share-btn { padding: 0.7rem; border: none; border-radius: 8px; color: white; cursor: pointer; text-align: center; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; }
         .share-btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .whatsapp { background: #25D366; }
         .instagram { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
@@ -541,26 +177,12 @@
         .copy { background: var(--bg-tertiary); color: var(--text-primary); grid-column: span 2; border: 1px solid var(--border); }
         .imgbtn { background: linear-gradient(45deg, #d4af37, #fbbf24); color: var(--bg-primary); grid-column: span 2; }
 
-        .install-step {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.9rem;
-            margin-bottom: 0.8rem;
-            font-size: 0.9rem;
-            line-height: 1.7;
-        }
+        .install-step { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; margin-bottom: 0.8rem; font-size: 0.9rem; line-height: 1.7; }
         .install-step strong { color: var(--accent); }
 
-        footer { 
-            text-align: center; 
-            padding: 2rem 1rem; 
-            background: var(--bg-secondary); 
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary); 
-            font-size: 0.85rem; 
-            margin-top: 3rem; 
-        }
+        #img-status { font-size: 0.9rem; color: var(--accent); text-align: center; margin-bottom: 0.6rem; }
+
+        footer { text-align: center; padding: 2rem 1rem; background: var(--bg-secondary); border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 0.85rem; margin-top: 3rem; }
     </style>
 </head>
 <body>
@@ -571,6 +193,7 @@
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
         <button class="icon-btn" title="Plano de Leitura" onclick="openPlano()">📅</button>
         <button class="icon-btn" title="Versículos Favoritos" onclick="openModal('modal-favs')">⭐</button>
+       <!-- <button class="icon-btn" title="Assistente Bíblico (IA)" onclick="openModal('modal-ai')">🤖</button> -->
         <button class="icon-btn" id="tts-btn" title="Ouvir capítulo em voz alta" onclick="toggleSpeech()">🔊</button>
         <div class="font-controls">
             <button class="font-btn" onclick="changeFontSize(-10)" title="Diminuir fonte">−</button>
@@ -580,10 +203,7 @@
         <button class="icon-btn" title="Como usar (ajuda)" onclick="openModal('modal-help')">❓</button>
         <button class="icon-btn" id="install-btn" title="Instalar App" onclick="installApp()">📲</button>
     </div>
-
-    <div class="version-tabs">
-        <div id="version-buttons"></div>
-    </div>
+    <div class="version-tabs"><div id="version-buttons"></div></div>
 </header>
 
 <div class="nav-bar">
@@ -619,16 +239,13 @@
 </div>
 
 <footer>
-    Bíblia Evilasio v1.3 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.0 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
 <div id="modal-nav" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>📖 Navegar</h3>
-            <span class="close" onclick="closeModal('modal-nav')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>📖 Navegar</h3><span class="close" onclick="closeModal('modal-nav')">&times;</span></div>
         <select id="select-book" onchange="updateChapterSelect(true)"></select>
         <select id="select-chapter" onchange="goToChapter()"></select>
         <button class="btn-primary" onclick="goToChapter()">📖 Ir para o capítulo</button>
@@ -638,25 +255,19 @@
 <!-- MODAL BUSCA -->
 <div id="modal-search" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>🔍 Busca</h3>
-            <span class="close" onclick="closeModal('modal-search')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>🔍 Busca</h3><span class="close" onclick="closeModal('modal-search')">&times;</span></div>
         <div style="display:flex; gap:0.5rem;">
             <input type="text" id="search-input" placeholder="Digite pelo menos 3 letras..." style="margin-bottom:0;">
-            <button class="btn-primary" style="width: auto; padding: 0 1.2rem;" onclick="performSearch()">Buscar</button>
+            <button class="btn-primary" style="width:auto; padding:0 1.2rem;" onclick="performSearch()">Buscar</button>
         </div>
         <div id="search-results" style="margin-top:1rem;"></div>
     </div>
 </div>
 
-<!-- MODAL PLANO DE LEITURA -->
+<!-- MODAL PLANO -->
 <div id="modal-plano" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>📅 Plano de Leitura</h3>
-            <span class="close" onclick="closeModal('modal-plano')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>📅 Plano de Leitura</h3><span class="close" onclick="closeModal('modal-plano')">&times;</span></div>
         <div id="plano-content"></div>
     </div>
 </div>
@@ -664,178 +275,153 @@
 <!-- MODAL FAVORITOS -->
 <div id="modal-favs" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>⭐ Versículos Favoritos</h3>
-            <span class="close" onclick="closeModal('modal-favs')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>⭐ Versículos Favoritos</h3><span class="close" onclick="closeModal('modal-favs')">&times;</span></div>
         <div id="favs-list"></div>
     </div>
 </div>
 
-<!-- MODAL AJUDA (GUIA COMPLETO) -->
+<!-- MODAL IA 
+<div id="modal-ai" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header"><h3>🤖 Assistente Bíblico (IA)</h3><span class="close" onclick="closeModal('modal-ai')">&times;</span></div>
+        <p class="notes-hint" style="text-align:left">Base protestante evangélica · capítulo aberto: <strong id="ai-context-ref">—</strong></p>
+        <div class="key-quick" style="margin-bottom:.6rem">
+            <button onclick="aiSuggest('Explique este capítulo de forma simples e clara.')">📖 Explique o capítulo</button>
+            <button onclick="aiSuggest('Qual o versículo-chave deste capítulo e por quê?')">🔑 Versículo-chave</button>
+            <button onclick="aiSuggest('Que aplicação prática este texto tem para a minha vida hoje?')">🙏 Aplicação prática</button>
+            <button onclick="aiSuggest('Escreva uma meditação curta com este texto para eu compartilhar.')">✨ Meditação</button>
+        </div>
+        <textarea id="ai-question" placeholder="Escreva sua pergunta sobre o capítulo aberto..."></textarea>
+        <button class="btn-primary" onclick="askAI()">✨ Perguntar à IA</button>
+        <div id="ai-answer" style="margin-top:1rem; font-size:.92rem; line-height:1.7; white-space:pre-line; color:var(--text-primary); background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; padding:1rem; min-height:60px;">A resposta da IA aparecerá aqui.</div>
+    </div>
+</div>   -->
+
+<!-- MODAL AJUDA -->
 <div id="modal-help" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>❓ Como usar a Bíblia Evilasio</h3>
-            <span class="close" onclick="closeModal('modal-help')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>❓ Como usar a Bíblia Evicom</h3><span class="close" onclick="closeModal('modal-help')">&times;</span></div>
 
-        <div class="help-item">
-            <div class="help-icon">📖</div>
-            <div>
-                <div class="help-title">Navegar pelos livros</div>
-                <div class="help-text">Toque em 📖 para abrir a lista de livros e capítulos. Os livros aparecem separados em <strong>Antigo Testamento</strong> e <strong>Novo Testamento</strong> — e na versão <strong>BC (Bíblia Católica)</strong> há ainda o grupo <strong>Livros Católicos (Deuterocanônicos)</strong>. Você também pode usar os botões ◀ Anterior / Próximo ▶ no topo e no fim de cada capítulo.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">📖</div><div>
+            <div class="help-title">Navegar pelos livros</div>
+            <div class="help-text">Toque em 📖 e escolha livro e capítulo, separados em <strong>Antigo Testamento</strong> e <strong>Novo Testamento</strong> — e na versão <strong>BC (Bíblia Católica)</strong> há o grupo <strong>Livros Católicos (Deuterocanônicos)</strong>. Use ◀ Anterior / Próximo ▶ no topo e no fim do capítulo.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🔄</div>
-            <div>
-                <div class="help-title">Trocar de versão</div>
-                <div class="help-text">Na fileira <strong>ARC · ACF · NVI · AA · BC</strong>, toque na versão desejada. O app mantém você no mesmo livro e capítulo ao trocar.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🔄</div><div>
+            <div class="help-title">Trocar de versão</div>
+            <div class="help-text">Na fileira <strong>ARC · ACF · NVI · AA · BC</strong>, toque na versão. O app mantém você no mesmo livro e capítulo ao trocar.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🔍</div>
-            <div>
-                <div class="help-title">Buscar palavras</div>
-                <div class="help-text">Toque em 🔍, digite pelo menos 3 letras e veja todos os versículos que contêm a palavra na versão atual. Toque num resultado para ir direto ao capítulo.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🤖</div><div>
+            <div class="help-title">Assistente Bíblico (IA)</div>
+            <div class="help-text">Toque em 🤖 para perguntar qualquer coisa sobre o <strong>capítulo aberto</strong>: use os atalhos (explicar capítulo, versículo-chave, aplicação prática, meditação) ou escreva sua pergunta. A IA responde com <strong>base protestante evangélica</strong>, em português. Além disso, ela <strong>gera automaticamente a reflexão</strong> de todo versículo compartilhado e <strong>cria a ilustração</strong> das imagens.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">📅</div>
-            <div>
-                <div class="help-title">Plano de Leitura</div>
-                <div class="help-text">Toque em 📅 e escolha um plano (Bíblia em 1 ano, 180 ou 90 dias, Novo Testamento, Evangelhos ou Salmos). O app mostra as leituras do <strong>dia de hoje</strong>, deixa navegar pelos dias e marcar dias concluídos. Seu progresso fica salvo no aparelho.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">✍️</div><div>
+            <div class="help-title">Compartilhar versículos</div>
+            <div class="help-text"><strong>Segure um versículo por 5 segundos, até ele ficar VERDE</strong>, para entrar no modo seleção. Depois toque nos demais versículos para adicionar/remover e use <strong>📤 Compartilhar</strong>. Versículos seguidos viram intervalo (ex: João 3:16-18). A mensagem vai com referência, reflexão da IA e o link do app.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">⭐</div>
-            <div>
-                <div class="help-title">Favoritar versículos</div>
-                <div class="help-text">Toque na <strong>☆</strong> que fica ao lado do número do versículo para favoritar (ela vira ★ dourada). O botão ⭐ da barra superior mostra a lista completa: toque para ir até o versículo ou em 🗑 para remover.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">📤</div><div>
+            <div class="help-title">Compartilhar 1 versículo</div>
+            <div class="help-text">Toque no <strong>número dourado</strong> do versículo para compartilhar via WhatsApp, Instagram, Telegram, Facebook, X ou Copiar — sempre com reflexão gerada pela IA.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">📝</div>
-            <div>
-                <div class="help-title">Anotações</div>
-                <div class="help-text">Dê <strong>2 toques rápidos</strong> num versículo para escrever uma anotação. Versículos anotados ganham uma <strong>barra dourada</strong> ao lado. As anotações ficam salvas no aparelho e, com internet, são <strong>sincronizadas na nuvem</strong> automaticamente.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🎨</div><div>
+            <div class="help-title">Gerar a imagem e enviar</div>
+            <div class="help-text">Na tela de compartilhar, toque em <strong>"🎨 Gerar a imagem e enviar"</strong>: a IA cria uma <strong>ilustração</strong> do versículo, o app monta a arte com texto e referência e abre o envio nativo (ou baixe a imagem).</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🎨</div>
-            <div>
-                <div class="help-title">Cores das falas</div>
-                <div class="help-text">Para facilitar a leitura, as <strong>palavras de Deus</strong> aparecem em <strong>azul</strong> e as <strong>palavras de Jesus</strong> em <strong>verde limão</strong>.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">📝</div><div>
+            <div class="help-title">Anotações</div>
+            <div class="help-text">Dê <strong>2 toques</strong> num versículo: se já houver anotação, ela abre para <strong>leitura</strong>, com opções <strong>✏️ Editar / 📋 Copiar / 🗑️ Apagar</strong>; se não houver, abre direto para escrever. Versículos anotados ganham <strong>barra dourada</strong> e são sincronizados na nuvem.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🔊</div>
-            <div>
-                <div class="help-title">Ouvir em voz alta</div>
-                <div class="help-text">Toque em 🔊 para o app ler o capítulo em voz alta, destacando o versículo lido. No player: <strong>⏸ pausa</strong> e <strong>▶ continua</strong> do mesmo versículo, <strong>⏹ para</strong>, <strong>− / +</strong> mudam a velocidade e o seletor troca a voz.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">⭐</div><div>
+            <div class="help-title">Favoritar versículos</div>
+            <div class="help-text">Toque na <strong>☆</strong> ao lado do número do versículo (vira ★ dourada). O botão ⭐ mostra a lista completa.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🔠</div>
-            <div>
-                <div class="help-title">Tamanho da fonte</div>
-                <div class="help-text">Os botões <strong>−</strong> e <strong>+</strong> ao lado do áudio diminuem ou aumentam o texto (de 80% a 200%). No celular o texto fica alinhado à esquerda para uma leitura mais confortável.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">📅</div><div>
+            <div class="help-title">Plano de Leitura</div>
+            <div class="help-text">Toque em 📅 e escolha um plano (Bíblia em 1 ano, 180 ou 90 dias, Novo Testamento, Evangelhos ou Salmos). Veja as leituras do dia, navegue pelos dias e marque concluídos.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">📤</div>
-            <div>
-                <div class="help-title">Compartilhar 1 versículo</div>
-                <div class="help-text">Toque no <strong>número dourado</strong> do versículo. A mensagem já vai com o texto, a referência bíblica, uma <strong>reflexão</strong>, o cabeçalho do app e o link para baixar. Escolha WhatsApp, Instagram, Telegram, Facebook, X ou Copiar.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🔍</div><div>
+            <div class="help-title">Buscar palavras</div>
+            <div class="help-text">Toque em 🔍, digite pelo menos 3 letras e toque num resultado para ir ao capítulo.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">✍️</div>
-            <div>
-                <div class="help-title">Compartilhar vários versículos</div>
-                <div class="help-text"><strong>Segure um versículo por 3 segundos</strong> (ele vai "enchendo" de dourado) para entrar no modo seleção. Depois, toque nos demais versículos para adicionar/remover e toque em <strong>📤 Compartilhar</strong>. Versículos seguidos viram intervalo (ex: João 3:16-18).</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🎨</div><div>
+            <div class="help-title">Cores das falas</div>
+            <div class="help-text"><strong>Palavras de Deus</strong> em <strong>azul</strong> e <strong>palavras de Jesus</strong> em <strong>verde limão</strong>.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🖼️</div>
-            <div>
-                <div class="help-title">Versículo como imagem</div>
-                <div class="help-text">Na tela de compartilhar, toque em <strong>🖼️ Gerar Imagem p/ Instagram</strong>. O app cria uma arte bonita com o versículo, a referência e o crédito do app. No celular, segure a imagem para salvar ou postar; no PC, clique em Baixar.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🔊</div><div>
+            <div class="help-title">Ouvir em voz alta</div>
+            <div class="help-text">Toque em 🔊: <strong>⏸ pausa</strong>, <strong>▶ continua</strong> do mesmo versículo, <strong>⏹ para</strong>, <strong>− / +</strong> velocidade e seletor de voz.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🔖</div>
-            <div>
-                <div class="help-title">Continuar leitura</div>
-                <div class="help-text">Ao abrir o app, uma barra mostra o <strong>último capítulo que você leu</strong> (mesmo de outra versão). Toque nela para continuar de onde parou.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🔠</div><div>
+            <div class="help-title">Tamanho da fonte</div>
+            <div class="help-text">Botões <strong>−</strong> e <strong>+</strong> ao lado do áudio (80% a 200%). No celular o texto fica alinhado à esquerda.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">📲</div>
-            <div>
-                <div class="help-title">Instalar como aplicativo</div>
-                <div class="help-text">Toque em 📲 e siga o passo a passo do seu aparelho: <strong>Android</strong> (menu ⋮ do Chrome → Instalar app), <strong>iPhone</strong> (Safari → Compartilhar → Adicionar à Tela de Início) ou <strong>PC</strong> (ícone ⊕ na barra de endereço). Depois de instalado, o app abre em tela cheia e funciona <strong>100% offline</strong>.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">🔖</div><div>
+            <div class="help-title">Continuar leitura</div>
+            <div class="help-text">Ao abrir o app, a barra mostra o <strong>último capítulo lido</strong>. Toque para continuar.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">✈️</div>
-            <div>
-                <div class="help-title">Modo offline</div>
-                <div class="help-text">Após a primeira visita (ou instalação), todas as Bíblias ficam salvas no aparelho: você pode ler sem internet. Só as anotações na nuvem precisam de conexão.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">📲</div><div>
+            <div class="help-title">Instalar como aplicativo</div>
+            <div class="help-text"><strong>Android</strong> (menu ⋮ do Chrome), <strong>iPhone</strong> (Safari → Compartilhar → Adicionar à Tela de Início) ou <strong>PC</strong> (ícone ⊕). Depois, funciona <strong>100% offline</strong>.</div>
+        </div></div>
 
-        <div class="help-item">
-            <div class="help-icon">🔆</div>
-            <div>
-                <div class="help-title">Tela sempre ativa</div>
-                <div class="help-text">Enquanto você lê, o app tenta manter a tela acesa (em aparelhos compatíveis), para não apagar no meio da leitura.</div>
-            </div>
-        </div>
+        <div class="help-item"><div class="help-icon">✈️</div><div>
+            <div class="help-title">Modo offline</div>
+            <div class="help-text">Após a primeira visita, todas as Bíblias ficam no aparelho. Só anotações na nuvem e a IA precisam de internet.</div>
+        </div></div>
+
+        <div class="help-item"><div class="help-icon">🔆</div><div>
+            <div class="help-title">Tela sempre ativa</div>
+            <div class="help-text">Durante a leitura o app tenta manter a tela acesa (aparelhos compatíveis).</div>
+        </div></div>
 
         <p class="notes-hint" style="margin-top:1rem;">💛 Gostando do app? Ajude esse projeto com um PIX: <strong>91980818289</strong></p>
     </div>
 </div>
 
-<!-- MODAL ANOTAÇÕES -->
+<!-- MODAL ANOTAÇÕES (visualizar → escolher editar) -->
 <div id="modal-notes" class="modal">
     <div class="modal-content modal-large">
-        <div class="modal-header">
-            <h3>📝 Anotações <span id="sync-status" title="Status da sincronização"></span></h3>
-            <span class="close" onclick="closeModal('modal-notes')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>📝 Anotações <span id="sync-status" title="Status da sincronização"></span></h3><span class="close" onclick="closeModal('modal-notes')">&times;</span></div>
         <p id="note-reference" class="note-ref-badge">—</p>
-        <textarea id="note-text" placeholder="Escreva aqui a sua anotação, reflexão ou estudo deste versículo..."></textarea>
-        <div class="notes-actions">
-            <button class="btn-primary" onclick="saveNote()">💾 Salvar Anotação</button>
-            <button class="btn-secondary" onclick="deleteNote()">🗑️ Apagar</button>
+
+        <div id="note-view">
+            <p id="note-view-text"></p>
+            <div class="notes-actions tri">
+                <button class="btn-primary" onclick="enterNoteEdit()">✏️ Editar</button>
+                <button class="btn-secondary" onclick="copyNote()">📋 Copiar</button>
+                <button class="btn-secondary" onclick="deleteNote()">🗑️ Apagar</button>
+            </div>
         </div>
-        <p class="notes-hint">💡 Dê <strong>2 toques</strong> no versículo para anotar · ☁️ salvo neste aparelho e na nuvem.</p>
+
+        <div id="note-edit" style="display:none;">
+            <textarea id="note-text" placeholder="Escreva aqui a sua anotação, reflexão ou estudo deste versículo..."></textarea>
+            <div class="notes-actions">
+                <button class="btn-primary" onclick="saveNote()">💾 Salvar Anotação</button>
+                <button class="btn-secondary" onclick="cancelNoteEdit()">↩️ Cancelar</button>
+            </div>
+        </div>
+
+        <p class="notes-hint">💡 2 toques no versículo abrem a anotação · ☁️ salvo neste aparelho e na nuvem.</p>
     </div>
 </div>
 
 <!-- MODAL COMPARTILHAR -->
 <div id="modal-share" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>Compartilhar</h3>
-            <span class="close" onclick="closeModal('modal-share')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>Compartilhar</h3><span class="close" onclick="closeModal('modal-share')">&times;</span></div>
         <p id="share-text" style="font-style:italic; background:var(--bg-tertiary); padding:1rem; border-left:3px solid var(--accent); border-radius: 0 8px 8px 0; margin-bottom:1rem; line-height: 1.6; white-space: pre-line;"></p>
         <div class="share-grid">
             <a id="share-wa" class="share-btn whatsapp" target="_blank">💬 WhatsApp</a>
@@ -844,72 +430,47 @@
             <a id="share-fb" class="share-btn facebook" target="_blank">f Facebook</a>
             <a id="share-tw" class="share-btn twitter" target="_blank">𝕏 Twitter/X</a>
             <button class="share-btn copy" onclick="copyToClipboard()">📋 Copiar Texto</button>
-            <button class="share-btn imgbtn" onclick="openVerseImage()">🖼️ Gerar Imagem p/ Instagram</button>
+            <button class="share-btn imgbtn" onclick="openVerseImage()">🎨 Gerar a imagem e enviar</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL IMAGEM DO VERSÍCULO -->
+<!-- MODAL IMAGEM -->
 <div id="modal-img" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>🖼️ Imagem do Versículo</h3>
-            <span class="close" onclick="closeModal('modal-img')">&times;</span>
-        </div>
+        <div class="modal-header"><h3>🎨 Imagem do Versículo</h3><span class="close" onclick="closeModal('modal-img')">&times;</span></div>
+        <p id="img-status"></p>
         <img id="verse-img" style="width:100%; border-radius:8px; border:1px solid var(--border);" alt="Versículo">
-        <p class="notes-hint">📱 No celular: segure a imagem para salvar ou compartilhar. 💻 No PC: clique em Baixar.</p>
-        <a id="img-download" class="btn-primary" style="display:block; text-align:center; text-decoration:none;" download="biblia-evilasio.png">⬇️ Baixar Imagem</a>
+        <p class="notes-hint">📱 Toque em Enviar para compartilhar direto, ou segure a imagem para salvar. 💻 No PC: Baixar.</p>
+        <button id="img-share-btn" class="btn-primary" style="display:none; margin-bottom:.6rem;">📤 Enviar imagem agora</button>
+        <a id="img-download" class="btn-primary" style="display:block; text-align:center; text-decoration:none;" download="biblia-evicom.png">⬇️ Baixar Imagem</a>
     </div>
 </div>
 
-<!-- MODAL INSTALAR APP -->
+<!-- MODAL INSTALAR -->
 <div id="modal-install" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>📲 Instalar App</h3>
-            <span class="close" onclick="closeModal('modal-install')">&times;</span>
-        </div>
-        <div class="install-step" data-plat="android">
-            <strong>🤖 Android (Chrome):</strong><br>
-            1. Toque no menu <strong>⋮</strong> do Chrome.<br>
-            2. Escolha <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong>.<br>
-            3. Confirme. O ícone aparecerá na sua tela inicial.
-        </div>
-        <div class="install-step" data-plat="ios">
-            <strong>🍎 iPhone / iPad — use o SAFARI:</strong><br>
-            1. Abra este site no <strong>Safari</strong> (no Chrome do iPhone a opção não existe).<br>
-            2. Toque no botão <strong>Compartilhar</strong> (quadrado com seta ↑).<br>
-            3. Role a lista e toque em <strong>"Adicionar à Tela de Início"</strong>.<br>
-            4. Toque em <strong>"Adicionar"</strong> no canto superior.
-        </div>
-        <div class="install-step" data-plat="pc">
-            <strong>💻 Computador (Chrome/Edge):</strong><br>
-            1. Clique no <strong>ícone de instalar (⊕)</strong> no lado direito da barra de endereço.<br>
-            2. Clique em <strong>"Instalar"</strong>.
-        </div>
-        <p style="font-size:0.85rem; color:var(--text-secondary); text-align:center;">
-            Após instalar, o app funciona 100% offline! ✨
-        </p>
+        <div class="modal-header"><h3>📲 Instalar App</h3><span class="close" onclick="closeModal('modal-install')">&times;</span></div>
+        <div class="install-step" data-plat="android"><strong>🤖 Android (Chrome):</strong><br>1. Toque no menu <strong>⋮</strong>.<br>2. Escolha <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong>.<br>3. Confirme.</div>
+        <div class="install-step" data-plat="ios"><strong>🍎 iPhone / iPad — use o SAFARI:</strong><br>1. Abra no <strong>Safari</strong>.<br>2. Toque em <strong>Compartilhar</strong> (quadrado com seta ↑).<br>3. <strong>"Adicionar à Tela de Início"</strong>.<br>4. <strong>"Adicionar"</strong>.</div>
+        <div class="install-step" data-plat="pc"><strong>💻 Computador (Chrome/Edge):</strong><br>1. Clique no <strong>ícone ⊕</strong> na barra de endereço.<br>2. <strong>"Instalar"</strong>.</div>
+        <p style="font-size:0.85rem; color:var(--text-secondary); text-align:center;">Após instalar, o app funciona 100% offline! ✨</p>
     </div>
 </div>
 
 <script>
     const state = {
-        version: 'arc',
-        bookIndex: 0,
-        chapterIndex: 0,
-        fontSize: 110,
+        version: 'arc', bookIndex: 0, chapterIndex: 0, fontSize: 110,
         data: null,
         notes: JSON.parse(localStorage.getItem('biblia_notas') || '{}'),
         favs: JSON.parse(localStorage.getItem('biblia_favoritos') || '{}'),
-        currentBookName: null,
-        currentChapterNum: null,
-        pendingJump: null
+        currentBookName: null, currentChapterNum: null, pendingJump: null
     };
 
     const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'BC': 'bc' };
-
     const DEUTEROCANONICOS = ['tobias','judite','sabedoria','eclesiastico','siracida','baruc','1macabeus','2macabeus','3macabeus','4macabeus'];
+    const APP_LINK = 'https://biblia-evicom.netlify.app/';
+    const LONG_PRESS_MS = 5000; // segurar 5s até ficar verde
 
     document.addEventListener('DOMContentLoaded', () => {
         renderVersionButtons();
@@ -918,58 +479,34 @@
         cloudLoad();
         requestWakeLock();
         checkContinue();
-
-        if (isAppInstalled()) {
-            document.getElementById('install-btn').style.display = 'none';
-        }
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') requestWakeLock();
-        });
+        if (isAppInstalled()) document.getElementById('install-btn').style.display = 'none';
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
         document.addEventListener('touchend', () => requestWakeLock(), { passive: true });
     });
 
-    // ===== TELA SEMPRE ATIVA =====
+    // ===== TELA ATIVA =====
     let wakeLock = null;
     async function requestWakeLock() {
-        if (!('wakeLock' in navigator)) return;
-        if (wakeLock) return;
-        try {
-            wakeLock = await navigator.wakeLock.request('screen');
-            wakeLock.addEventListener('release', () => { wakeLock = null; });
-        } catch (err) {
-            wakeLock = null;
-        }
+        if (!('wakeLock' in navigator) || wakeLock) return;
+        try { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); }
+        catch (err) { wakeLock = null; }
     }
 
     function isAppInstalled() {
-        return window.matchMedia('(display-mode: standalone)').matches ||
-               window.navigator.standalone === true;
+        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     }
 
-    // ===== PWA: SERVICE WORKER =====
+    // ===== SW =====
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => {
-                    console.log('✅ Service Worker registrado:', reg.scope);
-                    reg.update();
-                })
-                .catch(err => console.error('❌ Erro ao registrar SW:', err));
+            navigator.serviceWorker.register('sw.js').then(reg => reg.update()).catch(err => console.error(err));
         });
     }
 
-    // ===== PWA: INSTALAÇÃO =====
+    // ===== INSTALAÇÃO =====
     let deferredPrompt = null;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-    });
-
-    window.addEventListener('appinstalled', () => {
-        document.getElementById('install-btn').style.display = 'none';
-    });
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+    window.addEventListener('appinstalled', () => { document.getElementById('install-btn').style.display = 'none'; });
 
     function detectPlatform() {
         const ua = navigator.userAgent;
@@ -979,68 +516,41 @@
     }
 
     function installApp() {
-        if (isAppInstalled()) {
-            alert('✅ O app já está instalado neste aparelho!');
-            return;
-        }
+        if (isAppInstalled()) { alert('✅ O app já está instalado neste aparelho!'); return; }
         if (deferredPrompt) {
             deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') {
-                    document.getElementById('install-btn').style.display = 'none';
-                }
-                deferredPrompt = null;
-            });
+            deferredPrompt.userChoice.then(c => { if (c.outcome === 'accepted') document.getElementById('install-btn').style.display = 'none'; deferredPrompt = null; });
             return;
         }
         const plat = detectPlatform();
-        document.querySelectorAll('.install-step').forEach(el => {
-            el.style.display = (el.dataset.plat === plat) ? 'block' : 'none';
-        });
+        document.querySelectorAll('.install-step').forEach(el => { el.style.display = (el.dataset.plat === plat) ? 'block' : 'none'; });
         openModal('modal-install');
     }
 
-    // =====================================================
-    // ===== 🔖 CONTINUAR LEITURA =====
-    // =====================================================
+    // ===== CONTINUAR LEITURA =====
     let pendingContinue = null;
-
     function saveLastReading() {
         const book = state.data[state.bookIndex];
-        localStorage.setItem('biblia_ultima_leitura', JSON.stringify({
-            version: state.version,
-            book: book.name,
-            chapter: state.chapterIndex + 1
-        }));
+        localStorage.setItem('biblia_ultima_leitura', JSON.stringify({ version: state.version, book: book.name, chapter: state.chapterIndex + 1 }));
     }
-
     function checkContinue() {
         const saved = JSON.parse(localStorage.getItem('biblia_ultima_leitura') || 'null');
-        if (!saved) return;
-        if (saved.version === 'arc' && saved.book === 'Gênesis' && saved.chapter === 1) return;
+        if (!saved || (saved.version === 'arc' && saved.book === 'Gênesis' && saved.chapter === 1)) return;
         pendingContinue = saved;
         document.getElementById('continue-ref').textContent = `${saved.book} ${saved.chapter}`;
         document.getElementById('continue-bar').classList.add('visible');
     }
-
     function goContinue() {
         const saved = pendingContinue;
         document.getElementById('continue-bar').classList.remove('visible');
         if (!saved || !state.data) return;
         if (saved.version !== state.version) {
             state.pendingJump = { book: saved.book, chapter: saved.chapter };
-            const label = Object.keys(versions).find(k => versions[k] === saved.version) || 'ARC';
-            loadVersion(label);
-        } else {
-            jumpToBookChapter(saved.book, saved.chapter);
-        }
+            loadVersion(Object.keys(versions).find(k => versions[k] === saved.version) || 'ARC');
+        } else jumpToBookChapter(saved.book, saved.chapter);
         pendingContinue = null;
     }
-
-    function dismissContinue() {
-        pendingContinue = null;
-        document.getElementById('continue-bar').classList.remove('visible');
-    }
+    function dismissContinue() { pendingContinue = null; document.getElementById('continue-bar').classList.remove('visible'); }
 
     function jumpToBookChapter(bookName, chapter, verse) {
         const bIdx = state.data.findIndex(b => b.name === bookName);
@@ -1049,16 +559,10 @@
         state.chapterIndex = Math.min(Math.max(chapter, 1), state.data[bIdx].chapters.length) - 1;
         updateBookChapterSelectors();
         renderChapter();
-        if (verse) {
-            setTimeout(() => {
-                const el = document.querySelectorAll('.versiculo')[verse - 1];
-                if (el) {
-                    el.classList.add('versiculo-destaque');
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => el.classList.remove('versiculo-destaque'), 3000);
-                }
-            }, 200);
-        }
+        if (verse) setTimeout(() => {
+            const el = document.querySelectorAll('.versiculo')[verse - 1];
+            if (el) { el.classList.add('versiculo-destaque'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('versiculo-destaque'), 3000); }
+        }, 200);
     }
 
     // =====================================================
@@ -1141,71 +645,47 @@
     }
 
     // =====================================================
-    // ===== NORMALIZADOR UNIVERSAL DE JSON BÍBLICO =====
+    // ===== NORMALIZADOR DE JSON BÍBLICO =====
     // =====================================================
     function normalizeBibleData(raw) {
         const chapterToVerses = (ch) => {
-            if (Array.isArray(ch)) {
-                return ch.map(v => (typeof v === 'string') ? v : (v.texto || v.text || v.verse || v.content || '')).filter(t => t);
-            }
+            if (Array.isArray(ch)) return ch.map(v => (typeof v === 'string') ? v : (v.texto || v.text || v.verse || v.content || '')).filter(t => t);
             if (ch && typeof ch === 'object') {
                 const arr = ch.versiculos || ch.verses || ch.vs || null;
-                if (Array.isArray(arr)) {
-                    return arr.map(v => (typeof v === 'string') ? v : (v.texto || v.text || v.verse || v.content || '')).filter(t => t);
-                }
-                return Object.keys(ch).sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(k => (typeof ch[k] === 'string') ? ch[k] : (ch[k] && (ch[k].texto || ch[k].text)) || '')
-                    .filter(t => t);
+                if (Array.isArray(arr)) return arr.map(v => (typeof v === 'string') ? v : (v.texto || v.text || v.verse || v.content || '')).filter(t => t);
+                return Object.keys(ch).sort((a, b) => parseInt(a) - parseInt(b)).map(k => (typeof ch[k] === 'string') ? ch[k] : (ch[k] && (ch[k].texto || ch[k].text)) || '').filter(t => t);
             }
             return [];
         };
-
         const bookToStandard = (b) => {
             if (!b || typeof b !== 'object') return null;
             const name = b.name || b.nome || b.livro || b.title || b.titulo || b.book || null;
             const chaptersRaw = b.chapters || b.capitulos || b.ch || null;
             if (!name || !chaptersRaw) return null;
-
             let chaptersArr = null;
             if (Array.isArray(chaptersRaw)) chaptersArr = chaptersRaw;
-            else if (typeof chaptersRaw === 'object') {
-                chaptersArr = Object.keys(chaptersRaw).sort((a, b) => parseInt(a) - parseInt(b)).map(k => chaptersRaw[k]);
-            }
+            else if (typeof chaptersRaw === 'object') chaptersArr = Object.keys(chaptersRaw).sort((a, b) => parseInt(a) - parseInt(b)).map(k => chaptersRaw[k]);
             if (!chaptersArr) return null;
-
             const chapters = chaptersArr.map(chapterToVerses).filter(c => c.length);
             return chapters.length ? { name, chapters } : null;
         };
-
-        if (Array.isArray(raw)) {
-            const books = raw.map(bookToStandard).filter(Boolean);
-            return books.length ? books : null;
-        }
-
+        if (Array.isArray(raw)) { const books = raw.map(bookToStandard).filter(Boolean); return books.length ? books : null; }
         if (raw && typeof raw === 'object') {
             const arr = raw.books || raw.livros || raw.Bible || raw.bible || null;
-            if (Array.isArray(arr)) {
-                const books = arr.map(bookToStandard).filter(Boolean);
-                if (books.length) return books;
-            }
-
+            if (Array.isArray(arr)) { const books = arr.map(bookToStandard).filter(Boolean); if (books.length) return books; }
             const books = [];
             for (const [bookName, chaptersObj] of Object.entries(raw)) {
                 if (!chaptersObj || typeof chaptersObj !== 'object') continue;
-                const chapters = Object.keys(chaptersObj)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(k => chapterToVerses(chaptersObj[k]))
-                    .filter(c => c.length);
+                const chapters = Object.keys(chaptersObj).sort((a, b) => parseInt(a) - parseInt(b)).map(k => chapterToVerses(chaptersObj[k])).filter(c => c.length);
                 if (chapters.length) books.push({ name: bookName, chapters });
             }
             if (books.length) return books;
         }
-
         return null;
     }
 
     // =====================================================
-    // ===== BÍBLIA: CARREGAMENTO E LEITURA =====
+    // ===== LEITURA =====
     // =====================================================
     function renderVersionButtons() {
         const container = document.getElementById('version-buttons');
@@ -1228,68 +708,43 @@
             state.currentBookName = state.data[state.bookIndex]?.name;
             state.currentChapterNum = state.chapterIndex + 1;
         }
-
         state.version = versions[versionLabel];
         document.getElementById('loading').style.display = 'block';
         document.getElementById('leitor-biblia').innerHTML = '';
-        
-        document.querySelectorAll('.version-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.textContent === versionLabel);
-        });
-
+        document.querySelectorAll('.version-btn').forEach(btn => btn.classList.toggle('active', btn.textContent === versionLabel));
         try {
             const response = await fetch(`pt-br/${state.version}.json`);
             if (!response.ok) throw new Error('Falha ao carregar');
-            const rawDados = await response.json();
-            state.data = normalizeBibleData(rawDados);
-            if (!state.data) throw new Error('Formato do JSON não reconhecido');
-            
+            state.data = normalizeBibleData(await response.json());
+            if (!state.data) throw new Error('Formato não reconhecido');
             if (state.currentBookName) {
                 const bookIdx = state.data.findIndex(b => b.name === state.currentBookName);
                 if (bookIdx !== -1) {
                     state.bookIndex = bookIdx;
-                    const targetChapter = state.currentChapterNum - 1;
-                    state.chapterIndex = (targetChapter >= 0 && targetChapter < state.data[bookIdx].chapters.length) ? targetChapter : 0;
-                } else {
-                    state.bookIndex = 0;
-                    state.chapterIndex = 0;
-                }
-            } else {
-                state.bookIndex = 0;
-                state.chapterIndex = 0;
-            }
-            
+                    const t = state.currentChapterNum - 1;
+                    state.chapterIndex = (t >= 0 && t < state.data[bookIdx].chapters.length) ? t : 0;
+                } else { state.bookIndex = 0; state.chapterIndex = 0; }
+            } else { state.bookIndex = 0; state.chapterIndex = 0; }
             updateBookChapterSelectors();
             renderChapter();
         } catch (error) {
-            console.error("Erro ao carregar a versão:", error);
-            document.getElementById('leitor-biblia').innerHTML = 
-                `<p style="color:#ef4444; text-align:center; padding: 2rem;">Erro ao carregar os dados. Verifique se a pasta <strong>pt-br/</strong> e o arquivo <strong>${state.version}.json</strong> existem e se o formato do JSON é válido.</p>`;
-        } finally {
-            document.getElementById('loading').style.display = 'none';
-        }
+            console.error(error);
+            document.getElementById('leitor-biblia').innerHTML = `<p style="color:#ef4444; text-align:center; padding:2rem;">Erro ao carregar os dados. Verifique a pasta <strong>pt-br/</strong> e o arquivo <strong>${state.version}.json</strong>.</p>`;
+        } finally { document.getElementById('loading').style.display = 'none'; }
     }
 
-    // =====================================================
-    // ===== DESTAQUE DAS FALAS (DEUS = AZUL / JESUS = VERDE LIMÃO) =====
-    // =====================================================
     function processVerseText(text) {
         const colonIndex = text.search(/[:：]/);
         if (colonIndex === -1) return text;
-
         const intro = text.slice(0, colonIndex + 1);
         const speech = text.slice(colonIndex + 1);
         if (!speech.trim()) return text;
-
         const introLower = intro.toLowerCase();
-
         const hasSpeechVerb = /(disse|disser|dizia|diz\b|dizer|dize\b|respondeu|respondendo|responde\b|falou|fala\b|falando|falar|perguntou|perguntando|exclamou|declarou|ordenou|mandou|dizendo)/.test(introLower);
         if (!hasSpeechVerb) return text;
-
         const isJesus = /jesus/.test(introLower);
         const addressedToGod = /(ao senhor|a deus|ao seu deus|perante o senhor|diante do senhor)/.test(introLower);
         const isGod = !addressedToGod && /(deus|senhor|yahweh|jeová|todo-poderoso)/.test(introLower);
-
         if (isJesus) return intro + '<span class="palavras-jesus">' + speech + '</span>';
         if (isGod) return intro + '<span class="palavras-deus">' + speech + '</span>';
         return text;
@@ -1300,9 +755,9 @@
         const book = state.data[state.bookIndex];
         document.querySelectorAll('.versiculo').forEach((el, i) => {
             const ref = `${book.name} ${state.chapterIndex + 1}:${i + 1}`;
-            const hasNote = !!state.notes[ref];
-            el.classList.toggle('versiculo-com-nota', hasNote);
-            if (hasNote) el.title = '📝 Possui anotação — dê 2 toques para ver/editar';
+            const has = !!state.notes[ref];
+            el.classList.toggle('versiculo-com-nota', has);
+            if (has) el.title = '📝 Possui anotação — 2 toques para ver';
         });
     }
 
@@ -1314,33 +769,25 @@
         });
     }
 
-    // =====================================================
-    // ===== ⭐ FAVORITOS =====
-    // =====================================================
+    // ===== FAVORITOS =====
     function toggleFav(ref, text) {
-        if (state.favs[ref]) delete state.favs[ref];
-        else state.favs[ref] = text;
+        if (state.favs[ref]) delete state.favs[ref]; else state.favs[ref] = text;
         localStorage.setItem('biblia_favoritos', JSON.stringify(state.favs));
         updateFavMarkers();
     }
-
     function renderFavs() {
         const list = document.getElementById('favs-list');
         const refs = Object.keys(state.favs);
-        if (!refs.length) {
-            list.innerHTML = '<p style="color:var(--text-secondary); text-align:center; font-size:.9rem;">Nenhum favorito ainda.<br>Toque na ☆ ao lado do número do versículo para salvar. ⭐</p>';
-            return;
-        }
+        if (!refs.length) { list.innerHTML = '<p style="color:var(--text-secondary); text-align:center; font-size:.9rem;">Nenhum favorito ainda.<br>Toque na ☆ ao lado do número do versículo. ⭐</p>'; return; }
         list.innerHTML = refs.map(ref => `
             <div class="saved-note-item" style="display:flex; justify-content:space-between; gap:.6rem; align-items:center;">
                 <div style="flex:1;" onclick="openFav('${ref.replace(/'/g, "\\'")}')">
                     <div style="color:var(--accent); font-weight:600; font-size:.85rem;">⭐ ${ref}</div>
                     <div style="font-size:.85rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${state.favs[ref]}</div>
                 </div>
-                <button class="player-btn" title="Remover favorito" onclick="toggleFav('${ref.replace(/'/g, "\\'")}',''); renderFavs();">🗑</button>
+                <button class="player-btn" title="Remover" onclick="toggleFav('${ref.replace(/'/g, "\\'")}',''); renderFavs();">🗑</button>
             </div>`).join('');
     }
-
     function openFav(ref) {
         const m = ref.match(/^(.*)\s+(\d+):(\d+)$/);
         if (!m) return;
@@ -1348,25 +795,14 @@
         jumpToBookChapter(m[1], parseInt(m[2], 10), parseInt(m[3], 10));
     }
 
-    // =====================================================
-    // ===== SELEÇÃO POR PRESSIONAR 3s + COMPARTILHAR =====
-    // =====================================================
-    const APP_LINK = 'https://evicom.github.io/biblia-evilasio/';
-    const LONG_PRESS_MS = 3000;
-    let selectionMode = false;
-    let selectedVerses = new Set();
-    let pressTimer = null;
-    let suppressClick = false;
-    let lastShareBlocks = [];
-    let lastTap = { el: null, time: 0 };
+    // ===== SELEÇÃO 5s + COMPARTILHAR =====
+    let selectionMode = false, selectedVerses = new Set(), pressTimer = null, suppressClick = false;
+    let lastShareBlocks = [], lastTap = { el: null, time: 0 };
 
     function shareHeader() {
-        return `📖 BÍBLIA EVILASIO\n✍️ Criado por José Evilasio Marques\n📲 Baixe o app: ${APP_LINK}\n💛 Ajude esse projeto: PIX 91980818289\n━━━━━━━━━━━━━━\n\n`;
+        return `📖 BÍBLIA EVICOM\n✍️ Criado por José Evilasio Marques\n📲 Baixe o app: ${APP_LINK}\n━━━━━━━━━━━━━━\n\n`;
     }
-
-    function shareFooter() {
-        return `\n\n━━━━━━━━━━━━━━\nVersão: ${state.version.toUpperCase()}`;
-    }
+    function shareFooter() { return `\n\n━━━━━━━━━━━━━━\nVersão: ${state.version.toUpperCase()}`; }
 
     const REFLEXOES = [
         '🙏 Reflexão: Que esta Palavra ilumine o seu dia e fortaleça a sua fé.',
@@ -1380,20 +816,37 @@
         '🙏 Reflexão: Deixe que este versículo transforme a sua maneira de pensar hoje.',
         '🙏 Reflexão: O Senhor é fiel: o que Ele prometeu, Ele é poderoso para cumprir.'
     ];
+    function pickReflexao(ref) { let h = 0; for (const ch of ref) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return REFLEXOES[h % REFLEXOES.length]; }
 
-    function pickReflexao(ref) {
-        let h = 0;
-        for (const ch of ref) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-        return REFLEXOES[h % REFLEXOES.length];
+    async function generateReflection(blocks) {
+        const texto = blocks.map(b => `"${b.text}" (${b.ref})`).join('\n');
+        const r = await geminiText(
+            `${SYSTEM_EVANG}\n\nEscreva UMA reflexão curta (máximo 2 frases) para acompanhar estes versículos em um compartilhamento. Comece exatamente com "🙏 Reflexão: ".\n\nVersículos:\n${texto}`,
+            { temperature: 0.8, maxOutputTokens: 200 }
+        );
+        return r || pickReflexao(blocks.map(b => b.ref).join('; '));
     }
 
-    function buildShareText(blocks) {
-        const refsStr = blocks.map(b => b.ref).join('; ');
-        return shareHeader() +
-            blocks.map(b => `"${b.text}"\n${b.ref}`).join('\n\n') +
-            `\n\n${pickReflexao(refsStr)}` +
-            shareFooter();
+    function setShareText(fullText) {
+        const encodedText = encodeURIComponent(fullText);
+        const url = encodeURIComponent(APP_LINK);
+        document.getElementById('share-text').textContent = fullText;
+        document.getElementById('share-wa').href = `https://wa.me/?text=${encodedText}`;
+        document.getElementById('share-ig').href = `https://www.instagram.com/`;
+        document.getElementById('share-tg').href = `https://t.me/share/url?url=${url}&text=${encodedText}`;
+        document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        document.getElementById('share-tw').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
     }
+
+    async function showShare() {
+        const base = shareHeader() + lastShareBlocks.map(b => `"${b.text}"\n${b.ref}`).join('\n\n');
+        setShareText(base + '\n\n🤔 Gerando reflexão pela IA...');
+        openModal('modal-share');
+        const refl = await generateReflection(lastShareBlocks);
+        setShareText(base + '\n\n' + refl + shareFooter());
+    }
+
+    function openShareModal(ref, text) { lastShareBlocks = [{ text, ref }]; showShare(); }
 
     function startPress(el, index) {
         if (selectionMode) return;
@@ -1406,68 +859,39 @@
             enterSelectionMode(index, el);
         }, LONG_PRESS_MS);
     }
-
-    function endPress(el) {
-        clearTimeout(pressTimer);
-        if (el) el.classList.remove('versiculo-pressionando');
-    }
-
+    function endPress(el) { clearTimeout(pressTimer); if (el) el.classList.remove('versiculo-pressionando'); }
     function enterSelectionMode(index, el) {
-        selectionMode = true;
-        selectedVerses.clear();
+        selectionMode = true; selectedVerses.clear();
         document.querySelectorAll('.versiculo').forEach(v => v.classList.remove('versiculo-selecionado'));
-        selectedVerses.add(index);
-        el.classList.add('versiculo-selecionado');
-        updateSelectionBar();
-        document.getElementById('selection-bar').classList.add('visible');
+        selectedVerses.add(index); el.classList.add('versiculo-selecionado');
+        updateSelectionBar(); document.getElementById('selection-bar').classList.add('visible');
     }
-
     function toggleVerse(index, el) {
-        if (selectedVerses.has(index)) selectedVerses.delete(index);
-        else selectedVerses.add(index);
+        if (selectedVerses.has(index)) selectedVerses.delete(index); else selectedVerses.add(index);
         el.classList.toggle('versiculo-selecionado', selectedVerses.has(index));
         if (selectedVerses.size === 0) { exitSelectionMode(); return; }
         updateSelectionBar();
     }
-
     function updateSelectionBar() {
-        document.getElementById('selection-count').textContent =
-            selectedVerses.size === 1 ? '1 versículo selecionado' : `${selectedVerses.size} versículos selecionados`;
+        document.getElementById('selection-count').textContent = selectedVerses.size === 1 ? '1 versículo selecionado' : `${selectedVerses.size} versículos selecionados`;
     }
-
     function exitSelectionMode() {
-        selectionMode = false;
-        selectedVerses.clear();
-        lastTap = { el: null, time: 0 };
+        selectionMode = false; selectedVerses.clear(); lastTap = { el: null, time: 0 };
         document.querySelectorAll('.versiculo').forEach(v => v.classList.remove('versiculo-selecionado', 'versiculo-pressionando'));
         document.getElementById('selection-bar').classList.remove('visible');
     }
-
     function shareSelected() {
-        const book = state.data[state.bookIndex];
-        const chapter = book.chapters[state.chapterIndex];
+        const book = state.data[state.bookIndex], chapter = book.chapters[state.chapterIndex];
         const idxs = [...selectedVerses].sort((a, b) => a - b);
-
         const groups = [];
-        idxs.forEach(i => {
-            const last = groups[groups.length - 1];
-            if (last && i === last.end + 1) last.end = i;
-            else groups.push({ start: i, end: i });
-        });
-
-        const blocks = groups.map(g => {
-            const texts = [];
-            for (let i = g.start; i <= g.end; i++) texts.push(chapter[i]);
-            const ref = g.start === g.end
-                ? `${book.name} ${state.chapterIndex + 1}:${g.start + 1}`
-                : `${book.name} ${state.chapterIndex + 1}:${g.start + 1}-${g.end + 1}`;
+        idxs.forEach(i => { const last = groups[groups.length - 1]; if (last && i === last.end + 1) last.end = i; else groups.push({ start: i, end: i }); });
+        lastShareBlocks = groups.map(g => {
+            const texts = []; for (let i = g.start; i <= g.end; i++) texts.push(chapter[i]);
+            const ref = g.start === g.end ? `${book.name} ${state.chapterIndex + 1}:${g.start + 1}` : `${book.name} ${state.chapterIndex + 1}:${g.start + 1}-${g.end + 1}`;
             return { text: texts.join(' '), ref };
         });
-
-        lastShareBlocks = blocks;
-        setShareLinks(buildShareText(blocks));
-        openModal('modal-share');
         exitSelectionMode();
+        showShare();
     }
 
     // =====================================================
@@ -1505,7 +929,7 @@
         ctx.textAlign = 'center';
         ctx.fillStyle = '#d4af37';
         ctx.font = 'bold 46px Georgia, serif';
-        ctx.fillText('BÍBLIA EVILASIO', W / 2, 140);
+        ctx.fillText('BÍBLIA', W / 2, 140);
         ctx.fillStyle = '#a0a0a0';
         ctx.font = '30px Georgia, serif';
         ctx.fillText('✦ ✦ ✦', W / 2, 190);
@@ -1529,7 +953,7 @@
 
         ctx.fillStyle = '#d4af37';
         ctx.font = 'bold 32px Georgia, serif';
-        ctx.fillText('Ajude esse trabalho com um PIX 91980818289', W / 2, H - 150);
+        ctx.fillText(',', W / 2, H - 150);
         ctx.fillStyle = '#a0a0a0';
         ctx.font = '28px Georgia, serif';
         ctx.fillText('evicom.github.io/biblia-evilasio', W / 2, H - 100);
@@ -1547,9 +971,7 @@
         openModal('modal-img');
     }
 
-    // =====================================================
-    // ===== 📅 PLANO DE LEITURA =====
-    // =====================================================
+    // ===== 📅 PLANO =====
     const PLANS = [
         { id: 'biblia365', nome: '📖 Bíblia completa em 1 ano (365 dias)', dias: 365, corpus: 'all' },
         { id: 'biblia180', nome: '📖 Bíblia completa em 180 dias', dias: 180, corpus: 'all' },
@@ -1560,29 +982,22 @@
     ];
     let plano = JSON.parse(localStorage.getItem('biblia_plano') || 'null');
     let planoDayView = 0;
-
     function savePlano() { localStorage.setItem('biblia_plano', JSON.stringify(plano)); }
-
-    function localDateStr() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
+    function localDateStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+    function normalizeText(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim(); }
     function getCorpusChapters(corpus) {
         const ntStart = state.data.findIndex(b => normalizeText(b.name).includes('mateus'));
         const list = [];
         state.data.forEach((book, bi) => {
-            const n = normalizeText(book.name);
-            let inc = false;
+            const n = normalizeText(book.name); let inc = false;
             if (corpus === 'all') inc = true;
             else if (corpus === 'nt') inc = (ntStart !== -1 && bi >= ntStart);
             else if (corpus === 'salmos') inc = n.includes('salmos');
-            else if (corpus === 'evangelhos') inc = ['mateus', 'marcos', 'lucas', 'joao'].some(g => n === g || n.startsWith(g + ' '));
+            else if (corpus === 'evangelhos') inc = ['mateus','marcos','lucas','joao'].some(g => n === g || n.startsWith(g + ' '));
             if (inc) book.chapters.forEach((_, ci) => list.push({ book: book.name, cap: ci + 1 }));
         });
         return list;
     }
-
     function buildPlanDays(plan) {
         const chapters = getCorpusChapters(plan.corpus);
         const per = Math.max(1, Math.ceil(chapters.length / plan.dias));
@@ -1590,113 +1005,55 @@
         for (let i = 0; i < chapters.length; i += per) days.push(chapters.slice(i, i + per));
         return days;
     }
-
-    function openPlano() {
-        if (!state.data) return;
-        renderPlano();
-        openModal('modal-plano');
-    }
-
+    function openPlano() { if (!state.data) return; renderPlano(); openModal('modal-plano'); }
     function renderPlano() {
         const box = document.getElementById('plano-content');
         if (!plano || !plano.planId) {
-            box.innerHTML = `<p class="plano-hint">Escolha um plano — a contagem começa <strong>hoje</strong> e seu progresso fica salvo:</p>` +
-                PLANS.map(p => `<button class="btn-secondary plano-opt" onclick="startPlan('${p.id}')">${p.nome}</button>`).join('');
+            box.innerHTML = `<p class="plano-hint">Escolha um plano — a contagem começa <strong>hoje</strong>:</p>` + PLANS.map(p => `<button class="btn-secondary plano-opt" onclick="startPlan('${p.id}')">${p.nome}</button>`).join('');
             return;
         }
         const plan = PLANS.find(p => p.id === plano.planId);
         if (!plan) { plano = null; savePlano(); return renderPlano(); }
-
         const days = buildPlanDays(plan);
         const start = new Date(plano.start + 'T00:00:00');
         const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
         const todayNum = Math.max(1, Math.floor((hoje - start) / 86400000) + 1);
-
-        if (planoDayView < 1 || planoDayView > days.length) {
-            planoDayView = Math.min(Math.max(todayNum, 1), days.length);
-        }
+        if (planoDayView < 1 || planoDayView > days.length) planoDayView = Math.min(Math.max(todayNum, 1), days.length);
         const day = planoDayView;
         const done = (plano.done || []).includes(day);
         const doneCount = (plano.done || []).filter(d => d <= days.length).length;
         const pct = Math.round((doneCount / days.length) * 100);
         const readings = days[day - 1] || [];
-
         box.innerHTML = `
-            <div class="plano-top">
-                <strong style="color:var(--accent)">${plan.nome}</strong>
-                <span style="font-size:.85rem;color:var(--text-secondary)">${doneCount}/${days.length} dias · ${pct}%</span>
-            </div>
+            <div class="plano-top"><strong style="color:var(--accent)">${plan.nome}</strong><span style="font-size:.85rem;color:var(--text-secondary)">${doneCount}/${days.length} dias · ${pct}%</span></div>
             <div class="plano-progress"><div style="width:${pct}%"></div></div>
-            <div class="plano-daynav">
-                <button class="player-btn" onclick="planoNav(-1)">◀</button>
-                <span style="font-weight:700">Dia ${day}${day === todayNum ? ' (hoje)' : ''}</span>
-                <button class="player-btn" onclick="planoNav(1)">▶</button>
-            </div>
-            <div class="plano-reads">
-                ${readings.map(r => `<button class="btn-secondary plano-read" onclick="openReading('${r.book.replace(/'/g, "\\'")}', ${r.cap})">📖 ${r.book} ${r.cap}</button>`).join('')}
-            </div>
+            <div class="plano-daynav"><button class="player-btn" onclick="planoNav(-1)">◀</button><span style="font-weight:700">Dia ${day}${day === todayNum ? ' (hoje)' : ''}</span><button class="player-btn" onclick="planoNav(1)">▶</button></div>
+            <div class="plano-reads">${readings.map(r => `<button class="btn-secondary plano-read" onclick="openReading('${r.book.replace(/'/g, "\\'")}', ${r.cap})">📖 ${r.book} ${r.cap}</button>`).join('')}</div>
             <button class="btn-primary" onclick="togglePlanoDone(${day})">${done ? '↩️ Desmarcar dia concluído' : '✅ Marcar dia como concluído'}</button>
-            <button class="btn-secondary" style="margin-top:.5rem" onclick="resetPlano()">🔄 Trocar / recomeçar plano</button>
-        `;
+            <button class="btn-secondary" style="margin-top:.5rem" onclick="resetPlano()">🔄 Trocar / recomeçar plano</button>`;
     }
+    function startPlan(id) { plano = { planId: id, start: localDateStr(), done: [] }; planoDayView = 1; savePlano(); renderPlano(); }
+    function planoNav(d) { planoDayView += d; renderPlano(); }
+    function togglePlanoDone(day) { plano.done = plano.done || []; const i = plano.done.indexOf(day); if (i > -1) plano.done.splice(i, 1); else plano.done.push(day); savePlano(); renderPlano(); }
+    function resetPlano() { plano = null; planoDayView = 0; savePlano(); renderPlano(); }
+    function openReading(bookName, cap) { closeModal('modal-plano'); jumpToBookChapter(bookName, cap); }
 
-    function startPlan(id) {
-        plano = { planId: id, start: localDateStr(), done: [] };
-        planoDayView = 1;
-        savePlano();
-        renderPlano();
-    }
-
-    function planoNav(d) {
-        planoDayView += d;
-        renderPlano();
-    }
-
-    function togglePlanoDone(day) {
-        plano.done = plano.done || [];
-        const i = plano.done.indexOf(day);
-        if (i > -1) plano.done.splice(i, 1);
-        else plano.done.push(day);
-        savePlano();
-        renderPlano();
-    }
-
-    function resetPlano() {
-        plano = null;
-        planoDayView = 0;
-        savePlano();
-        renderPlano();
-    }
-
-    function openReading(bookName, cap) {
-        closeModal('modal-plano');
-        jumpToBookChapter(bookName, cap);
-    }
-
-    // =====================================================
-    // ===== RENDERIZAÇÃO DO CAPÍTULO =====
-    // =====================================================
+    // ===== CAPÍTULO =====
     function renderChapter() {
         if (tts.speaking) stopSpeech();
         exitSelectionMode();
-
-        const book = state.data[state.bookIndex];
-        const chapter = book.chapters[state.chapterIndex];
+        const book = state.data[state.bookIndex], chapter = book.chapters[state.chapterIndex];
         const reader = document.getElementById('leitor-biblia');
-        
         reader.innerHTML = `<h2 class="capitulo-titulo">${book.name} ${state.chapterIndex + 1}</h2>`;
         document.getElementById('current-reference').textContent = `${book.name} ${state.chapterIndex + 1}`;
-
         chapter.forEach((verseText, index) => {
             const verseNum = index + 1;
             const ref = `${book.name} ${state.chapterIndex + 1}:${verseNum}`;
             const processedText = processVerseText(verseText);
             const safeText = verseText.replace(/'/g, "\\'");
-            
             const p = document.createElement('p');
             p.className = 'versiculo';
             p.innerHTML = `<sup class="num-verso" onclick="event.stopPropagation(); openShareModal('${ref}', '${safeText}')">${verseNum}</sup><sup class="fav-btn" data-ref="${ref}" onclick="event.stopPropagation(); toggleFav(this.dataset.ref, '${safeText}')">☆</sup> ${processedText}`;
-
             p.addEventListener('touchstart', () => startPress(p, index), { passive: true });
             p.addEventListener('touchend', () => endPress(p));
             p.addEventListener('touchmove', () => endPress(p));
@@ -1704,100 +1061,58 @@
             p.addEventListener('mouseup', () => endPress(p));
             p.addEventListener('mouseleave', () => endPress(p));
             p.addEventListener('contextmenu', (e) => e.preventDefault());
-
             p.onclick = () => {
                 if (suppressClick) { suppressClick = false; return; }
                 if (selectionMode) { toggleVerse(index, p); return; }
                 const now = Date.now();
-                if (lastTap.el === p && now - lastTap.time < 400) {
-                    lastTap = { el: null, time: 0 };
-                    openNoteModal(ref, verseText);
-                } else {
-                    lastTap = { el: p, time: now };
-                }
+                if (lastTap.el === p && now - lastTap.time < 400) { lastTap = { el: null, time: 0 }; openNoteModal(ref, verseText); }
+                else lastTap = { el: p, time: now };
             };
-
             reader.appendChild(p);
         });
-
         const bottomNav = document.createElement('div');
         bottomNav.className = 'bottom-nav';
-        bottomNav.innerHTML = `
-            <button class="nav-btn" onclick="changeChapter(-1)">◀ Anterior</button>
-            <button class="nav-btn" onclick="changeChapter(1)">Próximo ▶</button>`;
+        bottomNav.innerHTML = `<button class="nav-btn" onclick="changeChapter(-1)">◀ Anterior</button><button class="nav-btn" onclick="changeChapter(1)">Próximo ▶</button>`;
         reader.appendChild(bottomNav);
-
-        updateNoteMarkers();
-        updateFavMarkers();
-        saveLastReading();
-        
+        updateNoteMarkers(); updateFavMarkers(); saveLastReading();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function changeChapter(direction) {
         const book = state.data[state.bookIndex];
-        const newChapter = state.chapterIndex + direction;
-        
-        if (newChapter >= 0 && newChapter < book.chapters.length) {
-            state.chapterIndex = newChapter;
-            renderChapter();
-        } else if (direction > 0 && state.bookIndex < state.data.length - 1) {
-            state.bookIndex++;
-            state.chapterIndex = 0;
-            renderChapter();
-        } else if (direction < 0 && state.bookIndex > 0) {
-            state.bookIndex--;
-            state.chapterIndex = state.data[state.bookIndex].chapters.length - 1;
-            renderChapter();
-        }
+        const nc = state.chapterIndex + direction;
+        if (nc >= 0 && nc < book.chapters.length) { state.chapterIndex = nc; renderChapter(); }
+        else if (direction > 0 && state.bookIndex < state.data.length - 1) { state.bookIndex++; state.chapterIndex = 0; renderChapter(); }
+        else if (direction < 0 && state.bookIndex > 0) { state.bookIndex--; state.chapterIndex = state.data[state.bookIndex].chapters.length - 1; renderChapter(); }
     }
 
-    // ===== NAVEGAÇÃO COM ANTIGO / (CATÓLICOS) / NOVO TESTAMENTO =====
     function updateBookChapterSelectors() {
         const bookSelect = document.getElementById('select-book');
         let ntStart = state.data.findIndex(b => normalizeText(b.name).includes('mateus'));
         if (ntStart === -1) ntStart = Math.min(39, state.data.length);
-
-        const otBooks = [];
-        const deutBooks = [];
-        const ntBooks = [];
+        const ot = [], dt = [], nt = [];
         state.data.forEach((book, idx) => {
             const entry = `<option value="${idx}" ${idx === state.bookIndex ? 'selected' : ''}>${book.name}</option>`;
-            if (idx >= ntStart) {
-                ntBooks.push(entry);
-            } else if (state.version === 'bc' && DEUTEROCANONICOS.includes(normalizeText(book.name).replace(/\s+/g, ''))) {
-                deutBooks.push(entry);
-            } else {
-                otBooks.push(entry);
-            }
+            if (idx >= ntStart) nt.push(entry);
+            else if (state.version === 'bc' && DEUTEROCANONICOS.includes(normalizeText(book.name).replace(/\s+/g, ''))) dt.push(entry);
+            else ot.push(entry);
         });
-
-        let html = `<optgroup label="📜 Antigo Testamento">${otBooks.join('')}</optgroup>`;
-        if (deutBooks.length) html += `<optgroup label="🕮 Livros Católicos (Deuterocanônicos)">${deutBooks.join('')}</optgroup>`;
-        if (ntBooks.length) html += `<optgroup label="✝️ Novo Testamento">${ntBooks.join('')}</optgroup>`;
+        let html = `<optgroup label="📜 Antigo Testamento">${ot.join('')}</optgroup>`;
+        if (dt.length) html += `<optgroup label="🕮 Livros Católicos (Deuterocanônicos)">${dt.join('')}</optgroup>`;
+        if (nt.length) html += `<optgroup label="✝️ Novo Testamento">${nt.join('')}</optgroup>`;
         bookSelect.innerHTML = html;
         updateChapterSelect(false);
     }
-
-    function updateChapterSelect(resetChapter) {
+    function updateChapterSelect(reset) {
         state.bookIndex = parseInt(document.getElementById('select-book').value);
         const book = state.data[state.bookIndex];
-        const chapSelect = document.getElementById('select-chapter');
-        const target = resetChapter ? 0 : Math.min(state.chapterIndex, book.chapters.length - 1);
-        chapSelect.innerHTML = book.chapters.map((_, idx) => 
-            `<option value="${idx}" ${idx === target ? 'selected' : ''}>Capítulo ${idx + 1}</option>`
-        ).join('');
+        const target = reset ? 0 : Math.min(state.chapterIndex, book.chapters.length - 1);
+        document.getElementById('select-chapter').innerHTML = book.chapters.map((_, idx) => `<option value="${idx}" ${idx === target ? 'selected' : ''}>Capítulo ${idx + 1}</option>`).join('');
     }
-
     function goToChapter() {
         state.bookIndex = parseInt(document.getElementById('select-book').value);
         state.chapterIndex = parseInt(document.getElementById('select-chapter').value);
-        renderChapter();
-        closeModal('modal-nav');
-    }
-
-    function normalizeText(s) {
-        return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        renderChapter(); closeModal('modal-nav');
     }
 
     function changeFontSize(delta) {
@@ -1809,133 +1124,71 @@
     function openModal(id) {
         document.getElementById(id).style.display = 'flex';
         if (id === 'modal-favs') renderFavs();
+        if (id === 'modal-ai') document.getElementById('ai-context-ref').textContent = getChapterContext().ref;
     }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    window.onclick = (event) => {
-        if (event.target.classList.contains('modal')) event.target.style.display = 'none';
-    };
+    window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
 
     function performSearch() {
         const query = document.getElementById('search-input').value.trim().toLowerCase();
-        const resultsDiv = document.getElementById('search-results');
-        
-        if (query.length < 3) {
-            resultsDiv.innerHTML = '<p style="color:var(--text-secondary); text-align:center;">Digite pelo menos 3 caracteres.</p>';
-            return;
-        }
-
-        resultsDiv.innerHTML = '<p style="color:var(--accent); text-align:center;">Buscando...</p>';
-        
+        const rd = document.getElementById('search-results');
+        if (query.length < 3) { rd.innerHTML = '<p style="color:var(--text-secondary); text-align:center;">Digite pelo menos 3 caracteres.</p>'; return; }
+        rd.innerHTML = '<p style="color:var(--accent); text-align:center;">Buscando...</p>';
         setTimeout(() => {
             const results = [];
-            state.data.forEach((book, bIdx) => {
-                book.chapters.forEach((chapter, cIdx) => {
-                    chapter.forEach((verse, vIdx) => {
-                        if (verse.toLowerCase().includes(query)) {
-                            results.push({ ref: `${book.name} ${cIdx + 1}:${vIdx + 1}`, text: verse, bIdx, cIdx });
-                        }
-                    });
-                });
-            });
-
-            if (results.length === 0) {
-                resultsDiv.innerHTML = '<p style="color:var(--text-secondary); text-align:center;">Nenhum resultado encontrado.</p>';
-            } else {
-                resultsDiv.innerHTML = results.slice(0, 50).map(r => `
-                    <div class="search-result" onclick="jumpTo(${r.bIdx}, ${r.cIdx}); closeModal('modal-search');">
-                        <div class="search-ref">${r.ref}</div>
-                        <div style="font-size: 0.95rem;">${r.text.replace(new RegExp(query, 'gi'), match => `<mark>${match}</mark>`)}</div>
-                    </div>
-                `).join('') + (results.length > 50 ? `<p style="text-align:center; color:var(--text-secondary); margin-top:1rem; font-size:0.9rem;">...e mais ${results.length - 50} resultados.</p>` : '');
-            }
+            state.data.forEach((book, bIdx) => book.chapters.forEach((chapter, cIdx) => chapter.forEach((verse, vIdx) => {
+                if (verse.toLowerCase().includes(query)) results.push({ ref: `${book.name} ${cIdx + 1}:${vIdx + 1}`, text: verse, bIdx, cIdx });
+            })));
+            rd.innerHTML = results.length ? results.slice(0, 50).map(r => `
+                <div class="search-result" onclick="jumpTo(${r.bIdx}, ${r.cIdx}); closeModal('modal-search');">
+                    <div class="search-ref">${r.ref}</div>
+                    <div style="font-size:0.95rem;">${r.text.replace(new RegExp(query, 'gi'), m => `<mark>${m}</mark>`)}</div>
+                </div>`).join('') : '<p style="color:var(--text-secondary); text-align:center;">Nenhum resultado encontrado.</p>';
         }, 100);
     }
+    function jumpTo(bIdx, cIdx) { state.bookIndex = bIdx; state.chapterIndex = cIdx; updateBookChapterSelectors(); renderChapter(); }
 
-    function jumpTo(bIdx, cIdx) {
-        state.bookIndex = bIdx;
-        state.chapterIndex = cIdx;
-        updateBookChapterSelectors();
-        renderChapter();
-    }
-
-    // =====================================================
-    // ===== ANOTAÇÕES (LOCAL + NUVEM AUTOMÁTICA) =====
-    // =====================================================
+    // ===== 📝 ANOTAÇÕES: ver → escolher editar =====
     let currentNoteRef = '';
-
+    function showNoteMode(viewMode) {
+        document.getElementById('note-view').style.display = viewMode ? 'block' : 'none';
+        document.getElementById('note-edit').style.display = viewMode ? 'none' : 'block';
+        if (!viewMode) setTimeout(() => document.getElementById('note-text').focus(), 200);
+    }
     function openNoteModal(ref, text) {
         currentNoteRef = ref;
         document.getElementById('note-reference').textContent = '📍 ' + ref;
-        document.getElementById('note-text').value = state.notes[ref] || '';
+        const existing = state.notes[ref];
+        if (existing) { document.getElementById('note-view-text').textContent = existing; showNoteMode(true); }
+        else { document.getElementById('note-text').value = ''; showNoteMode(false); }
         openModal('modal-notes');
-        setTimeout(() => document.getElementById('note-text').focus(), 200);
     }
-
+    function enterNoteEdit() { document.getElementById('note-text').value = state.notes[currentNoteRef] || ''; showNoteMode(false); }
+    function cancelNoteEdit() { if (state.notes[currentNoteRef]) { document.getElementById('note-view-text').textContent = state.notes[currentNoteRef]; showNoteMode(true); } else closeModal('modal-notes'); }
+    function copyNote() {
+        navigator.clipboard.writeText(state.notes[currentNoteRef] || '').then(() => {
+            const b = document.querySelector('#note-view .btn-secondary');
+            const o = b.textContent; b.textContent = '✅ Copiado!'; setTimeout(() => b.textContent = o, 1500);
+        }).catch(() => {});
+    }
     function saveNote() {
         const text = document.getElementById('note-text').value.trim();
-        if (text) state.notes[currentNoteRef] = text;
-        else delete state.notes[currentNoteRef];
+        if (text) state.notes[currentNoteRef] = text; else delete state.notes[currentNoteRef];
         localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
-        
-        const btn = document.querySelector('#modal-notes .btn-primary');
-        const originalText = btn.textContent;
-        btn.textContent = '✅ Salvo!';
-        
-        updateNoteMarkers();
-        scheduleCloudSync();
-        
-        setTimeout(() => {
-            btn.textContent = originalText;
-            closeModal('modal-notes');
-        }, 900);
+        updateNoteMarkers(); scheduleCloudSync();
+        if (text) { document.getElementById('note-view-text').textContent = text; showNoteMode(true); }
+        else closeModal('modal-notes');
     }
-
     function deleteNote() {
         if (!state.notes[currentNoteRef]) { closeModal('modal-notes'); return; }
         delete state.notes[currentNoteRef];
         localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
-        document.getElementById('note-text').value = '';
-        updateNoteMarkers();
-        scheduleCloudSync();
+        updateNoteMarkers(); scheduleCloudSync();
         closeModal('modal-notes');
     }
 
-    // =====================================================
-    // ===== COMPARTILHAMENTO (CABEÇALHO + REFLEXÃO) =====
-    // =====================================================
-    function openShareModal(ref, text) {
-        lastShareBlocks = [{ text, ref }];
-        setShareLinks(buildShareText(lastShareBlocks));
-        openModal('modal-share');
-    }
-
-    function setShareLinks(fullText) {
-        const encodedText = encodeURIComponent(fullText);
-        const url = encodeURIComponent(APP_LINK);
-        document.getElementById('share-text').textContent = fullText;
-        document.getElementById('share-wa').href = `https://wa.me/?text=${encodedText}`;
-        document.getElementById('share-ig').href = `https://www.instagram.com/`;
-        document.getElementById('share-tg').href = `https://t.me/share/url?url=${url}&text=${encodedText}`;
-        document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-        document.getElementById('share-tw').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
-    }
-
-    function copyToClipboard() {
-        const text = document.getElementById('share-text').textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            const btn = document.querySelector('.share-btn.copy');
-            const originalText = btn.textContent;
-            btn.textContent = '✅ Copiado!';
-            setTimeout(() => btn.textContent = originalText, 2000);
-        }).catch(err => console.error('Erro ao copiar:', err));
-    }
-
-    // =====================================================
-    // ===== LEITURA EM VOZ ALTA (TTS) — PAUSA CORRIGIDA =====
-    // =====================================================
+    // ===== 🔊 TTS =====
     const tts = { speaking: false, paused: false, verseIndex: 0, rate: 1, voice: null, voices: [] };
-
     function initVoices() {
         if (!('speechSynthesis' in window)) return;
         const load = () => {
@@ -1943,125 +1196,55 @@
             tts.voice = tts.voices.find(v => v.lang.replace('_', '-') === 'pt-BR') || tts.voices[0] || null;
             renderVoiceSelect();
         };
-        load();
-        speechSynthesis.onvoiceschanged = load;
+        load(); speechSynthesis.onvoiceschanged = load;
     }
-
     function renderVoiceSelect() {
-        const sel = document.getElementById('voice-select');
-        if (!sel) return;
-        if (tts.voices.length === 0) { sel.style.display = 'none'; return; }
+        const sel = document.getElementById('voice-select'); if (!sel) return;
+        if (!tts.voices.length) { sel.style.display = 'none'; return; }
         sel.style.display = '';
         sel.innerHTML = tts.voices.map((v, i) => `<option value="${i}">${v.name}</option>`).join('');
-        const idx = tts.voices.indexOf(tts.voice);
-        if (idx >= 0) sel.value = String(idx);
+        const idx = tts.voices.indexOf(tts.voice); if (idx >= 0) sel.value = String(idx);
     }
-
-    function changeVoice(i) {
-        tts.voice = tts.voices[parseInt(i)] || null;
-        if (tts.speaking && !tts.paused) {
-            speechSynthesis.cancel();
-            speakCurrentVerse();
-        }
-    }
-
+    function changeVoice(i) { tts.voice = tts.voices[parseInt(i)] || null; if (tts.speaking && !tts.paused) { speechSynthesis.cancel(); speakCurrentVerse(); } }
     function toggleSpeech() {
-        if (!('speechSynthesis' in window)) {
-            alert('Desculpe, seu navegador não suporta leitura em voz alta. Use o Chrome ou o Edge.');
-            return;
-        }
+        if (!('speechSynthesis' in window)) { alert('Seu navegador não suporta leitura em voz alta. Use Chrome ou Edge.'); return; }
         if (tts.speaking && !tts.paused) { pauseSpeech(); return; }
         if (tts.speaking && tts.paused) { resumeSpeech(); return; }
         startSpeech(0);
     }
-
-    function startSpeech(fromVerse) {
-        speechSynthesis.cancel();
-        tts.speaking = true;
-        tts.paused = false;
-        tts.verseIndex = fromVerse || 0;
-        document.getElementById('player-bar').classList.add('visible');
-        updatePlayerUI();
-        speakCurrentVerse();
-    }
-
-    function pauseSpeech() {
-        speechSynthesis.cancel();
-        tts.paused = true;
-        updatePlayerUI();
-    }
-
-    function resumeSpeech() {
-        tts.paused = false;
-        updatePlayerUI();
-        setTimeout(() => {
-            if (tts.speaking && !tts.paused) speakCurrentVerse();
-        }, 120);
-    }
-
+    function startSpeech(v) { speechSynthesis.cancel(); tts.speaking = true; tts.paused = false; tts.verseIndex = v || 0; document.getElementById('player-bar').classList.add('visible'); updatePlayerUI(); speakCurrentVerse(); }
+    function pauseSpeech() { speechSynthesis.cancel(); tts.paused = true; updatePlayerUI(); }
+    function resumeSpeech() { tts.paused = false; updatePlayerUI(); setTimeout(() => { if (tts.speaking && !tts.paused) speakCurrentVerse(); }, 120); }
     function speakCurrentVerse() {
         if (!tts.speaking || tts.paused) return;
-        const book = state.data[state.bookIndex];
-        const chapter = book.chapters[state.chapterIndex];
-
+        const book = state.data[state.bookIndex], chapter = book.chapters[state.chapterIndex];
         if (tts.verseIndex >= chapter.length) { stopSpeech(); return; }
-
         highlightVerse(tts.verseIndex);
-
         const verseText = chapter[tts.verseIndex];
-        const intro = tts.verseIndex === 0
-            ? `${book.name}, capítulo ${state.chapterIndex + 1}. `
-            : '';
+        const intro = tts.verseIndex === 0 ? `${book.name}, capítulo ${state.chapterIndex + 1}. ` : '';
         const utter = new SpeechSynthesisUtterance(`${intro}Versículo ${tts.verseIndex + 1}: ${verseText}`);
-        utter.lang = 'pt-BR';
-        if (tts.voice) utter.voice = tts.voice;
-        utter.rate = tts.rate;
-
-        utter.onend = () => {
-            if (!tts.speaking || tts.paused) return;
-            tts.verseIndex++;
-            speakCurrentVerse();
-        };
-        utter.onerror = (e) => {
-            if (e.error !== 'canceled' && e.error !== 'interrupted' && tts.speaking) stopSpeech();
-        };
-
-        speechSynthesis.speak(utter);
-        updatePlayerUI();
+        utter.lang = 'pt-BR'; if (tts.voice) utter.voice = tts.voice; utter.rate = tts.rate;
+        utter.onend = () => { if (!tts.speaking || tts.paused) return; tts.verseIndex++; speakCurrentVerse(); };
+        utter.onerror = (e) => { if (e.error !== 'canceled' && e.error !== 'interrupted' && tts.speaking) stopSpeech(); };
+        speechSynthesis.speak(utter); updatePlayerUI();
     }
-
     function highlightVerse(idx) {
         const verses = document.querySelectorAll('.versiculo');
         verses.forEach((el, i) => el.classList.toggle('versiculo-ativo', i === idx));
         if (verses[idx]) verses[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        document.getElementById('player-info').textContent =
-            `${state.data[state.bookIndex].name} ${state.chapterIndex + 1}:${idx + 1}`;
+        document.getElementById('player-info').textContent = `${state.data[state.bookIndex].name} ${state.chapterIndex + 1}:${idx + 1}`;
     }
-
     function stopSpeech() {
-        speechSynthesis.cancel();
-        tts.speaking = false;
-        tts.paused = false;
-        tts.verseIndex = 0;
+        speechSynthesis.cancel(); tts.speaking = false; tts.paused = false; tts.verseIndex = 0;
         document.getElementById('player-bar').classList.remove('visible');
         document.querySelectorAll('.versiculo').forEach(el => el.classList.remove('versiculo-ativo'));
         updatePlayerUI();
     }
-
-    function changeRate(delta) {
-        tts.rate = Math.min(2, Math.max(0.5, Math.round((tts.rate + delta) * 100) / 100));
-        document.getElementById('player-rate').textContent = `${tts.rate}x`;
-        if (tts.speaking && !tts.paused) {
-            speechSynthesis.cancel();
-            speakCurrentVerse();
-        }
-    }
-
+    function changeRate(d) { tts.rate = Math.min(2, Math.max(0.5, Math.round((tts.rate + d) * 100) / 100)); document.getElementById('player-rate').textContent = `${tts.rate}x`; if (tts.speaking && !tts.paused) { speechSynthesis.cancel(); speakCurrentVerse(); } }
     function updatePlayerUI() {
         const playBtn = document.getElementById('player-play');
-        const ttsBtn = document.getElementById('tts-btn');
         if (playBtn) playBtn.textContent = (tts.speaking && !tts.paused) ? '⏸' : '▶';
-        if (ttsBtn) ttsBtn.classList.toggle('active-tts', tts.speaking);
+        document.getElementById('tts-btn').classList.toggle('active-tts', tts.speaking);
     }
 </script>
 
