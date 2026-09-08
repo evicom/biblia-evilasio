@@ -159,7 +159,7 @@
         .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
         .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* ===== NOVA APARÊNCIA DA CAIXA DA IA ===== */
+        /* ===== CAIXA DA IA ===== */
         .modal-ai { border: 1px solid rgba(212, 175, 55, 0.35); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65); }
         .ai-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid var(--border); }
         .ai-avatar { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: linear-gradient(135deg, rgba(212,175,55,0.28), rgba(163,230,53,0.14)); border: 1px solid rgba(212,175,55,0.45); }
@@ -266,7 +266,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.3 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.4 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -307,7 +307,7 @@
     </div>
 </div>
 
-<!-- MODAL IA (NOVO VISUAL) -->
+<!-- MODAL IA -->
 <div id="modal-ai" class="modal">
     <div class="modal-content modal-large modal-ai">
         <div class="ai-header">
@@ -350,7 +350,7 @@
 
         <div class="help-item"><div class="help-icon">🤖</div><div>
             <div class="help-title">Assistente Bíblico (IA)</div>
-            <div class="help-text">Toque em 🤖: use os atalhos em pílula ou escreva sua pergunta sobre o <strong>capítulo aberto</strong>. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens.</div>
+            <div class="help-text">Toque em 🤖: use os atalhos em pílula ou escreva sua pergunta sobre o <strong>capítulo aberto</strong>. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens. A chave fica protegida em um servidor proxy — nunca no código.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">✍️</div><div>
@@ -709,10 +709,10 @@
     }
 
     // =====================================================
-    // ===== 🤖 IA GEMINI — BASE PROTESTANTE EVANGÉLICA =====
-    // Chave do projeto 201504013925 (conta com 2FA)
+    // ===== 🤖 IA GEMINI VIA PROXY (ZERO chave no código) =====
+    // ⚠️ Troque pelo URL do seu Cloudflare Worker
     // =====================================================
-    const AI_API_KEY = 'AQ.Ab8RN6KMe_pXx3cYBC4aDJKd1Zu2tCryXwtgUNX5XFfzHskdxw';
+    const AI_PROXY = 'https://biblia-proxy.SEU-USUARIO.workers.dev';
     const AI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
     const AI_IMG_MODELS = ['gemini-2.5-flash-image-preview', 'gemini-2.0-flash-preview-image-generation'];
     let lastAiError = null;
@@ -724,19 +724,15 @@
         'Não apresente perspectivas contrárias à fé evangélica protestante.';
 
     async function geminiRaw(model, body) {
-        const base = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-        const attempts = [
-            { url: base, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': AI_API_KEY } },
-            { url: base + `?key=${encodeURIComponent(AI_API_KEY)}`, headers: { 'Content-Type': 'application/json' } }
-        ];
-        for (const a of attempts) {
-            try {
-                const res = await fetch(a.url, { method: 'POST', headers: a.headers, body: JSON.stringify(body) });
-                if (res.ok) return { status: 200, data: await res.json() };
-                lastAiError = 'HTTP ' + res.status;
-                if (res.status === 404) break;
-            } catch (e) { lastAiError = e.message; }
-        }
+        try {
+            const res = await fetch(AI_PROXY + '?model=' + encodeURIComponent(model), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (res.ok) return { status: 200, data: await res.json() };
+            lastAiError = 'HTTP ' + res.status;
+        } catch (e) { lastAiError = e.message; }
         return { status: 0, data: null };
     }
 
@@ -798,7 +794,7 @@
         box.classList.remove('loading');
         out.textContent = answer ||
             ('❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
-             '\n\nVerifique no Google AI Studio se a chave está ativa (conta com verificação em duas etapas).');
+             '\n\nConfira se o URL do proxy (AI_PROXY) está certo e se o secret GEMINI_API_KEY está configurado no Worker.');
     }
 
     // ===== NORMALIZADOR DE JSON BÍBLICO =====
