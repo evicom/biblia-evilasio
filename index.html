@@ -104,6 +104,24 @@
         .selection-btn.cancel { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
         .selection-hint { width: 100%; font-size: 0.75rem; color: var(--text-secondary); }
 
+        /* ===== BARRA DE AVISO DE ATUALIZAÇÃO ===== */
+        #update-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--accent);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            z-index: 1000;
+            flex-wrap: wrap;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+        }
+        #update-bar.visible { display: flex; }
+        #update-bar span { color: var(--accent); font-weight: 700; }
+
         .plano-hint { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem; }
         .plano-opt { margin-top: 0.5rem; text-align: left; }
         .plano-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
@@ -129,7 +147,7 @@
 
         #loading { display: none; text-align: center; padding: 3rem; font-size: 1.1rem; color: var(--accent); }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1001; justify-content: center; align-items: center; }
         .modal-content { background: var(--bg-secondary); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .modal-large { max-width: 640px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
@@ -226,6 +244,13 @@
     <span class="selection-hint">Toque em outros versículos para adicionar ou remover da seleção.</span>
 </div>
 
+<!-- ===== BARRA DE AVISO DE ATUALIZAÇÃO DO APP ===== -->
+<div id="update-bar">
+    <span>🔄 Nova versão disponível!</span>
+    <button class="selection-btn" onclick="applyUpdate()">Atualizar agora</button>
+    <button class="selection-btn cancel" onclick="dismissUpdate()">Depois</button>
+</div>
+
 <div id="player-bar">
     <span id="player-info">—</span>
     <button class="player-btn" id="player-play" onclick="toggleSpeech()" title="Pausar / Continuar">⏸</button>
@@ -237,7 +262,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.1 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.2 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -340,6 +365,11 @@
             <div class="help-text">Todos podem <strong>ler</strong>, mas <strong>editar, salvar ou apagar</strong> exige a <strong>senha do administrador</strong> (pedida uma vez por sessão). Sem ela, nada pode ser alterado.</div>
         </div></div>
 
+        <div class="help-item"><div class="help-icon">🔄</div><div>
+            <div class="help-title">Avisos de atualização</div>
+            <div class="help-text">Quando uma versão nova for publicada, aparece a barra <strong>"🔄 Nova versão disponível!"</strong> — toque em <strong>Atualizar agora</strong> para receber na hora.</div>
+        </div></div>
+
         <div class="help-item"><div class="help-icon">⭐</div><div>
             <div class="help-title">Favoritar versículos</div>
             <div class="help-text">Toque na <strong>☆</strong> ao lado do número do versículo (vira ★ dourada). O botão ⭐ mostra a lista completa.</div>
@@ -394,7 +424,7 @@
     </div>
 </div>
 
-<!-- MODAL ANOTAÇÕES (ler livre · editar/salvar/apagar SOMENTE com senha) -->
+<!-- MODAL ANOTAÇÕES -->
 <div id="modal-notes" class="modal">
     <div class="modal-content modal-large">
         <div class="modal-header"><h3>📝 Anotações <span id="sync-status" title="Status da sincronização"></span></h3><span class="close" onclick="closeModal('modal-notes')">&times;</span></div>
@@ -475,7 +505,7 @@
     const APP_LINK = 'https://evicom.github.io/biblia-evilasio/';
     const LONG_PRESS_MS = 5000;
 
-    // 🔒 SENHA DO ADMINISTRADOR das anotações (editar/salvar/apagar)
+    // 🔒 SENHA DO ADMINISTRADOR das anotações
     const NOTA_SENHA = 'administrador';
     function adminLibera() {
         if (sessionStorage.getItem('biblia_admin') === '1') return true;
@@ -509,10 +539,42 @@
         return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     }
 
-    // ===== SW =====
+    // =====================================================
+    // ===== 🔄 SERVICE WORKER + AVISO DE ATUALIZAÇÃO =====
+    // =====================================================
+    let pendingUpdate = null;
+
+    function showUpdateBar() { document.getElementById('update-bar').classList.add('visible'); }
+    function hideUpdateBar() { document.getElementById('update-bar').classList.remove('visible'); }
+    function applyUpdate() {
+        if (pendingUpdate) pendingUpdate.postMessage('SKIP_WAITING');
+        hideUpdateBar();
+    }
+    function dismissUpdate() { hideUpdateBar(); }
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(reg => reg.update()).catch(err => console.error(err));
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                // verifica atualizações agora e a cada 30 minutos
+                reg.update();
+                setInterval(() => reg.update(), 30 * 60 * 1000);
+
+                const handleWorker = (worker) => {
+                    if (!worker) return;
+                    pendingUpdate = worker;
+                    worker.addEventListener('statechange', () => {
+                        if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdateBar();
+                    });
+                    if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdateBar();
+                };
+
+                if (reg.waiting) handleWorker(reg.waiting);
+                reg.addEventListener('updatefound', () => handleWorker(reg.installing));
+
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    window.location.reload();
+                });
+            }).catch(err => console.error('❌ Erro ao registrar SW:', err));
         });
     }
 
@@ -579,9 +641,8 @@
     }
 
     // =====================================================
-    // ===== ☁️ NUVEM JSONBIN (direto do navegador — GitHub Pages) =====
-    // Chave ofuscada (invertida) para não ficar legível no código.
-    // ⚠️ Ao copiar este projeto, troque pelas SUAS chaves!
+    // ===== ☁️ NUVEM JSONBIN (direto do navegador) =====
+    // Chave ofuscada (invertida). ⚠️ Ao copiar o projeto, troque!
     // =====================================================
     const JSONBIN_BIN_ID = '6a8ba1f2da38895dfe0893cb';
     const _chaveInvertida = 'SAHzgxDxyu0noeIi6znOEaPYmNEnCFH.wceyNr0i83ARm0cxI2mW8$01$a2$';
@@ -643,8 +704,9 @@
 
     // =====================================================
     // ===== 🤖 IA GEMINI — BASE PROTESTANTE EVANGÉLICA =====
+    // Chave do projeto "biblia-evicom" (projects/468091286035)
     // =====================================================
-    const AI_API_KEY = 'AQ.Ab8RN6LkNOXIIJr9CO0TIk8coSaYN3P5zooUpxhrCW8qoXQOCq';
+    const AI_API_KEY = 'AQ.Ab8RN6IvHg3PmuD04hy_z0C9fyMMeoAodB7YlQ0f5NTBg_GUSg';
     const AI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
     const AI_IMG_MODELS = ['gemini-2.5-flash-image-preview', 'gemini-2.0-flash-preview-image-generation'];
     let lastAiError = null;
@@ -1240,7 +1302,7 @@
     }
     function jumpTo(bIdx, cIdx) { state.bookIndex = bIdx; state.chapterIndex = cIdx; updateBookChapterSelectors(); renderChapter(); }
 
-    // ===== 📝 ANOTAÇÕES: ler livre · editar/salvar/apagar SOMENTE com senha =====
+    // ===== 📝 ANOTAÇÕES COM SENHA =====
     let currentNoteRef = '';
     function showNoteMode(viewMode) {
         document.getElementById('note-view').style.display = viewMode ? 'block' : 'none';
