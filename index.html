@@ -29,7 +29,6 @@
             --jesus-color: #a3e635;
             --god-color: #60a5fa;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; }
 
@@ -73,7 +72,6 @@
         .versiculo:hover { background: rgba(212, 175, 55, 0.08); }
         @media (max-width: 640px) { .versiculo { text-align: left; } }
 
-        /* Segurar 5s → preenche até ficar VERDE */
         .versiculo-pressionando { animation: pressFill 5s linear forwards; }
         @keyframes pressFill {
             from { background: rgba(212, 175, 55, 0.05); }
@@ -193,7 +191,7 @@
         <button class="icon-btn" title="Buscar" onclick="openModal('modal-search')">🔍</button>
         <button class="icon-btn" title="Plano de Leitura" onclick="openPlano()">📅</button>
         <button class="icon-btn" title="Versículos Favoritos" onclick="openModal('modal-favs')">⭐</button>
-       <!-- <button class="icon-btn" title="Assistente Bíblico (IA)" onclick="openModal('modal-ai')">🤖</button> -->
+        <button class="icon-btn" title="Assistente Bíblico (IA)" onclick="openModal('modal-ai')">🤖</button>
         <button class="icon-btn" id="tts-btn" title="Ouvir capítulo em voz alta" onclick="toggleSpeech()">🔊</button>
         <div class="font-controls">
             <button class="font-btn" onclick="changeFontSize(-10)" title="Diminuir fonte">−</button>
@@ -239,7 +237,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.0 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.1 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -280,7 +278,7 @@
     </div>
 </div>
 
-<!-- MODAL IA 
+<!-- MODAL IA -->
 <div id="modal-ai" class="modal">
     <div class="modal-content modal-large">
         <div class="modal-header"><h3>🤖 Assistente Bíblico (IA)</h3><span class="close" onclick="closeModal('modal-ai')">&times;</span></div>
@@ -295,7 +293,7 @@
         <button class="btn-primary" onclick="askAI()">✨ Perguntar à IA</button>
         <div id="ai-answer" style="margin-top:1rem; font-size:.92rem; line-height:1.7; white-space:pre-line; color:var(--text-primary); background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; padding:1rem; min-height:60px;">A resposta da IA aparecerá aqui.</div>
     </div>
-</div>   -->
+</div>
 
 <!-- MODAL AJUDA -->
 <div id="modal-help" class="modal">
@@ -314,27 +312,32 @@
 
         <div class="help-item"><div class="help-icon">🤖</div><div>
             <div class="help-title">Assistente Bíblico (IA)</div>
-            <div class="help-text">Toque em 🤖 para perguntar qualquer coisa sobre o <strong>capítulo aberto</strong>: use os atalhos (explicar capítulo, versículo-chave, aplicação prática, meditação) ou escreva sua pergunta. A IA responde com <strong>base protestante evangélica</strong>, em português. Além disso, ela <strong>gera automaticamente a reflexão</strong> de todo versículo compartilhado e <strong>cria a ilustração</strong> das imagens.</div>
+            <div class="help-text">Toque em 🤖 e pergunte sobre o <strong>capítulo aberto</strong> (atalhos: explicar, versículo-chave, aplicação, meditação) ou escreva sua pergunta. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">✍️</div><div>
             <div class="help-title">Compartilhar versículos</div>
-            <div class="help-text"><strong>Segure um versículo por 5 segundos, até ele ficar VERDE</strong>, para entrar no modo seleção. Depois toque nos demais versículos para adicionar/remover e use <strong>📤 Compartilhar</strong>. Versículos seguidos viram intervalo (ex: João 3:16-18). A mensagem vai com referência, reflexão da IA e o link do app.</div>
+            <div class="help-text"><strong>Segure um versículo por 5 segundos, até ficar VERDE</strong>, para entrar no modo seleção; toque nos demais para adicionar/remover e use <strong>📤 Compartilhar</strong>. Versículos seguidos viram intervalo (ex: João 3:16-18).</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">📤</div><div>
             <div class="help-title">Compartilhar 1 versículo</div>
-            <div class="help-text">Toque no <strong>número dourado</strong> do versículo para compartilhar via WhatsApp, Instagram, Telegram, Facebook, X ou Copiar — sempre com reflexão gerada pela IA.</div>
+            <div class="help-text">Toque no <strong>número dourado</strong>: WhatsApp, Instagram, Telegram, Facebook, X ou Copiar — sempre com reflexão da IA e o link do app.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">🎨</div><div>
             <div class="help-title">Gerar a imagem e enviar</div>
-            <div class="help-text">Na tela de compartilhar, toque em <strong>"🎨 Gerar a imagem e enviar"</strong>: a IA cria uma <strong>ilustração</strong> do versículo, o app monta a arte com texto e referência e abre o envio nativo (ou baixe a imagem).</div>
+            <div class="help-text">Na tela de compartilhar, toque em <strong>"🎨 Gerar a imagem e enviar"</strong>: a IA cria uma ilustração do versículo e o app monta a arte com texto e referência, com envio nativo ou download.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">📝</div><div>
             <div class="help-title">Anotações</div>
-            <div class="help-text">Dê <strong>2 toques</strong> num versículo: se já houver anotação, ela abre para <strong>leitura</strong>, com opções <strong>✏️ Editar / 📋 Copiar / 🗑️ Apagar</strong>; se não houver, abre direto para escrever. Versículos anotados ganham <strong>barra dourada</strong> e são sincronizados na nuvem.</div>
+            <div class="help-text">Dê <strong>2 toques</strong> num versículo para <strong>ler</strong> a anotação (barra dourada indica que existe). As anotações são sincronizadas na nuvem entre aparelhos.</div>
+        </div></div>
+
+        <div class="help-item"><div class="help-icon">🔒</div><div>
+            <div class="help-title">Anotações protegidas por senha</div>
+            <div class="help-text">Todos podem <strong>ler</strong>, mas <strong>editar, salvar ou apagar</strong> exige a <strong>senha do administrador</strong> (pedida uma vez por sessão). Sem ela, nada pode ser alterado.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">⭐</div><div>
@@ -344,7 +347,7 @@
 
         <div class="help-item"><div class="help-icon">📅</div><div>
             <div class="help-title">Plano de Leitura</div>
-            <div class="help-text">Toque em 📅 e escolha um plano (Bíblia em 1 ano, 180 ou 90 dias, Novo Testamento, Evangelhos ou Salmos). Veja as leituras do dia, navegue pelos dias e marque concluídos.</div>
+            <div class="help-text">Toque em 📅 e escolha um plano (Bíblia em 1 ano, 180 ou 90 dias, Novo Testamento, Evangelhos ou Salmos). Veja as leituras do dia e marque concluídos.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">🔍</div><div>
@@ -391,7 +394,7 @@
     </div>
 </div>
 
-<!-- MODAL ANOTAÇÕES (visualizar → escolher editar) -->
+<!-- MODAL ANOTAÇÕES (ler livre · editar/salvar/apagar SOMENTE com senha) -->
 <div id="modal-notes" class="modal">
     <div class="modal-content modal-large">
         <div class="modal-header"><h3>📝 Anotações <span id="sync-status" title="Status da sincronização"></span></h3><span class="close" onclick="closeModal('modal-notes')">&times;</span></div>
@@ -414,7 +417,7 @@
             </div>
         </div>
 
-        <p class="notes-hint">💡 2 toques no versículo abrem a anotação · ☁️ salvo neste aparelho e na nuvem.</p>
+        <p class="notes-hint">🔒 Editar/salvar/apagar exige a senha do administrador · ☁️ sincronizado na nuvem.</p>
     </div>
 </div>
 
@@ -469,8 +472,18 @@
 
     const versions = { 'ARC': 'arc', 'ACF': 'acf', 'NVI': 'nvi', 'AA': 'aa', 'BC': 'bc' };
     const DEUTEROCANONICOS = ['tobias','judite','sabedoria','eclesiastico','siracida','baruc','1macabeus','2macabeus','3macabeus','4macabeus'];
-    const APP_LINK = 'https://biblia-evicom.netlify.app/';
-    const LONG_PRESS_MS = 5000; // segurar 5s até ficar verde
+    const APP_LINK = 'https://evicom.github.io/biblia-evilasio/';
+    const LONG_PRESS_MS = 5000;
+
+    // 🔒 SENHA DO ADMINISTRADOR das anotações (editar/salvar/apagar)
+    const NOTA_SENHA = 'administrador';
+    function adminLibera() {
+        if (sessionStorage.getItem('biblia_admin') === '1') return true;
+        const s = prompt('🔒 Digite a senha para editar anotações:');
+        if (s === NOTA_SENHA) { sessionStorage.setItem('biblia_admin', '1'); return true; }
+        if (s !== null) alert('❌ Senha incorreta. Somente o administrador pode editar anotações.');
+        return false;
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         renderVersionButtons();
@@ -566,11 +579,13 @@
     }
 
     // =====================================================
-    // ===== SINCRONIZAÇÃO NA NUVEM (JSONBIN) =====
-    // ⚠️ AO COPIAR ESTE PROJETO: troque pelas SUAS chaves!
+    // ===== ☁️ NUVEM JSONBIN (direto do navegador — GitHub Pages) =====
+    // Chave ofuscada (invertida) para não ficar legível no código.
+    // ⚠️ Ao copiar este projeto, troque pelas SUAS chaves!
     // =====================================================
     const JSONBIN_BIN_ID = '6a8ba1f2da38895dfe0893cb';
-    const JSONBIN_MASTER_KEY = '$2a$10$8Wm2Ixc0mRA38i0rNyecw.HFCnENmYPaEOnz6iIeon0uyxDxgzHAS';
+    const _chaveInvertida = 'SAHzgxDxyu0noeIi6znOEaPYmNEnCFH.wceyNr0i83ARm0cxI2mW8$01$a2$';
+    const JSONBIN_MASTER_KEY = _chaveInvertida.split('').reverse().join('');
     const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
     let syncTimer = null;
 
@@ -580,38 +595,28 @@
         const map = {
             'syncing': ['☁️', 'Sincronizando com a nuvem...'],
             'ok':      ['☁️✅', 'Anotações sincronizadas na nuvem'],
-            'error':   ['☁️❌', 'Falha na sincronização — salvo apenas neste aparelho'],
-            'local':   ['📱', 'Salvo apenas neste aparelho']
+            'error':   ['☁️❌', 'Nuvem indisponível — salvo apenas neste aparelho']
         };
-        const [icon, title] = map[status] || map['local'];
-        el.textContent = icon;
-        el.title = title;
+        const [icon, title] = map[status] || map['error'];
+        el.textContent = icon; el.title = title;
     }
 
     async function cloudLoad() {
         try {
-            const res = await fetch(`${JSONBIN_URL}/latest`, {
-                headers: { 'X-Master-Key': JSONBIN_MASTER_KEY }
-            });
+            const res = await fetch(`${JSONBIN_URL}/latest`, { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY } });
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const json = await res.json();
             const record = json.record || {};
             const rawCloud = (record.notes && typeof record.notes === 'object') ? record.notes : record;
-
             const cloudNotes = {};
-            for (const [k, v] of Object.entries(rawCloud)) {
-                if (typeof v === 'string') cloudNotes[k] = v;
-            }
-
+            for (const [k, v] of Object.entries(rawCloud)) if (typeof v === 'string') cloudNotes[k] = v;
             state.notes = { ...cloudNotes, ...state.notes };
             localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
             setSyncStatus('ok');
             updateNoteMarkers();
-            return true;
         } catch (e) {
-            console.warn('Nuvem (JSONBin) indisponível. Usando anotações locais.', e);
+            console.warn('Nuvem indisponível:', e);
             setSyncStatus('error');
-            return false;
         }
     }
 
@@ -619,22 +624,14 @@
         try {
             const res = await fetch(JSONBIN_URL, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': JSONBIN_MASTER_KEY
-                },
-                body: JSON.stringify({
-                    notes: state.notes,
-                    atualizadoEm: new Date().toISOString()
-                })
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
+                body: JSON.stringify({ notes: state.notes, atualizadoEm: new Date().toISOString() })
             });
             if (!res.ok) throw new Error('HTTP ' + res.status);
             setSyncStatus('ok');
-            return true;
         } catch (e) {
-            console.error('Erro ao salvar na nuvem (JSONBin):', e);
+            console.error('Erro na nuvem:', e);
             setSyncStatus('error');
-            return false;
         }
     }
 
@@ -642,6 +639,95 @@
         setSyncStatus('syncing');
         clearTimeout(syncTimer);
         syncTimer = setTimeout(cloudSave, 1500);
+    }
+
+    // =====================================================
+    // ===== 🤖 IA GEMINI — BASE PROTESTANTE EVANGÉLICA =====
+    // =====================================================
+    const AI_API_KEY = 'AQ.Ab8RN6LkNOXIIJr9CO0TIk8coSaYN3P5zooUpxhrCW8qoXQOCq';
+    const AI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
+    const AI_IMG_MODELS = ['gemini-2.5-flash-image-preview', 'gemini-2.0-flash-preview-image-generation'];
+    let lastAiError = null;
+
+    const SYSTEM_EVANG =
+        'Você é um assistente bíblico do app Bíblia Evicom, de perspectiva PROTESTANTE EVANGÉLICA. ' +
+        'Baseie-se somente na Bíblia (Sola Scriptura) e na doutrina evangélica histórica: salvação pela graça mediante a fé em Jesus Cristo, autoridade das Escrituras, vida de oração e santificação. ' +
+        'Responda SEMPRE em português, de forma piedosa, didática e acolhedora, citando referências bíblicas quando útil. ' +
+        'Não apresente perspectivas contrárias à fé evangélica protestante.';
+
+    async function geminiRaw(model, body) {
+        const base = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+        const attempts = [
+            { url: base, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': AI_API_KEY } },
+            { url: base + `?key=${encodeURIComponent(AI_API_KEY)}`, headers: { 'Content-Type': 'application/json' } }
+        ];
+        for (const a of attempts) {
+            try {
+                const res = await fetch(a.url, { method: 'POST', headers: a.headers, body: JSON.stringify(body) });
+                if (res.ok) return { status: 200, data: await res.json() };
+                lastAiError = 'HTTP ' + res.status;
+                if (res.status === 404) break;
+            } catch (e) { lastAiError = e.message; }
+        }
+        return { status: 0, data: null };
+    }
+
+    function extractParts(data) {
+        return (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+    }
+
+    async function geminiText(prompt, cfg) {
+        const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: Object.assign({ temperature: 0.5, maxOutputTokens: 1024 }, cfg || {}) };
+        for (const model of AI_MODELS) {
+            const r = await geminiRaw(model, body);
+            if (r.status === 200) {
+                const txt = extractParts(r.data).map(p => p.text || '').join('').trim();
+                if (txt) return txt;
+            }
+        }
+        return null;
+    }
+
+    async function geminiImage(prompt) {
+        const configs = [ { responseModalities: ['IMAGE', 'TEXT'] }, { responseModalities: ['IMAGE'] }, {} ];
+        for (const model of AI_IMG_MODELS) {
+            for (const gc of configs) {
+                const body = { contents: [{ parts: [{ text: prompt }] }] };
+                if (gc.responseModalities) body.generationConfig = gc;
+                const r = await geminiRaw(model, body);
+                if (r.status === 200) {
+                    const inline = extractParts(r.data).find(p => p.inlineData);
+                    if (inline) return 'data:' + inline.inlineData.mimeType + ';base64,' + inline.inlineData.data;
+                }
+            }
+        }
+        return null;
+    }
+
+    function getChapterContext() {
+        const ref = document.getElementById('current-reference')?.textContent || '';
+        const verses = [...document.querySelectorAll('.versiculo')].map((p, i) => {
+            const clone = p.cloneNode(true);
+            clone.querySelectorAll('sup').forEach(s => s.remove());
+            return `${i + 1}. ${clone.textContent.trim()}`;
+        });
+        return { ref, text: verses.join('\n') };
+    }
+
+    function aiSuggest(text) { document.getElementById('ai-question').value = text; askAI(); }
+
+    async function askAI() {
+        const q = document.getElementById('ai-question').value.trim();
+        const out = document.getElementById('ai-answer');
+        if (!q) { out.textContent = '✏️ Digite uma pergunta ou toque numa sugestão acima.'; return; }
+        const ctx = getChapterContext();
+        document.getElementById('ai-context-ref').textContent = ctx.ref;
+        out.textContent = '🤔 Consultando a IA...';
+        const prompt = `${SYSTEM_EVANG}\n\nTexto bíblico (${ctx.ref}):\n${ctx.text}\n\nPergunta do leitor: ${q}`;
+        const answer = await geminiText(prompt, { temperature: 0.5, maxOutputTokens: 1024 });
+        out.textContent = answer ||
+            ('❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
+             '\n\nVerifique no Google AI Studio se a chave está ativa para a API Gemini.');
     }
 
     // =====================================================
@@ -757,7 +843,7 @@
             const ref = `${book.name} ${state.chapterIndex + 1}:${i + 1}`;
             const has = !!state.notes[ref];
             el.classList.toggle('versiculo-com-nota', has);
-            if (has) el.title = '📝 Possui anotação — 2 toques para ver';
+            if (has) el.title = '📝 Possui anotação — 2 toques para ler';
         });
     }
 
@@ -894,81 +980,87 @@
         showShare();
     }
 
-    // =====================================================
-    // ===== 🖼️ VERSÍCULO COMO IMAGEM =====
-    // =====================================================
+    // ===== 🎨 IMAGEM ILUSTRADA POR IA + ENVIAR =====
     function wrapText(ctx, text, maxWidth) {
-        const words = text.split(' ');
-        const lines = [];
-        let line = '';
-        for (const w of words) {
-            const test = line ? line + ' ' + w : w;
-            if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
-            else line = test;
-        }
+        const words = text.split(' '); const lines = []; let line = '';
+        for (const w of words) { const t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > maxWidth && line) { lines.push(line); line = w; } else line = t; }
         if (line) lines.push(line);
         return lines;
     }
-
-    function generateVerseImage(text, ref) {
-        const W = 1080, H = 1350;
-        const canvas = document.createElement('canvas');
-        canvas.width = W; canvas.height = H;
-        const ctx = canvas.getContext('2d');
-
-        const g = ctx.createLinearGradient(0, 0, 0, H);
-        g.addColorStop(0, '#101010');
-        g.addColorStop(1, '#1e1e1e');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, W, H);
-
-        ctx.strokeStyle = '#d4af37';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(42, 42, W - 84, H - 84);
-
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#d4af37';
-        ctx.font = 'bold 46px Georgia, serif';
-        ctx.fillText('BÍBLIA', W / 2, 140);
-        ctx.fillStyle = '#a0a0a0';
-        ctx.font = '30px Georgia, serif';
-        ctx.fillText('✦ ✦ ✦', W / 2, 190);
-
-        let size = 40;
-        let lines;
-        do {
-            ctx.font = `italic ${size}px Georgia, serif`;
-            lines = wrapText(ctx, `"${text}"`, W - 220);
-            if (lines.length * (size + 18) <= H - 640) break;
-            size -= 4;
-        } while (size > 24);
-
-        ctx.fillStyle = '#e0e0e0';
-        let y = H / 2 - (lines.length * (size + 18)) / 2 + 30;
-        lines.forEach(l => { ctx.fillText(l, W / 2, y); y += size + 18; });
-
-        ctx.fillStyle = '#a3e635';
-        ctx.font = 'bold 44px Georgia, serif';
-        ctx.fillText(ref, W / 2, y + 55);
-
-        ctx.fillStyle = '#d4af37';
-        ctx.font = 'bold 32px Georgia, serif';
-        ctx.fillText(',', W / 2, H - 150);
-        ctx.fillStyle = '#a0a0a0';
-        ctx.font = '28px Georgia, serif';
-        ctx.fillText('evicom.github.io/biblia-evilasio', W / 2, H - 100);
-
-        return canvas.toDataURL('image/png');
+    function drawCover(ctx, img, W, H) {
+        const scale = Math.max(W / img.width, H / img.height);
+        const w = img.width * scale, h = img.height * scale;
+        ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
     }
-
-    function openVerseImage() {
+    function composeVerseImage(text, ref, bgDataUrl) {
+        return new Promise((resolve) => {
+            const W = 1080, H = 1350;
+            const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
+            const ctx = canvas.getContext('2d');
+            const finish = () => {
+                const veil = ctx.createLinearGradient(0, 0, 0, H);
+                veil.addColorStop(0, 'rgba(0,0,0,0.45)'); veil.addColorStop(0.5, 'rgba(0,0,0,0.62)'); veil.addColorStop(1, 'rgba(0,0,0,0.78)');
+                ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
+                ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 6; ctx.strokeRect(42, 42, W - 84, H - 84);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#d4af37'; ctx.font = 'bold 46px Georgia, serif'; ctx.fillText('BÍBLIA EVICOM', W / 2, 150);
+                let size = 40, lines;
+                do { ctx.font = `italic ${size}px Georgia, serif`; lines = wrapText(ctx, `"${text}"`, W - 220); if (lines.length * (size + 18) <= H - 640) break; size -= 4; } while (size > 24);
+                ctx.fillStyle = '#ffffff';
+                let y = H / 2 - (lines.length * (size + 18)) / 2 + 30;
+                lines.forEach(l => { ctx.fillText(l, W / 2, y); y += size + 18; });
+                ctx.fillStyle = '#a3e635'; ctx.font = 'bold 44px Georgia, serif'; ctx.fillText(ref, W / 2, y + 55);
+                ctx.fillStyle = '#e0e0e0'; ctx.font = '28px Georgia, serif'; ctx.fillText('evicom.github.io/biblia-evilasio', W / 2, H - 100);
+                resolve(canvas.toDataURL('image/png'));
+            };
+            if (bgDataUrl) {
+                const img = new Image();
+                img.onload = () => { drawCover(ctx, img, W, H); finish(); };
+                img.onerror = () => {
+                    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#101010'); g.addColorStop(1, '#1e1e1e');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); finish();
+                };
+                img.src = bgDataUrl;
+            } else {
+                const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#101010'); g.addColorStop(1, '#1e1e1e');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); finish();
+            }
+        });
+    }
+    async function openVerseImage() {
         if (!lastShareBlocks.length) return;
         const text = lastShareBlocks.map(b => b.text).join(' ');
         const ref = lastShareBlocks.map(b => b.ref).join('; ');
-        const url = generateVerseImage(text, ref);
+        openModal('modal-img');
+        const status = document.getElementById('img-status');
+        const shareBtn = document.getElementById('img-share-btn');
+        shareBtn.style.display = 'none';
+        status.textContent = '🎨 Gerando ilustração com IA...';
+        let bg = null;
+        try {
+            bg = await geminiImage('Ilustração artística, respeitosa e serena, estilo pintura digital, SEM nenhum texto ou letras, inspirada no tema deste versículo bíblico: "' + text + '". Cores suaves e atmosfera de paz.');
+        } catch (e) { bg = null; }
+        status.textContent = bg ? '✨ Ilustração gerada pela IA!' : '🖼️ Arte clássica (IA de imagem indisponível agora).';
+        const url = await composeVerseImage(text, ref, bg);
         document.getElementById('verse-img').src = url;
         document.getElementById('img-download').href = url;
-        openModal('modal-img');
+        try {
+            const blob = await (await fetch(url)).blob();
+            const file = new File([blob], 'biblia-evicom.png', { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                shareBtn.style.display = 'block';
+                shareBtn.onclick = () => navigator.share({ files: [file], title: 'Bíblia Evicom' }).catch(() => {});
+            }
+        } catch (e) { /* sem suporte a envio de arquivo */ }
+    }
+
+    function copyToClipboard() {
+        const text = document.getElementById('share-text').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.share-btn.copy');
+            const o = btn.textContent; btn.textContent = '✅ Copiado!';
+            setTimeout(() => btn.textContent = o, 2000);
+        }).catch(err => console.error(err));
     }
 
     // ===== 📅 PLANO =====
@@ -1148,7 +1240,7 @@
     }
     function jumpTo(bIdx, cIdx) { state.bookIndex = bIdx; state.chapterIndex = cIdx; updateBookChapterSelectors(); renderChapter(); }
 
-    // ===== 📝 ANOTAÇÕES: ver → escolher editar =====
+    // ===== 📝 ANOTAÇÕES: ler livre · editar/salvar/apagar SOMENTE com senha =====
     let currentNoteRef = '';
     function showNoteMode(viewMode) {
         document.getElementById('note-view').style.display = viewMode ? 'block' : 'none';
@@ -1163,7 +1255,7 @@
         else { document.getElementById('note-text').value = ''; showNoteMode(false); }
         openModal('modal-notes');
     }
-    function enterNoteEdit() { document.getElementById('note-text').value = state.notes[currentNoteRef] || ''; showNoteMode(false); }
+    function enterNoteEdit() { if (!adminLibera()) return; document.getElementById('note-text').value = state.notes[currentNoteRef] || ''; showNoteMode(false); }
     function cancelNoteEdit() { if (state.notes[currentNoteRef]) { document.getElementById('note-view-text').textContent = state.notes[currentNoteRef]; showNoteMode(true); } else closeModal('modal-notes'); }
     function copyNote() {
         navigator.clipboard.writeText(state.notes[currentNoteRef] || '').then(() => {
@@ -1172,6 +1264,7 @@
         }).catch(() => {});
     }
     function saveNote() {
+        if (!adminLibera()) return;
         const text = document.getElementById('note-text').value.trim();
         if (text) state.notes[currentNoteRef] = text; else delete state.notes[currentNoteRef];
         localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
@@ -1181,6 +1274,7 @@
     }
     function deleteNote() {
         if (!state.notes[currentNoteRef]) { closeModal('modal-notes'); return; }
+        if (!adminLibera()) return;
         delete state.notes[currentNoteRef];
         localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
         updateNoteMarkers(); scheduleCloudSync();
