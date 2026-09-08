@@ -266,7 +266,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.4 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.5 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -549,7 +549,7 @@
     }
 
     function isAppInstalled() {
-        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        return window.matchMedia('(display-mode: standalone').matches || window.navigator.standalone === true;
     }
 
     // ===== 🔄 SERVICE WORKER + AVISO DE ATUALIZAÇÃO =====
@@ -710,11 +710,11 @@
 
     // =====================================================
     // ===== 🤖 IA GEMINI VIA PROXY (ZERO chave no código) =====
-    // ⚠️ Troque pelo URL do seu Cloudflare Worker
+    // Alias "gemini-flash-latest" = sempre o modelo atual (à prova de aposentadoria)
     // =====================================================
-    const AI_PROXY = 'https://biblia-proxy.SEU-USUARIO.workers.dev';
-    const AI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
-    const AI_IMG_MODELS = ['gemini-2.5-flash-image-preview', 'gemini-2.0-flash-preview-image-generation'];
+    const AI_PROXY = 'https://biblia-proxy.evicomx.workers.dev';
+    const AI_MODELS = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+    const AI_IMG_MODELS = ['gemini-image-latest', 'gemini-3-pro-image', 'gemini-2.5-flash-image'];
     let lastAiError = null;
 
     const SYSTEM_EVANG =
@@ -794,7 +794,7 @@
         box.classList.remove('loading');
         out.textContent = answer ||
             ('❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
-             '\n\nConfira se o URL do proxy (AI_PROXY) está certo e se o secret GEMINI_API_KEY está configurado no Worker.');
+             '\n\nConfira o secret GEMINI_API_KEY no Worker e o URL em AI_PROXY.');
     }
 
     // ===== NORMALIZADOR DE JSON BÍBLICO =====
