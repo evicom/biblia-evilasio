@@ -1,8 +1,8 @@
 {
   "id": "/biblia-evilasio/",
-  "name": "Bíblia Evilasio",
-  "short_name": "Evilasio",
-  "description": "Bíblia Evilasio completa com ARC, ACF, NVI, AA e Bíblia Católica (BC). 100% offline. Leia, busque e anote versículos.",
+  "name": "Bíblia Evicom",
+  "short_name": "Evicom",
+  "description": "Bíblia Evicom completa com ARC, ACF, NVI, AA e Bíblia Católica (BC). 100% offline. Leia, busque, anote e pergunte à IA.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
