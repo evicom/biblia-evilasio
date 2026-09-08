@@ -266,7 +266,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.6 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.7 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -350,7 +350,7 @@
 
         <div class="help-item"><div class="help-icon">🤖</div><div>
             <div class="help-title">Assistente Bíblico (IA)</div>
-            <div class="help-text">Toque em 🤖: use os atalhos em pílula ou escreva sua pergunta sobre o <strong>capítulo aberto</strong>. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens. A chave fica protegida no proxy — nunca no código.</div>
+            <div class="help-text">Toque em 🤖: use os atalhos em pílula ou escreva sua pergunta sobre o <strong>capítulo aberto</strong>. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens. A chave fica protegida no proxy — nunca no código. Se a cota gratuita (429) esgotar, o app avisa e continua funcionando com os recursos locais.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">✍️</div><div>
@@ -360,7 +360,7 @@
 
         <div class="help-item"><div class="help-icon">📤</div><div>
             <div class="help-title">Compartilhar 1 versículo</div>
-            <div class="help-text">Toque no <strong>número dourado</strong>: WhatsApp, Instagram, Telegram, Facebook, X ou Copiar — sempre com reflexão da IA e o link do app.</div>
+            <div class="help-text">Toque no <strong>número dourado</strong>: WhatsApp, Instagram, Telegram, Facebook, X ou Copiar — sempre com reflexão da IA (ou reflexão local, se a cota estiver esgotada) e o link do app.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">🎨</div><div>
@@ -710,13 +710,15 @@
 
     // =====================================================
     // ===== 🤖 IA GEMINI VIA PROXY (ZERO chave no código) =====
-    // Alias "gemini-flash-latest" = sempre o modelo atual;
-    // geminiRaw tenta 3x com espera quando o Gemini está sobrecarregado (503/429)
+    // 429 = cota gratuita → para tudo e avisa (não multiplica requests)
+    // 503 = sobrecarga → espera e tenta de novo (até 3x)
+    // 404 = modelo aposentado → pula para o próximo da lista
     // =====================================================
     const AI_PROXY = 'https://biblia-proxy.evicomx.workers.dev';
     const AI_MODELS = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3-flash', 'gemini-pro-latest'];
     const AI_IMG_MODELS = ['gemini-image-latest', 'gemini-3-pro-image', 'gemini-2.5-flash-image'];
     let lastAiError = null;
+    let quotaExcedida = false;
 
     const SYSTEM_EVANG =
         'Você é um assistente bíblico do app Bíblia Evicom, de perspectiva PROTESTANTE EVANGÉLICA. ' +
@@ -738,10 +740,11 @@
                 ultimoStatus = res.status;
                 lastAiError = 'HTTP ' + res.status;
                 if (res.status === 404) break; // modelo não existe → próximo da lista
-                if (res.status === 503 || res.status === 429) {
+                if (res.status === 503) {
                     await new Promise(r => setTimeout(r, 1000 * tentativa)); // sobrecarga → espera e repete
                     continue;
                 }
+                if (res.status === 429) { quotaExcedida = true; break; } // cota da conta → para tudo
                 break; // outros erros → próximo modelo
             } catch (e) {
                 lastAiError = e.message;
@@ -757,7 +760,9 @@
 
     async function geminiText(prompt, cfg) {
         const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: Object.assign({ temperature: 0.5, maxOutputTokens: 1024 }, cfg || {}) };
+        quotaExcedida = false;
         for (const model of AI_MODELS) {
+            if (quotaExcedida) break; // cota esgotada → não multiplica requests
             const r = await geminiRaw(model, body);
             if (r.status === 200) {
                 const txt = extractParts(r.data).map(p => p.text || '').join('').trim();
@@ -770,7 +775,9 @@
     async function geminiImage(prompt) {
         const configs = [ { responseModalities: ['IMAGE', 'TEXT'] }, { responseModalities: ['IMAGE'] }, {} ];
         for (const model of AI_IMG_MODELS) {
+            if (quotaExcedida) break;
             for (const gc of configs) {
+                if (quotaExcedida) break;
                 const body = { contents: [{ parts: [{ text: prompt }] }] };
                 if (gc.responseModalities) body.generationConfig = gc;
                 const r = await geminiRaw(model, body);
@@ -807,9 +814,10 @@
         const prompt = `${SYSTEM_EVANG}\n\nTexto bíblico (${ctx.ref}):\n${ctx.text}\n\nPergunta do leitor: ${q}`;
         const answer = await geminiText(prompt, { temperature: 0.5, maxOutputTokens: 1024 });
         box.classList.remove('loading');
-        out.textContent = answer ||
-            ('❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
-             '\n\nO Gemini pode estar sobrecarregado (503) — tente de novo em 1 minuto. Confira também o secret GEMINI_API_KEY no Worker.');
+        out.textContent = answer || (quotaExcedida
+            ? '⏳ Limite gratuito da IA atingido (HTTP 429).\n\nO plano gratuito do Gemini tem cota por minuto e por dia — isso não é erro do app. Tente de novo em alguns minutos ou amanhã, quando a cota diária renova.\n\n💡 Enquanto isso, tudo no app continua funcionando: leitura, busca, anotações e compartilhamento (com reflexão local).'
+            : ('❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
+               '\n\nSe aparecer 503, o Gemini está sobrecarregado — tente em 1 minuto. Confira também o secret GEMINI_API_KEY no Worker.'));
     }
 
     // ===== NORMALIZADOR DE JSON BÍBLICO =====
