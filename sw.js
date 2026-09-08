@@ -1,6 +1,6 @@
 // Service Worker - Bíblia Evicom (José Evilasio Marques)
-// HTML sempre atualizado (network-first) + Bíblias .json em cache (offline total)
-const CACHE_VERSION = 'v4';
+// v5: HTML network-first + Bíblias offline + comando SKIP_WAITING p/ atualização
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
@@ -23,6 +23,11 @@ const BIBLE_JSONS = [
   './pt-br/aa.json',
   './pt-br/bc.json'
 ];
+
+// Recebe o comando do app para ativar a versão nova na hora
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
+});
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -49,7 +54,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Navegações (HTML): REDE PRIMEIRO → sempre pega a versão nova
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
@@ -63,7 +67,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Demais arquivos: cache primeiro, atualiza em segundo plano
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const networkFetch = fetch(event.request)
