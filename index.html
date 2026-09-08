@@ -104,21 +104,7 @@
         .selection-btn.cancel { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
         .selection-hint { width: 100%; font-size: 0.75rem; color: var(--text-secondary); }
 
-        /* ===== BARRA DE AVISO DE ATUALIZAÇÃO ===== */
-        #update-bar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--bg-secondary);
-            border-top: 2px solid var(--accent);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 0.8rem;
-            padding: 0.8rem 1rem;
-            z-index: 1000;
-            flex-wrap: wrap;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
-        }
+        #update-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); border-top: 2px solid var(--accent); display: none; align-items: center; justify-content: center; gap: 0.8rem; padding: 0.8rem 1rem; z-index: 1000; flex-wrap: wrap; box-shadow: 0 -4px 12px rgba(0,0,0,0.4); }
         #update-bar.visible { display: flex; }
         #update-bar span { color: var(--accent); font-weight: 700; }
 
@@ -161,7 +147,6 @@
         select optgroup { color: var(--accent); font-weight: 700; background: var(--bg-secondary); }
         select option { color: var(--text-primary); background: var(--bg-secondary); }
         #note-text { min-height: 200px; resize: vertical; line-height: 1.6; }
-        #ai-question { min-height: 90px; resize: vertical; }
         #note-view-text { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-height: 120px; white-space: pre-line; font-size: 0.95rem; margin-bottom: 0.8rem; }
 
         .note-ref-badge { display: inline-block; background: var(--bg-tertiary); border: 1px solid var(--accent); color: var(--accent); padding: 0.3rem 0.9rem; border-radius: 20px; font-weight: 700; margin-bottom: 0.8rem; font-size: 0.9rem; }
@@ -173,6 +158,26 @@
         .btn-primary:hover { background: var(--accent-hover); }
         .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
         .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ===== NOVA APARÊNCIA DA CAIXA DA IA ===== */
+        .modal-ai { border: 1px solid rgba(212, 175, 55, 0.35); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65); }
+        .ai-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid var(--border); }
+        .ai-avatar { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: linear-gradient(135deg, rgba(212,175,55,0.28), rgba(163,230,53,0.14)); border: 1px solid rgba(212,175,55,0.45); }
+        .ai-header h3 { color: var(--accent); font-size: 1.1rem; line-height: 1.2; }
+        .ai-sub { font-size: 0.78rem; color: var(--text-secondary); }
+        .ai-header .close { margin-left: auto; }
+        .ai-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.8rem; }
+        .ai-chips button { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-secondary); font-size: 0.78rem; padding: 0.42rem 0.8rem; border-radius: 999px; cursor: pointer; transition: 0.2s; }
+        .ai-chips button:hover { border-color: var(--accent); color: var(--accent); background: rgba(212,175,55,0.08); }
+        #ai-question { min-height: 90px; resize: vertical; }
+        .btn-ai { width: 100%; border: none; cursor: pointer; font-weight: 700; font-size: 0.95rem; padding: 0.8rem; border-radius: 10px; color: #1a1a1a; background: linear-gradient(135deg, var(--accent), #fbbf24); transition: 0.2s; }
+        .btn-ai:hover { filter: brightness(1.12); transform: translateY(-1px); }
+        .ai-answer { margin-top: 1rem; border-radius: 12px; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(45,45,45,0.65), rgba(30,30,30,0.95)); overflow: hidden; }
+        .ai-answer-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.9rem; background: rgba(212,175,55,0.08); border-bottom: 1px solid var(--border); color: var(--accent); font-size: 0.8rem; font-weight: 700; }
+        .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--jesus-color); box-shadow: 0 0 8px var(--jesus-color); animation: aiPulse 1.6s infinite; }
+        @keyframes aiPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+        #ai-answer-text { padding: 0.9rem 1rem; font-size: 0.92rem; line-height: 1.75; white-space: pre-line; color: var(--text-primary); min-height: 70px; }
+        .ai-answer.loading #ai-answer-text { color: var(--text-secondary); font-style: italic; }
 
         .search-result { padding: 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; border-radius: 6px; transition: 0.2s; }
         .search-result:hover { background: var(--bg-tertiary); }
@@ -244,7 +249,6 @@
     <span class="selection-hint">Toque em outros versículos para adicionar ou remover da seleção.</span>
 </div>
 
-<!-- ===== BARRA DE AVISO DE ATUALIZAÇÃO DO APP ===== -->
 <div id="update-bar">
     <span>🔄 Nova versão disponível!</span>
     <button class="selection-btn" onclick="applyUpdate()">Atualizar agora</button>
@@ -262,7 +266,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.2 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.3 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -303,20 +307,29 @@
     </div>
 </div>
 
-<!-- MODAL IA -->
+<!-- MODAL IA (NOVO VISUAL) -->
 <div id="modal-ai" class="modal">
-    <div class="modal-content modal-large">
-        <div class="modal-header"><h3>🤖 Assistente Bíblico (IA)</h3><span class="close" onclick="closeModal('modal-ai')">&times;</span></div>
-        <p class="notes-hint" style="text-align:left">Base protestante evangélica · capítulo aberto: <strong id="ai-context-ref">—</strong></p>
-        <div class="key-quick" style="margin-bottom:.6rem">
-            <button onclick="aiSuggest('Explique este capítulo de forma simples e clara.')">📖 Explique o capítulo</button>
+    <div class="modal-content modal-large modal-ai">
+        <div class="ai-header">
+            <div class="ai-avatar">🤖</div>
+            <div>
+                <h3>Assistente Bíblico</h3>
+                <span class="ai-sub">Base protestante evangélica · capítulo aberto: <strong id="ai-context-ref">—</strong></span>
+            </div>
+            <span class="close" onclick="closeModal('modal-ai')">&times;</span>
+        </div>
+        <div class="ai-chips">
+            <button onclick="aiSuggest('Explique este capítulo de forma simples e clara.')">📖 Explicar capítulo</button>
             <button onclick="aiSuggest('Qual o versículo-chave deste capítulo e por quê?')">🔑 Versículo-chave</button>
             <button onclick="aiSuggest('Que aplicação prática este texto tem para a minha vida hoje?')">🙏 Aplicação prática</button>
             <button onclick="aiSuggest('Escreva uma meditação curta com este texto para eu compartilhar.')">✨ Meditação</button>
         </div>
         <textarea id="ai-question" placeholder="Escreva sua pergunta sobre o capítulo aberto..."></textarea>
-        <button class="btn-primary" onclick="askAI()">✨ Perguntar à IA</button>
-        <div id="ai-answer" style="margin-top:1rem; font-size:.92rem; line-height:1.7; white-space:pre-line; color:var(--text-primary); background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; padding:1rem; min-height:60px;">A resposta da IA aparecerá aqui.</div>
+        <button class="btn-ai" onclick="askAI()">✨ Perguntar à IA</button>
+        <div id="ai-answer" class="ai-answer">
+            <div class="ai-answer-head"><span class="ai-dot"></span> Resposta da IA</div>
+            <div id="ai-answer-text">A resposta aparecerá aqui, com base no capítulo aberto.</div>
+        </div>
     </div>
 </div>
 
@@ -337,7 +350,7 @@
 
         <div class="help-item"><div class="help-icon">🤖</div><div>
             <div class="help-title">Assistente Bíblico (IA)</div>
-            <div class="help-text">Toque em 🤖 e pergunte sobre o <strong>capítulo aberto</strong> (atalhos: explicar, versículo-chave, aplicação, meditação) ou escreva sua pergunta. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens.</div>
+            <div class="help-text">Toque em 🤖: use os atalhos em pílula ou escreva sua pergunta sobre o <strong>capítulo aberto</strong>. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">✍️</div><div>
@@ -539,11 +552,8 @@
         return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     }
 
-    // =====================================================
     // ===== 🔄 SERVICE WORKER + AVISO DE ATUALIZAÇÃO =====
-    // =====================================================
     let pendingUpdate = null;
-
     function showUpdateBar() { document.getElementById('update-bar').classList.add('visible'); }
     function hideUpdateBar() { document.getElementById('update-bar').classList.remove('visible'); }
     function applyUpdate() {
@@ -555,7 +565,6 @@
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').then(reg => {
-                // verifica atualizações agora e a cada 30 minutos
                 reg.update();
                 setInterval(() => reg.update(), 30 * 60 * 1000);
 
@@ -640,10 +649,7 @@
         }, 200);
     }
 
-    // =====================================================
-    // ===== ☁️ NUVEM JSONBIN (direto do navegador) =====
-    // Chave ofuscada (invertida). ⚠️ Ao copiar o projeto, troque!
-    // =====================================================
+    // ===== ☁️ NUVEM JSONBIN (chave ofuscada) =====
     const JSONBIN_BIN_ID = '6a8ba1f2da38895dfe0893cb';
     const _chaveInvertida = 'SAHzgxDxyu0noeIi6znOEaPYmNEnCFH.wceyNr0i83ARm0cxI2mW8$01$a2$';
     const JSONBIN_MASTER_KEY = _chaveInvertida.split('').reverse().join('');
@@ -704,9 +710,9 @@
 
     // =====================================================
     // ===== 🤖 IA GEMINI — BASE PROTESTANTE EVANGÉLICA =====
-    // Chave do projeto "biblia-evicom" (projects/468091286035)
+    // Chave do projeto 201504013925 (conta com 2FA)
     // =====================================================
-    const AI_API_KEY = 'AQ.Ab8RN6IvHg3PmuD04hy_z0C9fyMMeoAodB7YlQ0f5NTBg_GUSg';
+    const AI_API_KEY = 'AQ.Ab8RN6KMe_pXx3cYBC4aDJKd1Zu2tCryXwtgUNX5XFfzHskdxw';
     const AI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
     const AI_IMG_MODELS = ['gemini-2.5-flash-image-preview', 'gemini-2.0-flash-preview-image-generation'];
     let lastAiError = null;
@@ -780,21 +786,22 @@
 
     async function askAI() {
         const q = document.getElementById('ai-question').value.trim();
-        const out = document.getElementById('ai-answer');
+        const box = document.getElementById('ai-answer');
+        const out = document.getElementById('ai-answer-text');
         if (!q) { out.textContent = '✏️ Digite uma pergunta ou toque numa sugestão acima.'; return; }
         const ctx = getChapterContext();
         document.getElementById('ai-context-ref').textContent = ctx.ref;
+        box.classList.add('loading');
         out.textContent = '🤔 Consultando a IA...';
         const prompt = `${SYSTEM_EVANG}\n\nTexto bíblico (${ctx.ref}):\n${ctx.text}\n\nPergunta do leitor: ${q}`;
         const answer = await geminiText(prompt, { temperature: 0.5, maxOutputTokens: 1024 });
+        box.classList.remove('loading');
         out.textContent = answer ||
             ('❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
-             '\n\nVerifique no Google AI Studio se a chave está ativa para a API Gemini.');
+             '\n\nVerifique no Google AI Studio se a chave está ativa (conta com verificação em duas etapas).');
     }
 
-    // =====================================================
     // ===== NORMALIZADOR DE JSON BÍBLICO =====
-    // =====================================================
     function normalizeBibleData(raw) {
         const chapterToVerses = (ch) => {
             if (Array.isArray(ch)) return ch.map(v => (typeof v === 'string') ? v : (v.texto || v.text || v.verse || v.content || '')).filter(t => t);
@@ -832,9 +839,7 @@
         return null;
     }
 
-    // =====================================================
     // ===== LEITURA =====
-    // =====================================================
     function renderVersionButtons() {
         const container = document.getElementById('version-buttons');
         container.innerHTML = '';
