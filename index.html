@@ -266,7 +266,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.7 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.8 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -327,7 +327,7 @@
         <textarea id="ai-question" placeholder="Escreva sua pergunta sobre o capítulo aberto..."></textarea>
         <button class="btn-ai" onclick="askAI()">✨ Perguntar à IA</button>
         <div id="ai-answer" class="ai-answer">
-            <div class="ai-answer-head"><span class="ai-dot"></span> Resposta da IA</div>
+            <div class="ai-answer-head"><span class="ai-dot"></span> Resposta da IA <span id="ai-provedor" style="margin-left:auto; font-weight:400; color:var(--text-secondary);"></span></div>
             <div id="ai-answer-text">A resposta aparecerá aqui, com base no capítulo aberto.</div>
         </div>
     </div>
@@ -350,7 +350,7 @@
 
         <div class="help-item"><div class="help-icon">🤖</div><div>
             <div class="help-title">Assistente Bíblico (IA)</div>
-            <div class="help-text">Toque em 🤖: use os atalhos em pílula ou escreva sua pergunta sobre o <strong>capítulo aberto</strong>. A IA responde com <strong>base protestante evangélica</strong>, gera a <strong>reflexão</strong> dos compartilhamentos e a <strong>ilustração</strong> das imagens. A chave fica protegida no proxy — nunca no código. Se a cota gratuita (429) esgotar, o app avisa e continua funcionando com os recursos locais.</div>
+            <div class="help-text">Toque em 🤖 e pergunte sobre o <strong>capítulo aberto</strong>. A IA usa uma <strong>cadeia de provedores gratuitos</strong> (Groq → Cloudflare → Gemini): se um estiver sem cota, o próximo assume automaticamente — respostas rápidas e sem cair. Base <strong>protestante evangélica</strong>.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">✍️</div><div>
@@ -360,7 +360,7 @@
 
         <div class="help-item"><div class="help-icon">📤</div><div>
             <div class="help-title">Compartilhar 1 versículo</div>
-            <div class="help-text">Toque no <strong>número dourado</strong>: WhatsApp, Instagram, Telegram, Facebook, X ou Copiar — sempre com reflexão da IA (ou reflexão local, se a cota estiver esgotada) e o link do app.</div>
+            <div class="help-text">Toque no <strong>número dourado</strong>: WhatsApp, Instagram, Telegram, Facebook, X ou Copiar — sempre com reflexão da IA (ou reflexão local, se todos os provedores estiverem sem cota) e o link do app.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">🎨</div><div>
@@ -709,16 +709,12 @@
     }
 
     // =====================================================
-    // ===== 🤖 IA GEMINI VIA PROXY (ZERO chave no código) =====
-    // 429 = cota gratuita → para tudo e avisa (não multiplica requests)
-    // 503 = sobrecarga → espera e tenta de novo (até 3x)
-    // 404 = modelo aposentado → pula para o próximo da lista
+    // ===== 🤖 IA MULTI-PROVEDOR VIA PROXY =====
+    // Groq → Cloudflare Workers AI → Gemini (o Worker decide; nenhuma chave aqui)
     // =====================================================
     const AI_PROXY = 'https://biblia-proxy.evicomx.workers.dev';
-    const AI_MODELS = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3-flash', 'gemini-pro-latest'];
-    const AI_IMG_MODELS = ['gemini-image-latest', 'gemini-3-pro-image', 'gemini-2.5-flash-image'];
     let lastAiError = null;
-    let quotaExcedida = false;
+    let ultimoProvedor = null;
 
     const SYSTEM_EVANG =
         'Você é um assistente bíblico do app Bíblia Evicom, de perspectiva PROTESTANTE EVANGÉLICA. ' +
@@ -726,67 +722,31 @@
         'Responda SEMPRE em português, de forma piedosa, didática e acolhedora, citando referências bíblicas quando útil. ' +
         'Não apresente perspectivas contrárias à fé evangélica protestante.';
 
-    async function geminiRaw(model, body) {
-        const url = AI_PROXY + '?model=' + encodeURIComponent(model);
-        let ultimoStatus = 0;
-        for (let tentativa = 1; tentativa <= 3; tentativa++) {
-            try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                if (res.ok) return { status: 200, data: await res.json() };
-                ultimoStatus = res.status;
-                lastAiError = 'HTTP ' + res.status;
-                if (res.status === 404) break; // modelo não existe → próximo da lista
-                if (res.status === 503) {
-                    await new Promise(r => setTimeout(r, 1000 * tentativa)); // sobrecarga → espera e repete
-                    continue;
-                }
-                if (res.status === 429) { quotaExcedida = true; break; } // cota da conta → para tudo
-                break; // outros erros → próximo modelo
-            } catch (e) {
-                lastAiError = e.message;
-                await new Promise(r => setTimeout(r, 800 * tentativa));
-            }
-        }
-        return { status: ultimoStatus, data: null };
-    }
-
-    function extractParts(data) {
-        return (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-    }
-
-    async function geminiText(prompt, cfg) {
-        const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: Object.assign({ temperature: 0.5, maxOutputTokens: 1024 }, cfg || {}) };
-        quotaExcedida = false;
-        for (const model of AI_MODELS) {
-            if (quotaExcedida) break; // cota esgotada → não multiplica requests
-            const r = await geminiRaw(model, body);
-            if (r.status === 200) {
-                const txt = extractParts(r.data).map(p => p.text || '').join('').trim();
-                if (txt) return txt;
-            }
-        }
+    async function pedirIA(prompt, system) {
+        try {
+            const res = await fetch(AI_PROXY + '?tipo=texto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, system })
+            });
+            const d = await res.json().catch(() => ({}));
+            if (res.ok && d.ok) { ultimoProvedor = d.provedor || null; return d.resultado; }
+            lastAiError = d.error || ('HTTP ' + res.status);
+        } catch (e) { lastAiError = e.message; }
         return null;
     }
 
-    async function geminiImage(prompt) {
-        const configs = [ { responseModalities: ['IMAGE', 'TEXT'] }, { responseModalities: ['IMAGE'] }, {} ];
-        for (const model of AI_IMG_MODELS) {
-            if (quotaExcedida) break;
-            for (const gc of configs) {
-                if (quotaExcedida) break;
-                const body = { contents: [{ parts: [{ text: prompt }] }] };
-                if (gc.responseModalities) body.generationConfig = gc;
-                const r = await geminiRaw(model, body);
-                if (r.status === 200) {
-                    const inline = extractParts(r.data).find(p => p.inlineData);
-                    if (inline) return 'data:' + inline.inlineData.mimeType + ';base64,' + inline.inlineData.data;
-                }
-            }
-        }
+    async function pedirImagemIA(prompt) {
+        try {
+            const res = await fetch(AI_PROXY + '?tipo=imagem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            const d = await res.json().catch(() => ({}));
+            if (res.ok && d.ok) { ultimoProvedor = d.provedor || null; return d.resultado; }
+            lastAiError = d.error || ('HTTP ' + res.status);
+        } catch (e) { lastAiError = e.message; }
         return null;
     }
 
@@ -806,18 +766,22 @@
         const q = document.getElementById('ai-question').value.trim();
         const box = document.getElementById('ai-answer');
         const out = document.getElementById('ai-answer-text');
+        const prov = document.getElementById('ai-provedor');
         if (!q) { out.textContent = '✏️ Digite uma pergunta ou toque numa sugestão acima.'; return; }
         const ctx = getChapterContext();
         document.getElementById('ai-context-ref').textContent = ctx.ref;
         box.classList.add('loading');
         out.textContent = '🤔 Consultando a IA...';
-        const prompt = `${SYSTEM_EVANG}\n\nTexto bíblico (${ctx.ref}):\n${ctx.text}\n\nPergunta do leitor: ${q}`;
-        const answer = await geminiText(prompt, { temperature: 0.5, maxOutputTokens: 1024 });
+        prov.textContent = '';
+        const answer = await pedirIA(`Texto bíblico (${ctx.ref}):\n${ctx.text}\n\nPergunta do leitor: ${q}`, SYSTEM_EVANG);
         box.classList.remove('loading');
-        out.textContent = answer || (quotaExcedida
-            ? '⏳ Limite gratuito da IA atingido (HTTP 429).\n\nO plano gratuito do Gemini tem cota por minuto e por dia — isso não é erro do app. Tente de novo em alguns minutos ou amanhã, quando a cota diária renova.\n\n💡 Enquanto isso, tudo no app continua funcionando: leitura, busca, anotações e compartilhamento (com reflexão local).'
-            : ('❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
-               '\n\nSe aparecer 503, o Gemini está sobrecarregado — tente em 1 minuto. Confira também o secret GEMINI_API_KEY no Worker.'));
+        if (answer) {
+            out.textContent = answer;
+            prov.textContent = ultimoProvedor ? '· via ' + ultimoProvedor : '';
+        } else {
+            out.textContent = '❌ Não foi possível consultar a IA agora. (' + (lastAiError || 'sem conexão') + ')' +
+                '\n\nTodos os provedores gratuitos (Groq → Cloudflare → Gemini) falharam ou estão sem cota no momento. Tente de novo em alguns minutos — o app continua funcionando normalmente com todos os recursos locais.';
+        }
     }
 
     // ===== NORMALIZADOR DE JSON BÍBLICO =====
@@ -992,9 +956,9 @@
 
     async function generateReflection(blocks) {
         const texto = blocks.map(b => `"${b.text}" (${b.ref})`).join('\n');
-        const r = await geminiText(
-            `${SYSTEM_EVANG}\n\nEscreva UMA reflexão curta (máximo 2 frases) para acompanhar estes versículos em um compartilhamento. Comece exatamente com "🙏 Reflexão: ".\n\nVersículos:\n${texto}`,
-            { temperature: 0.8, maxOutputTokens: 200 }
+        const r = await pedirIA(
+            `Escreva UMA reflexão curta (máximo 2 frases) para acompanhar estes versículos em um compartilhamento. Comece exatamente com "🙏 Reflexão: ".\n\nVersículos:\n${texto}`,
+            SYSTEM_EVANG
         );
         return r || pickReflexao(blocks.map(b => b.ref).join('; '));
     }
@@ -1122,10 +1086,7 @@
         const shareBtn = document.getElementById('img-share-btn');
         shareBtn.style.display = 'none';
         status.textContent = '🎨 Gerando ilustração com IA...';
-        let bg = null;
-        try {
-            bg = await geminiImage('Ilustração artística, respeitosa e serena, estilo pintura digital, SEM nenhum texto ou letras, inspirada no tema deste versículo bíblico: "' + text + '". Cores suaves e atmosfera de paz.');
-        } catch (e) { bg = null; }
+        const bg = await pedirImagemIA('Ilustração artística, respeitosa e serena, estilo pintura digital, SEM nenhum texto ou letras, inspirada no tema deste versículo bíblico: "' + text + '". Cores suaves e atmosfera de paz.');
         status.textContent = bg ? '✨ Ilustração gerada pela IA!' : '🖼️ Arte clássica (IA de imagem indisponível agora).';
         const url = await composeVerseImage(text, ref, bg);
         document.getElementById('verse-img').src = url;
