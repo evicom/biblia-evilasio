@@ -1,6 +1,6 @@
-// Service Worker - Bíblia Evicom (José Evilasio Marques)
-// v5: HTML network-first + Bíblias offline + comando SKIP_WAITING p/ atualização
-const CACHE_VERSION = 'v8';
+// Service Worker - Bíblia Evicom
+// v9: aviso de atualização funcionando (sem skipWaiting automático) + offline
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = `biblia-evilasio-${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
@@ -24,7 +24,7 @@ const BIBLE_JSONS = [
   './pt-br/bc.json'
 ];
 
-// Recebe o comando do app para ativar a versão nova na hora
+// Recebe o comando "atualizar agora" vindo do app
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
@@ -34,7 +34,9 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.addAll(PRECACHE_ASSETS);
       await Promise.allSettled(BIBLE_JSONS.map((url) => cache.add(url)));
-      return self.skipWaiting();
+      // ⚠️ SEM skipWaiting() aqui: o SW novo fica "waiting" e o app
+      // mostra a barra "🔄 Nova versão disponível!" ao usuário
+      return true;
     })
   );
 });
@@ -54,6 +56,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  // Navegações (HTML): REDE primeiro → sempre busca a versão nova
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
@@ -67,6 +70,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Demais arquivos: cache primeiro, atualiza em segundo plano
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const networkFetch = fetch(event.request)
