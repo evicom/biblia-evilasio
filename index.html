@@ -266,7 +266,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.8 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v1.9 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -365,7 +365,7 @@
 
         <div class="help-item"><div class="help-icon">🎨</div><div>
             <div class="help-title">Gerar a imagem e enviar</div>
-            <div class="help-text">Na tela de compartilhar, toque em <strong>"🎨 Gerar a imagem e enviar"</strong>: a IA cria uma ilustração do versículo e o app monta a arte com texto e referência, com envio nativo ou download.</div>
+            <div class="help-text">Na tela de compartilhar, toque em <strong>"🎨 Gerar a imagem e enviar"</strong>: a IA cria uma ilustração do versículo e o app monta a arte com <strong>fontes grandes</strong>, texto e referência, com envio nativo ou download.</div>
         </div></div>
 
         <div class="help-item"><div class="help-icon">📝</div><div>
@@ -536,7 +536,13 @@
         requestWakeLock();
         checkContinue();
         if (isAppInstalled()) document.getElementById('install-btn').style.display = 'none';
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
+        // Ao voltar para o app: reativa a tela E verifica atualização do SW
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestWakeLock();
+                if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration().then(r => { if (r) r.update(); });
+            }
+        });
         document.addEventListener('touchend', () => requestWakeLock(), { passive: true });
     });
 
@@ -1030,7 +1036,7 @@
         showShare();
     }
 
-    // ===== 🎨 IMAGEM ILUSTRADA POR IA + ENVIAR =====
+    // ===== 🎨 IMAGEM ILUSTRADA POR IA + ENVIAR (FONTES GRANDES) =====
     function wrapText(ctx, text, maxWidth) {
         const words = text.split(' '); const lines = []; let line = '';
         for (const w of words) { const t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > maxWidth && line) { lines.push(line); line = w; } else line = t; }
@@ -1053,14 +1059,24 @@
                 ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
                 ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 6; ctx.strokeRect(42, 42, W - 84, H - 84);
                 ctx.textAlign = 'center';
-                ctx.fillStyle = '#d4af37'; ctx.font = 'bold 46px Georgia, serif'; ctx.fillText('BÍBLIA EVICOM', W / 2, 150);
-                let size = 40, lines;
-                do { ctx.font = `italic ${size}px Georgia, serif`; lines = wrapText(ctx, `"${text}"`, W - 220); if (lines.length * (size + 18) <= H - 640) break; size -= 4; } while (size > 24);
+                // ===== FONTES GRANDES p/ leitura no celular =====
+                ctx.fillStyle = '#d4af37'; ctx.font = 'bold 60px Georgia, serif'; ctx.fillText('BÍBLIA EVICOM', W / 2, 175);
+                let size = 56, lines;
+                do {
+                    ctx.font = `italic ${size}px Georgia, serif`;
+                    lines = wrapText(ctx, `"${text}"`, W - 170);
+                    if (lines.length * (size + 26) <= H - 600) break;
+                    size -= 4;
+                } while (size > 36);
+                const maxLines = Math.floor((H - 600) / (size + 26));
+                let truncado = false;
+                if (lines.length > maxLines) { lines = lines.slice(0, maxLines); truncado = true; }
+                if (truncado) lines[lines.length - 1] += ' …';
                 ctx.fillStyle = '#ffffff';
-                let y = H / 2 - (lines.length * (size + 18)) / 2 + 30;
-                lines.forEach(l => { ctx.fillText(l, W / 2, y); y += size + 18; });
-                ctx.fillStyle = '#a3e635'; ctx.font = 'bold 44px Georgia, serif'; ctx.fillText(ref, W / 2, y + 55);
-                ctx.fillStyle = '#e0e0e0'; ctx.font = '28px Georgia, serif'; ctx.fillText('evicom.github.io/biblia-evilasio', W / 2, H - 100);
+                let y = H / 2 - (lines.length * (size + 26)) / 2 + 45;
+                lines.forEach(l => { ctx.fillText(l, W / 2, y); y += size + 26; });
+                ctx.fillStyle = '#a3e635'; ctx.font = 'bold 60px Georgia, serif'; ctx.fillText(ref, W / 2, y + 75);
+                ctx.fillStyle = '#e0e0e0'; ctx.font = '36px Georgia, serif'; ctx.fillText('evicom.github.io/biblia-evilasio', W / 2, H - 92);
                 resolve(canvas.toDataURL('image/png'));
             };
             if (bgDataUrl) {
