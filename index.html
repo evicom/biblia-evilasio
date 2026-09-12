@@ -15,6 +15,10 @@
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
+    <!-- ===== FIREBASE (nuvem das anotações) ===== -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --bg-primary: #121212;
@@ -266,7 +270,7 @@
 </div>
 
 <footer>
-    Bíblia Evicom v1.9 · Ajude esse projeto (PIX 91980818289) · © 2026
+    Bíblia Evicom v2.0 · Ajude esse projeto (PIX 91980818289) · © 2026
 </footer>
 
 <!-- MODAL NAVEGAÇÃO -->
@@ -460,7 +464,7 @@
             </div>
         </div>
 
-        <p class="notes-hint">🔒 Editar/salvar/apagar exige a senha do administrador · ☁️ sincronizado na nuvem.</p>
+        <p class="notes-hint">🔒 Editar/salvar/apagar exige a senha do administrador · ☁️ sincronizado na nuvem (Firebase).</p>
     </div>
 </div>
 
@@ -536,7 +540,6 @@
         requestWakeLock();
         checkContinue();
         if (isAppInstalled()) document.getElementById('install-btn').style.display = 'none';
-        // Ao voltar para o app: reativa a tela E verifica atualização do SW
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 requestWakeLock();
@@ -655,11 +658,20 @@
         }, 200);
     }
 
-    // ===== ☁️ NUVEM JSONBIN (chave ofuscada) =====
-    const JSONBIN_BIN_ID = '6a8ba1f2da38895dfe0893cb';
-    const _chaveInvertida = 'SAHzgxDxyu0noeIi6znOEaPYmNEnCFH.wceyNr0i83ARm0cxI2mW8$01$a2$';
-    const JSONBIN_MASTER_KEY = _chaveInvertida.split('').reverse().join('');
-    const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+    // ===== ☁️ NUVEM FIREBASE (Firestore) — sem chave secreta no código =====
+    // A "apiKey" do Firebase NÃO é segredo: é identificador público do projeto.
+    // Proteção real = Regras do Firestore + senha de admin no app.
+    const firebaseConfig = {
+        apiKey: "AIzaSyCWD7GSPVNP1kiHtkTSSBwpylEpGWTh2L4",
+        authDomain: "biblia-evicom.firebaseapp.com",
+        projectId: "biblia-evicom",
+        storageBucket: "biblia-evicom.firebasestorage.app",
+        messagingSenderId: "492536476351",
+        appId: "1:492536476351:web:f77e510f416d4c96d94c0a"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const NOTAS_COL = 'notas';
     let syncTimer = null;
 
     function setSyncStatus(status) {
@@ -674,15 +686,20 @@
         el.textContent = icon; el.title = title;
     }
 
+    // Converte "Gênesis 1:1" em id válido para Firestore (sem espaços/acentos/pontuação)
+    function refToId(ref) {
+        return ref.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '_').replace(/^_+|_+$/g, '');
+    }
+
     async function cloudLoad() {
         try {
-            const res = await fetch(`${JSONBIN_URL}/latest`, { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY } });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const json = await res.json();
-            const record = json.record || {};
-            const rawCloud = (record.notes && typeof record.notes === 'object') ? record.notes : record;
+            const snap = await db.collection(NOTAS_COL).get();
             const cloudNotes = {};
-            for (const [k, v] of Object.entries(rawCloud)) if (typeof v === 'string') cloudNotes[k] = v;
+            snap.forEach(d => {
+                const v = d.data();
+                if (v && v.ref && typeof v.texto === 'string') cloudNotes[v.ref] = v.texto;
+            });
+            // Local ganha em conflito (mais recente do usuário atual)
             state.notes = { ...cloudNotes, ...state.notes };
             localStorage.setItem('biblia_notas', JSON.stringify(state.notes));
             setSyncStatus('ok');
@@ -695,12 +712,21 @@
 
     async function cloudSave() {
         try {
-            const res = await fetch(JSONBIN_URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
-                body: JSON.stringify({ notes: state.notes, atualizadoEm: new Date().toISOString() })
+            const snap = await db.collection(NOTAS_COL).get();
+            const batch = db.batch();
+            const locais = new Set(Object.keys(state.notes).map(refToId));
+            // Propaga apagamentos: o que existe na nuvem mas não local é deletado
+            snap.forEach(d => { if (!locais.has(d.id)) batch.delete(d.ref); });
+            // Sobe tudo que existe localmente
+            Object.entries(state.notes).forEach(([ref, texto]) => {
+                const docRef = db.collection(NOTAS_COL).doc(refToId(ref));
+                batch.set(docRef, {
+                    ref: ref,
+                    texto: texto,
+                    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                });
             });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
+            await batch.commit();
             setSyncStatus('ok');
         } catch (e) {
             console.error('Erro na nuvem:', e);
@@ -1059,7 +1085,6 @@
                 ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
                 ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 6; ctx.strokeRect(42, 42, W - 84, H - 84);
                 ctx.textAlign = 'center';
-                // ===== FONTES GRANDES p/ leitura no celular =====
                 ctx.fillStyle = '#d4af37'; ctx.font = 'bold 60px Georgia, serif'; ctx.fillText('BÍBLIA EVICOM', W / 2, 175);
                 let size = 56, lines;
                 do {
